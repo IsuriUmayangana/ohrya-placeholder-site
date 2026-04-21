@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
+import type { SurveyResponse } from "@/lib/store";
+
+function detectDevice(ua: string): SurveyResponse["device"] {
+  const s = ua.toLowerCase();
+  if (/ipad|tablet|(android(?!.*mobile))/i.test(s)) return "Tablet";
+  if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(s)) return "Mobile";
+  if (/windows|macintosh|linux/i.test(s)) return "Desktop";
+  return "Other";
+}
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const ua = req.headers.get("user-agent") || "";
     const response = saveResponse({
       sessionId: body.sessionId || "anon",
       referredBy: body.referredBy || "",
@@ -15,6 +25,8 @@ export async function POST(req: NextRequest) {
       prefersEarning: body.prefersEarning || "",
       email: body.email || "",
       surveyScore: body.surveyScore || 0,
+      startedAt: body.startedAt || new Date().toISOString(),
+      device: detectDevice(ua),
     });
     return NextResponse.json({ success: true, response });
   } catch {
