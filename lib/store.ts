@@ -114,6 +114,12 @@ export function getUserBySlug(slug: string): PublicUserStats | null {
   return r ? toPublic(r) : null;
 }
 
+export function getUserByEmail(email: string): PublicUserStats | null {
+  const responses = readDB();
+  const r = responses.find((res) => res.email.toLowerCase() === email.toLowerCase().trim());
+  return r ? toPublic(r) : null;
+}
+
 function toPublic(r: SurveyResponse): PublicUserStats {
   return {
     referralCode: r.referralCode,
