@@ -1,34 +1,24 @@
+import "server-only";
+
 import fs from "fs";
 import path from "path";
+import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 
-export interface SurveyResponse {
-  id: string;
-  sessionId: string;
-  referralCode: string;
-  emailSlug: string;
-  referredBy: string;
-  campaign: string;
-  willGive: string;
-  donationAmount: string;
-  willVote: string;
-  willShine: string;
-  prefersEarning: string;
-  email: string;
-  surveyScore: number;
-  referralScore: number;
-  referralCount: number;
-  startedAt: string;
-  submittedAt: string;
-  timeToCompleteSeconds: number;
-  device: "Desktop" | "Mobile" | "Tablet" | "Other";
+export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
+
+const useDynamo = Boolean(process.env.DYNAMODB_TABLE_NAME?.trim());
+
+type StoreDynamoModule = typeof import("@/lib/store-dynamo");
+let dynamoModulePromise: Promise<StoreDynamoModule> | null = null;
+
+function loadDynamo(): Promise<StoreDynamoModule> {
+  if (!dynamoModulePromise) {
+    dynamoModulePromise = import("@/lib/store-dynamo");
+  }
+  return dynamoModulePromise;
 }
 
-export type PublicUserStats = Pick<
-  SurveyResponse,
-  "referralCode" | "emailSlug" | "email" | "surveyScore" | "referralScore" | "referralCount" | "campaign"
-> & { totalScore: number };
-
-// ── File-based persistence ──────────────────────────────────────────────────
+// ── File-based persistence (local / fallback) ─────────────────────────────
 const DB_PATH = path.join(process.cwd(), "data", "db.json");
 
 function readDB(): SurveyResponse[] {
@@ -49,7 +39,6 @@ function writeDB(responses: SurveyResponse[]): void {
   }
 }
 
-// ── Helpers ─────────────────────────────────────────────────────────────────
 function generateCode(): string {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
@@ -64,10 +53,32 @@ function emailToSlug(email: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-// ── Public API ───────────────────────────────────────────────────────────────
-export function saveResponse(
-  data: Omit<SurveyResponse, "id" | "referralCode" | "emailSlug" | "referralScore" | "referralCount" | "submittedAt" | "timeToCompleteSeconds" | "device"> & { device?: SurveyResponse["device"] }
-): SurveyResponse {
+function toPublic(r: SurveyResponse): PublicUserStats {
+  return {
+    referralCode: r.referralCode,
+    emailSlug: r.emailSlug,
+    email: r.email,
+    surveyScore: r.surveyScore,
+    referralScore: r.referralScore,
+    referralCount: r.referralCount,
+    campaign: r.campaign,
+    totalScore: r.surveyScore + r.referralScore,
+  };
+}
+
+async function fileSaveResponse(
+  data: Omit<
+    SurveyResponse,
+    | "id"
+    | "referralCode"
+    | "emailSlug"
+    | "referralScore"
+    | "referralCount"
+    | "submittedAt"
+    | "timeToCompleteSeconds"
+    | "device"
+  > & { device?: SurveyResponse["device"] }
+): Promise<SurveyResponse> {
   const responses = readDB();
 
   if (data.referredBy) {
@@ -80,7 +91,10 @@ export function saveResponse(
 
   const now = new Date();
   const startedAt = data.startedAt ? new Date(data.startedAt) : now;
-  const timeToCompleteSeconds = Math.max(0, Math.round((now.getTime() - startedAt.getTime()) / 1000));
+  const timeToCompleteSeconds = Math.max(
+    0,
+    Math.round((now.getTime() - startedAt.getTime()) / 1000)
+  );
 
   const referralCode = generateCode();
   const emailSlug = `${emailToSlug(data.email)}-${referralCode.toLowerCase()}`;
@@ -102,42 +116,54 @@ export function saveResponse(
   return response;
 }
 
-export function getUserByCode(code: string): PublicUserStats | null {
+export async function saveResponse(
+  data: Omit<
+    SurveyResponse,
+    | "id"
+    | "referralCode"
+    | "emailSlug"
+    | "referralScore"
+    | "referralCount"
+    | "submittedAt"
+    | "timeToCompleteSeconds"
+    | "device"
+  > & { device?: SurveyResponse["device"] }
+): Promise<SurveyResponse> {
+  if (useDynamo) {
+    const d = await loadDynamo();
+    return d.dynamoSaveResponse(data, { generateCode, emailToSlug });
+  }
+  return fileSaveResponse(data);
+}
+
+export async function getUserByCode(code: string): Promise<PublicUserStats | null> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetUserByCode(code);
   const responses = readDB();
   const r = responses.find((res) => res.referralCode === code.toUpperCase());
   return r ? toPublic(r) : null;
 }
 
-export function getUserBySlug(slug: string): PublicUserStats | null {
+export async function getUserBySlug(slug: string): Promise<PublicUserStats | null> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetUserBySlug(slug);
   const responses = readDB();
   const r = responses.find((res) => res.emailSlug === slug.toLowerCase());
   return r ? toPublic(r) : null;
 }
 
-export function getUserByEmail(email: string): PublicUserStats | null {
+export async function getUserByEmail(email: string): Promise<PublicUserStats | null> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetUserByEmail(email);
   const responses = readDB();
   const r = responses.find((res) => res.email.toLowerCase() === email.toLowerCase().trim());
   return r ? toPublic(r) : null;
 }
 
-function toPublic(r: SurveyResponse): PublicUserStats {
-  return {
-    referralCode: r.referralCode,
-    emailSlug: r.emailSlug,
-    email: r.email,
-    surveyScore: r.surveyScore,
-    referralScore: r.referralScore,
-    referralCount: r.referralCount,
-    campaign: r.campaign,
-    totalScore: r.surveyScore + r.referralScore,
-  };
-}
-
-export function getAllResponses(): SurveyResponse[] {
+export async function getAllResponses(): Promise<SurveyResponse[]> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetAllResponses();
   return readDB();
 }
 
-export function getStats() {
+export async function getStats() {
+  if (useDynamo) return (await loadDynamo()).dynamoGetStats();
   const responses = readDB();
   const total = responses.length;
   const avgScore =

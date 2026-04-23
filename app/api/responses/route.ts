@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
-import type { SurveyResponse } from "@/lib/store";
+import type { SurveyResponse } from "@/lib/survey-types";
 
 function detectDevice(ua: string): SurveyResponse["device"] {
   const s = ua.toLowerCase();
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const ua = req.headers.get("user-agent") || "";
-    const response = saveResponse({
+    const response = await saveResponse({
       sessionId: body.sessionId || "anon",
       referredBy: body.referredBy || "",
       campaign: body.campaign || "",
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const responses = getAllResponses();
-  const stats = getStats();
+  const responses = await getAllResponses();
+  const stats = await getStats();
   return NextResponse.json({ responses, stats });
 }

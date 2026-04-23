@@ -8,7 +8,7 @@ export async function GET(
   const { code } = await params;
 
   // Try by referral code first (6-char uppercase), then by full email slug
-  const user = getUserByCode(code) ?? getUserBySlug(code);
+  const user = (await getUserByCode(code)) ?? (await getUserBySlug(code));
 
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });

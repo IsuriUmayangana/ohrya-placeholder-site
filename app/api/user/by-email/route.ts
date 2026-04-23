@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   if (!email) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
-  const user = getUserByEmail(email);
+  const user = await getUserByEmail(email);
   if (!user) {
     return NextResponse.json({ error: "No survey found for this email" }, { status: 404 });
   }

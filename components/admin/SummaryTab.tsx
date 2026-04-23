@@ -41,7 +41,10 @@ function QuestionChart({ title, data, total }: { title: string; data: DataPoint[
             <XAxis dataKey="name" tick={{ fontFamily: "Georgia, serif", fontSize: 11, fill: "#888" }} axisLine={false} tickLine={false} />
             <YAxis allowDecimals={false} tick={{ fontFamily: "Georgia, serif", fontSize: 11, fill: "#aaa" }} axisLine={false} tickLine={false} />
             <Tooltip
-              formatter={(val: number) => [`${val} (${total > 0 ? Math.round((val / total) * 100) : 0}%)`, "Responses"]}
+              formatter={(val) => {
+                const n = typeof val === "number" ? val : Number(val) || 0;
+                return [`${n} (${total > 0 ? Math.round((n / total) * 100) : 0}%)`, "Responses"];
+              }}
               contentStyle={{ fontFamily: "Georgia, serif", fontSize: 12, borderRadius: 8, border: "1px solid #e8f0f2" }}
             />
             <Bar dataKey="value" radius={[4, 4, 0, 0]}>

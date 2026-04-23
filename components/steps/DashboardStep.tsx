@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import type { PublicUserStats } from "@/lib/store";
+import type { PublicUserStats } from "@/lib/survey-types";
 
 interface Props {
   referralCode: string;

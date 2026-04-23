@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const to = searchParams.get("to");       // "YYYY-MM-DD"
   const device = searchParams.get("device"); // "All" | "Desktop" | "Mobile" | "Tablet" | "Other"
 
-  let responses = getAllResponses();
+  let responses = await getAllResponses();
 
   // Apply date filter
   if (from) responses = responses.filter((r) => r.submittedAt >= from);

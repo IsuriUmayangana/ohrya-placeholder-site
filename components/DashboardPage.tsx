@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import OhryaLogo from "./OhryaLogo";
-import type { PublicUserStats } from "@/lib/store";
+import type { PublicUserStats } from "@/lib/survey-types";
 
 interface Props {
   slug: string;
