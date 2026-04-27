@@ -14,9 +14,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {/* Referral Banner */}
       {showRefBanner && <ReferralBanner />}
 
-      {/* Header */}
-      <Header />
-
       {/* Main */}
       <main className="flex-1 flex items-center justify-center px-4 py-8">
         {children}

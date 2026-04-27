@@ -139,8 +139,8 @@ body {
   font-size: var(--font-body-medium);
   font-family: var(--primary-font);
   cursor: pointer;
-  width: 40px !important;
-  height: 40px !important;
+  width: 35px !important;
+  height: 35px !important;
   background-color: var(--primary-color) !important;
   border-radius: 9999px !important;
   border: none !important;
