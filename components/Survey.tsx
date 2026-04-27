@@ -3,7 +3,6 @@
 import { useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import OhryaLogo from "./OhryaLogo";
 import WelcomeStep from "./steps/WelcomeStep";
 import CampaignStep from "./steps/CampaignStep";
 import GiveStep from "./steps/GiveStep";
@@ -14,6 +13,11 @@ import ShineStep from "./steps/ShineStep";
 import RecognitionStep from "./steps/RecognitionStep";
 import EmailStep from "./steps/EmailStep";
 import ReferralStep from "./steps/ReferralStep";
+import StepButton from "./ui/StepButton";
+import ProgressBar from "./ui/ProgressBar";
+import MobileNavButton from "./ui/MobileNavButton";
+import Loading from "@/app/loading";
+import NavButton from "./ui/NavButton";
 
 const STEPS = [
   "welcome",
@@ -24,8 +28,8 @@ const STEPS = [
   "vote",
   "score-almost",
   "shine",
-  "score-welldone",
   "recognition",
+  "score-welldone",
   "email",
   "referral-share",
 ] as const;
@@ -56,6 +60,8 @@ function SurveyInner() {
   const searchParams = useSearchParams();
   const referredBy = searchParams.get("ref") || "";
 
+  const [emailError, setEmailError] = useState("");
+
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Answers>({
@@ -69,15 +75,22 @@ function SurveyInner() {
   const showRefBanner = !!referredBy && stepIndex === 0;
 
   const currentStep: Step = STEPS[stepIndex];
+  const [maxStepReached, setMaxStepReached] = useState(0);
+
+  const [stepError, setStepError] = useState("");
 
   function goNext() {
-    // Record start time when user moves off the welcome screen
     if (currentStep === "welcome" && !startedAt) {
       setStartedAt(new Date().toISOString());
     }
     setDirection(1);
-    setStepIndex((i) => Math.min(i + 1, STEPS.length - 1));
+    setStepIndex((i) => {
+      const next = Math.min(i + 1, STEPS.length - 1);
+      setMaxStepReached((max) => Math.max(max, next));
+      return next;
+    });
   }
+
   function goPrev() {
     setDirection(-1);
     setStepIndex((i) => Math.max(i - 1, 0));
@@ -110,6 +123,46 @@ function SurveyInner() {
     }
   }
 
+  async function handleStepNext() {
+    // Validate required question steps
+    if (currentStep === "campaign" && !answers.campaign) {
+      setStepError("Please select a campaign to continue.");
+      return;
+    }
+    if (currentStep === "give" && !answers.willGive) {
+      setStepError("Please make a selection to continue.");
+      return;
+    }
+    if (currentStep === "donation" && !answers.donationAmount) {
+      setStepError("Please make a selection to continue.");
+      return;
+    }
+    if (currentStep === "vote" && !answers.willVote) {
+      setStepError("Please make a selection to continue.");
+      return;
+    }
+    if (currentStep === "shine" && !answers.willShine) {
+      setStepError("Please make a selection to continue.");
+      return;
+    }
+    if (currentStep === "recognition" && !answers.prefersEarning) {
+      setStepError("Please make a selection to continue.");
+      return;
+    }
+    if (currentStep === "email") {
+      if (!answers.email || !answers.email.includes("@")) {
+        setStepError("Please enter a valid email address.");
+        return;
+      }
+      setStepError("");
+      await submitAndShowReferral();
+      return;
+    }
+  
+    setStepError("");
+    goNext();
+  }
+
   const restart = useCallback(() => {
     setAnswers({ campaign: "", willGive: "", donationAmount: "", willVote: "", willShine: "", prefersEarning: "", email: "" });
     setReferralCode("");
@@ -125,94 +178,136 @@ function SurveyInner() {
   const showNav = currentStep !== "welcome" && currentStep !== "referral-share";
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-white">
-      {showRefBanner && (
-        <div style={{ background: "linear-gradient(90deg, #5a9aaa, #4a8798)", color: "white", textAlign: "center", padding: "10px 16px", fontFamily: "Georgia, serif", fontSize: "0.88rem" }}>
-          ✨ A friend invited you to earn your Social Impact Score — GIVE. VOTE. SHINE.
+    <div className="relative flex flex-col bg-white">
+
+      {/* Progress Bar */}
+      <ProgressBar pct={progressPct} show={showProgress} />
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-8">
+
+        {/* Nav Buttons - Desktop */}
+        <div className="w-full flex flex-row items-center gap-2 top-25 fixed px-6">
+          { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
+            <NavButton action={goPrev}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+              </svg>
+            </NavButton>
+          )}
+          { currentStep !== "welcome" && stepIndex < maxStepReached && (
+            <NavButton action={goNext}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </NavButton>
+          )}
         </div>
-      )}
 
-      <header className="flex justify-center pt-8 pb-4 px-6">
-        <OhryaLogo />
-      </header>
-
-      <main className="flex-1 flex items-center justify-center py-8 px-4">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentStep}
-            custom={direction}
-            variants={{
-              enter: (d: number) => ({ opacity: 0, y: d > 0 ? 50 : -50 }),
-              center: { opacity: 1, y: 0 },
-              exit: (d: number) => ({ opacity: 0, y: d > 0 ? -50 : 50 }),
-            }}
-            initial="enter" animate="center" exit="exit"
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="w-full max-w-2xl"
-          >
-            {currentStep === "welcome" && <WelcomeStep onNext={goNext} />}
-            {currentStep === "campaign" && (
-              <CampaignStep value={answers.campaign} onChange={(v) => setAnswers((a) => ({ ...a, campaign: v }))} onNext={goNext} />
-            )}
-            {currentStep === "give" && (
-              <GiveStep value={answers.willGive} onChange={(v) => setAnswers((a) => ({ ...a, willGive: v }))} onNext={goNext} />
-            )}
-            {currentStep === "score-brilliant" && (
-              <ScoreStep score={surveyScore} variant="brilliant" onNext={goNext} />
-            )}
-            {currentStep === "donation" && (
-              <DonationStep value={answers.donationAmount} onChange={(v) => setAnswers((a) => ({ ...a, donationAmount: v }))} onNext={goNext} />
-            )}
-            {currentStep === "vote" && (
-              <VoteStep value={answers.willVote} onChange={(v) => setAnswers((a) => ({ ...a, willVote: v }))} onNext={goNext} />
-            )}
-            {currentStep === "score-almost" && (
-              <ScoreStep score={surveyScore} variant="almost" onNext={goNext} />
-            )}
-            {currentStep === "shine" && (
-              <ShineStep value={answers.willShine} onChange={(v) => setAnswers((a) => ({ ...a, willShine: v }))} onNext={goNext} />
-            )}
-            {currentStep === "score-welldone" && (
-              <ScoreStep score={surveyScore} variant="welldone" onNext={goNext} />
-            )}
-            {currentStep === "recognition" && (
-              <RecognitionStep value={answers.prefersEarning} onChange={(v) => setAnswers((a) => ({ ...a, prefersEarning: v }))} onNext={goNext} />
-            )}
-            {currentStep === "email" && (
-              <EmailStep value={answers.email} onChange={(v) => setAnswers((a) => ({ ...a, email: v }))} onNext={submitting ? () => {} : submitAndShowReferral} />
-            )}
-            {currentStep === "referral-share" && (
-              <ReferralStep referralCode={referralCode} emailSlug={emailSlug} />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
-
-      {showProgress && (
-        <div className="fixed bottom-0 left-0 right-0 h-1" style={{ background: "#e8e8e8" }}>
-          <motion.div style={{ height: "100%", background: "#c9a84c" }} animate={{ width: `${progressPct}%` }} transition={{ duration: 0.4, ease: "easeOut" }} />
+        {/* Step Container */}
+        <div className="flex flex-col items-center justify-center text-center lg:px-6 lg:gap-8">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={{
+                enter: (d: number) => ({ opacity: 0, y: d > 0 ? 50 : -50 }),
+                center: { opacity: 1, y: 0 },
+                exit: (d: number) => ({ opacity: 0, y: d > 0 ? -50 : 50 }),
+              }}
+              initial="enter" animate="center" exit="exit"
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className="w-full"
+            >
+              {currentStep === "welcome" && <WelcomeStep />}
+              {currentStep === "campaign" && (
+                <CampaignStep value={answers.campaign} onChange={(v) => { setAnswers((a) => ({ ...a, campaign: v })); setStepError(""); }} />
+              )}
+              {currentStep === "give" && (
+                <GiveStep value={answers.willGive} onChange={(v) => { setAnswers((a) => ({ ...a, willGive: v })); setStepError(""); }}  />
+              )}
+              {currentStep === "score-brilliant" && (
+                <ScoreStep score={surveyScore} variant="brilliant"  />
+              )}
+              {currentStep === "donation" && (
+                <DonationStep value={answers.donationAmount} onChange={(v) => { setAnswers((a) => ({ ...a, donationAmount: v })); setStepError(""); }}  />
+              )}
+              {currentStep === "vote" && (
+                <VoteStep value={answers.willVote} onChange={(v) => { setAnswers((a) => ({ ...a, willVote: v })); setStepError(""); }} />
+              )}
+              {currentStep === "score-almost" && (
+                <ScoreStep score={surveyScore} variant="almost"  />
+              )}
+              {currentStep === "shine" && (
+                <ShineStep value={answers.willShine} onChange={(v) => { setAnswers((a) => ({ ...a, willShine: v })); setStepError(""); }}  />
+              )}
+              {currentStep === "score-welldone" && (
+                <ScoreStep score={surveyScore} variant="welldone"  />
+              )}
+              {currentStep === "recognition" && (
+                <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} />
+              )}
+              {currentStep === "email" && (
+                <EmailStep
+                value={answers.email}
+                onChange={(v) => {
+                  setAnswers((a) => ({ ...a, email: v }));
+                  setStepError("");
+                }}
+                error={emailError}
+              />
+              )}
+              {currentStep === "referral-share" && (
+                <ReferralStep referralCode={referralCode} emailSlug={emailSlug} />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
-      )}
 
-      {showNav && (
-        <div className="fixed bottom-6 right-6 flex flex-col gap-2" style={{ zIndex: 10 }}>
-          <button onClick={goPrev} disabled={stepIndex <= 1} aria-label="Previous"
-            style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #5a9aaa", background: stepIndex <= 1 ? "#e8e8e8" : "#5a9aaa", cursor: stepIndex <= 1 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 15l-6-6-6 6" stroke={stepIndex <= 1 ? "#aaa" : "white"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-          <button onClick={goNext} aria-label="Next"
-            style={{ width: 36, height: 36, borderRadius: "50%", border: "1.5px solid #5a9aaa", background: "#5a9aaa", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
+        {/* Step Error */}
+        {stepError && (
+          <p className="error-message">
+            {stepError}
+          </p>
+        )}
+
+        {/* Step Buttons */}
+        <div className="flex lg:flex-col flex-row items-center lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
+
+          {/* Previous Button */}
+          {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+            </svg>
+          </MobileNavButton>)}
+
+          {currentStep === "welcome" && (
+            <StepButton onClick={handleStepNext}>Get Started</StepButton>
+          )}
+          {currentStep !== "welcome" && currentStep !== "email" && currentStep !== "referral-share" && (
+            <StepButton onClick={handleStepNext}>OK</StepButton>
+          )}
+          {currentStep === "email" && (
+            <StepButton onClick={handleStepNext}>OK</StepButton>
+          )}
+
+          {/* Next Button */}
+          {currentStep !== "welcome" && stepIndex < maxStepReached && (
+            <MobileNavButton action={goNext}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </MobileNavButton>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
 export default function Survey() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<Loading />}>
       <SurveyInner />
     </Suspense>
   );

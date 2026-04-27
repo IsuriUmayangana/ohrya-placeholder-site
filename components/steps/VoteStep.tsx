@@ -5,10 +5,9 @@ import { useState } from "react";
 interface Props {
   value: string;
   onChange: (val: string) => void;
-  onNext: () => void;
 }
 
-export default function VoteStep({ value, onChange, onNext }: Props) {
+export default function VoteStep({ value, onChange }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(opt: string) {
@@ -18,20 +17,14 @@ export default function VoteStep({ value, onChange, onNext }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-8 px-6 w-full max-w-xl mx-auto">
-      <h2
-        style={{
-          fontFamily: "Georgia, 'Times New Roman', serif",
-          fontSize: "clamp(1.1rem, 2.5vw, 1.4rem)",
-          fontWeight: "400",
-          color: "#2d2d2d",
-          textAlign: "center",
-          lineHeight: 1.5,
-        }}
+      {/* Heading */}
+      <h2 className="text-[20px] lg:text-[28px] font-normal leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance"
       >
         Will you <strong>VOTE</strong> for a vetted nonprofit to receive the pooled funding in the campaign you support?*
       </h2>
 
-      <div className="flex gap-3 w-full">
+      {/* Options */}
+      <div className="flex gap-3 w-full flex-col md:flex-row">
         {["Yes", "No"].map((opt) => (
           <button
             key={opt}
@@ -43,14 +36,6 @@ export default function VoteStep({ value, onChange, onNext }: Props) {
         ))}
       </div>
 
-      <button
-        className="btn-primary"
-        onClick={onNext}
-        disabled={!selected}
-        style={{ minWidth: 100, opacity: selected ? 1 : 0.5 }}
-      >
-        OK
-      </button>
     </div>
   );
 }

@@ -6,7 +6,6 @@ import Image from "next/image";
 interface Props {
   value: string;
   onChange: (val: string) => void;
-  onNext: () => void;
 }
 
 const campaigns = [
@@ -30,7 +29,7 @@ const campaigns = [
   },
 ];
 
-export default function CampaignStep({ value, onChange, onNext }: Props) {
+export default function CampaignStep({ value, onChange }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(id: string) {
@@ -39,28 +38,23 @@ export default function CampaignStep({ value, onChange, onNext }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 px-4 w-full max-w-2xl mx-auto">
+    <div className="flex flex-col items-center gap-8 px-4 w-full max-w-4xl mx-auto">
+      {/* Heading */}
       <h2
-        style={{
-          fontFamily: "Georgia, 'Times New Roman', serif",
-          fontSize: "clamp(1.1rem, 2.5vw, 1.4rem)",
-          fontWeight: "400",
-          color: "#2d2d2d",
-          textAlign: "center",
-        }}
+        className="text-[20px] md:text-[26px] lg:text-[28px] font-normal leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px]"
       >
         Which campaign inspires you the most?*
       </h2>
 
-      <div className="grid grid-cols-3 gap-4 w-full">
+      {/* Campaigns */}
+      <div className="grid lg:grid-cols-3 md:grid-cols-3 grid-cols-2 gap-4 lg:gap-6 w-full">
         {campaigns.map((c) => (
           <button
             key={c.id}
             onClick={() => handleSelect(c.id)}
             className={`image-choice flex flex-col items-center ${selected === c.id ? "selected" : ""}`}
-            style={{ background: "none", padding: 0, border: selected === c.id ? "2px solid #5a9aaa" : "2px solid #d0d9dc" }}
           >
-            <div style={{ width: "100%", aspectRatio: "3/2", position: "relative" }}>
+            <div className="w-full h-full aspect-square lg:aspect-video md:aspect-video relative">
               <Image
                 src={c.image}
                 alt={c.alt}
@@ -70,27 +64,13 @@ export default function CampaignStep({ value, onChange, onNext }: Props) {
               />
             </div>
             <span
-              style={{
-                fontFamily: "Georgia, serif",
-                fontSize: "0.9rem",
-                color: "#5a9aaa",
-                padding: "10px 0 8px",
-              }}
+              className="text-[16px] lg:text-[18px] leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px]"
             >
               {c.label}
             </span>
           </button>
         ))}
       </div>
-
-      <button
-        className="btn-primary"
-        onClick={onNext}
-        disabled={!selected}
-        style={{ minWidth: 100, opacity: selected ? 1 : 0.5 }}
-      >
-        OK
-      </button>
     </div>
   );
 }

@@ -28,6 +28,7 @@ const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
 export default function DateFilter({ value, onChange }: Props) {
   const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [activePreset, setActivePreset] = useState(value.label);
   const [calYear, setCalYear] = useState(new Date().getFullYear());
   const [calMonth, setCalMonth] = useState(new Date().getMonth());
@@ -41,6 +42,15 @@ export default function DateFilter({ value, onChange }: Props) {
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function syncViewport() {
+      setIsMobile(window.innerWidth < 640);
+    }
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+    return () => window.removeEventListener("resize", syncViewport);
   }, []);
 
   function selectPreset(preset: typeof PRESETS[0]) {
@@ -110,20 +120,31 @@ export default function DateFilter({ value, onChange }: Props) {
           position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 100,
           background: "white", borderRadius: 12,
           boxShadow: "0 8px 32px rgba(0,0,0,0.14)", border: "1px solid #e8f0f2",
-          display: "flex", flexDirection: "column", minWidth: 540,
+          display: "flex", flexDirection: "column",
+          minWidth: isMobile ? "min(92vw, 330px)" : 540,
+          maxWidth: isMobile ? "92vw" : "none",
         }}>
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
             {/* Presets */}
-            <div style={{ width: 140, borderRight: "1px solid #f0f0f0", padding: "12px 0" }}>
+            <div style={{
+              width: isMobile ? "100%" : 140,
+              borderRight: isMobile ? "none" : "1px solid #f0f0f0",
+              borderBottom: isMobile ? "1px solid #f0f0f0" : "none",
+              padding: "12px 0",
+              display: isMobile ? "grid" : "block",
+              gridTemplateColumns: isMobile ? "repeat(2, minmax(0, 1fr))" : undefined,
+              gap: isMobile ? 4 : undefined,
+            }}>
               {PRESETS.map((p) => (
                 <button key={p.label} onClick={() => selectPreset(p)}
                   style={{
                     display: "block", width: "100%", textAlign: "left",
-                    padding: "10px 20px", border: "none", cursor: "pointer",
+                    padding: isMobile ? "8px 12px" : "10px 20px", border: "none", cursor: "pointer",
                     fontFamily: "Georgia, serif", fontSize: "0.85rem",
                     background: activePreset === p.label ? "#f0f8fa" : "transparent",
                     color: activePreset === p.label ? "#5a9aaa" : "#444",
                     fontWeight: activePreset === p.label ? "bold" : "normal",
+                    borderRadius: isMobile ? 8 : 0,
                   }}
                 >
                   {p.label}
@@ -132,7 +153,7 @@ export default function DateFilter({ value, onChange }: Props) {
             </div>
 
             {/* Calendar */}
-            <div style={{ flex: 1, padding: "16px 20px" }}>
+            <div style={{ flex: 1, padding: isMobile ? "12px" : "16px 20px" }}>
               {/* Month nav */}
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); } else setCalMonth(m => m - 1); }}
@@ -163,7 +184,7 @@ export default function DateFilter({ value, onChange }: Props) {
                   return (
                     <button key={day} onClick={() => handleDayClick(dateStr)}
                       style={{
-                        textAlign: "center", padding: "6px 2px",
+                        textAlign: "center", padding: isMobile ? "8px 2px" : "6px 2px",
                         border: "none", borderRadius: isSel ? 6 : 4,
                         cursor: "pointer", fontFamily: "Georgia, serif", fontSize: "0.82rem",
                         background: isSel ? "#5a9aaa" : isIn ? "#e8f5f8" : "transparent",
@@ -187,13 +208,13 @@ export default function DateFilter({ value, onChange }: Props) {
           </div>
 
           {/* Footer */}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, padding: "12px 20px", borderTop: "1px solid #f0f0f0" }}>
+          <div className={`flex border-t border-slate-200 ${isMobile ? "justify-stretch gap-2 p-3" : "justify-end gap-4 p-4"}`}>
             <button onClick={cancel}
-              style={{ padding: "8px 20px", border: "1px solid #e0e8ec", borderRadius: 7, background: "white", fontFamily: "Georgia, serif", fontSize: "0.85rem", color: "#666", cursor: "pointer" }}>
+              className={`border border-slate-200 rounded-lg text-sm text-[#666] bg-white cursor-pointer ${isMobile ? "flex-1 px-3 py-2" : "px-6 py-2"}`}>
               Cancel
             </button>
             <button onClick={apply}
-              style={{ padding: "8px 20px", border: "none", borderRadius: 7, background: "#2d2d2d", fontFamily: "Georgia, serif", fontSize: "0.85rem", color: "white", cursor: "pointer" }}>
+              className={`border-none rounded-lg bg-[#5a9aaa] text-sm text-white cursor-pointer ${isMobile ? "flex-1 px-3 py-2" : "px-6 py-2"}`}>
               Apply
             </button>
           </div>

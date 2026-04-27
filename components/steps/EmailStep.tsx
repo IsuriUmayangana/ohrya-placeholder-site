@@ -1,35 +1,12 @@
 "use client";
 
-import { useState } from "react";
-
 interface Props {
   value: string;
   onChange: (val: string) => void;
-  onNext: () => void;
+  error?: string;
 }
 
-export default function EmailStep({ value, onChange, onNext }: Props) {
-  const [email, setEmail] = useState(value);
-  const [error, setError] = useState("");
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setEmail(e.target.value);
-    onChange(e.target.value);
-    setError("");
-  }
-
-  function handleSubmit() {
-    if (!email || !email.includes("@")) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    onNext();
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Enter") handleSubmit();
-  }
-
+export default function EmailStep({ value, onChange, error }: Props) {
   return (
     <div className="flex flex-col items-center gap-8 px-6 w-full max-w-xl mx-auto">
       <div className="flex flex-col items-center gap-2 text-center">
@@ -52,14 +29,13 @@ export default function EmailStep({ value, onChange, onNext }: Props) {
         <input
           type="email"
           placeholder="name@example.com"
-          value={email}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           autoFocus
           style={{
             width: "100%",
             border: "none",
-            borderBottom: "1.5px solid #b0b0b0",
+            borderBottom: `1.5px solid ${error ? "#c0392b" : "#b0b0b0"}`,
             outline: "none",
             fontSize: "1.1rem",
             fontFamily: "Georgia, serif",
@@ -72,14 +48,6 @@ export default function EmailStep({ value, onChange, onNext }: Props) {
           <p style={{ color: "#c0392b", fontSize: "0.85rem", fontFamily: "Georgia, serif" }}>{error}</p>
         )}
       </div>
-
-      <button
-        className="btn-primary"
-        onClick={handleSubmit}
-        style={{ minWidth: 100 }}
-      >
-        OK
-      </button>
     </div>
   );
 }

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import StepButton from "../ui/StepButton";
 
 interface Props {
   value: string;
   onChange: (val: string) => void;
-  onNext: () => void;
 }
 
 const options = ["Yes", "Not Yet"];
 
-export default function GiveStep({ value, onChange, onNext }: Props) {
+export default function GiveStep({ value, onChange }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(opt: string) {
@@ -20,24 +20,21 @@ export default function GiveStep({ value, onChange, onNext }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-8 px-6 w-full max-w-xl mx-auto">
-      <div className="flex flex-col items-center gap-2 text-center">
+      {/* Heading */}
+      <div className="flex max-w-4xl flex-col items-center gap-3 text-center">
         <h2
-          style={{
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontSize: "clamp(1.1rem, 2.5vw, 1.4rem)",
-            fontWeight: "400",
-            color: "#2d2d2d",
-          }}
+          className="text-[20px] lg:text-[28px] font-normal leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] lg:whitespace-nowrap text-balance"
         >
           After watching the video, will you{" "}
           <strong>GIVE</strong> to a campaign?*
         </h2>
-        <p style={{ fontFamily: "Georgia, serif", fontSize: "0.9rem", color: "#777" }}>
+        <p className="text-[16px] lg:text-[18px] leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px] text-[#2d2d2d]">
           (by registering or donating to advocate)
         </p>
       </div>
 
-      <div className="flex gap-3 w-full">
+      {/* Options */}
+      <div className="flex gap-3 w-full flex-col md:flex-row">
         {options.map((opt) => (
           <button
             key={opt}
@@ -49,14 +46,6 @@ export default function GiveStep({ value, onChange, onNext }: Props) {
         ))}
       </div>
 
-      <button
-        className="btn-primary"
-        onClick={onNext}
-        disabled={!selected}
-        style={{ minWidth: 100, opacity: selected ? 1 : 0.5 }}
-      >
-        OK
-      </button>
     </div>
   );
 }
