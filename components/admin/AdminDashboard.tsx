@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import OhryaLogo from "../OhryaLogo";
 import InsightsTab from "./InsightsTab";
 import SummaryTab from "./SummaryTab";
 import ResponsesTab from "./ResponsesTab";
+import Loading from "@/app/loading";
 
 type TabId = "insights" | "summary" | "responses";
 
@@ -34,10 +35,28 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "responses", label: "Responses" },
 ];
 
+function tabStyle(active: boolean): React.CSSProperties {
+  return {
+    padding: "20px 20px",
+    background: "none",
+    borderTop: "none",
+    borderLeft: "none",
+    borderRight: "none",
+    borderBottom: active ? "2.5px solid #5a9aaa" : "2.5px solid transparent",
+    color: active ? "#5a9aaa" : "#999",
+    fontFamily: "Georgia, serif",
+    fontSize: "0.9rem",
+    cursor: "pointer",
+    transition: "color 0.15s",
+  };
+}
+
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("insights");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   async function load() {
     try {
@@ -54,61 +73,155 @@ export default function AdminDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <div style={{ minHeight: "100vh", background: "#f7f9fa", fontFamily: "Georgia, serif" }}>
-      {/* Top nav */}
-      <header style={{ background: "white", borderBottom: "1px solid #e8f0f2", padding: "0 32px", display: "flex", alignItems: "center", gap: 32, position: "sticky", top: 0, zIndex: 20 }}>
-        <div style={{ padding: "16px 0" }}>
-          <OhryaLogo />
-        </div>
+  // Close menu on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
 
-        <nav style={{ display: "flex", gap: 0, flex: 1 }}>
-          {TABS.map((tab) => (
+  const activeLabel = TABS.find((t) => t.id === activeTab)?.label ?? "";
+
+  return (
+    <div className="min-h-screen bg-[#f7f9fa] w-full overflow-x-hidden">
+      {/* Top nav */}
+      <header className="bg-white border-b border-[#e8f0f2] sticky top-0 z-20">
+
+        {/* Logo row — mobile */}
+        <div className="flex sm:hidden items-center justify-between px-4 py-1 border-b border-[#f4f4f4]">
+          <OhryaLogo />
+
+          <div className="flex items-center gap-2">
+            {/* Refresh */}
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={load}
+              title="Refresh"
+              className="flex items-center gap-1.5 text-[#888] rounded-md px-3 py-1.5 text-[0.8rem] cursor-pointer bg-transparent"
               style={{
-                padding: "20px 20px",
-                background: "none",
-                border: "none",
-                borderBottom: activeTab === tab.id ? "2.5px solid #5a9aaa" : "2.5px solid transparent",
-                color: activeTab === tab.id ? "#5a9aaa" : "#999",
                 fontFamily: "Georgia, serif",
-                fontSize: "0.9rem",
-                cursor: "pointer",
-                transition: "color 0.15s",
+                border: "1px solid #e0e8ec",
               }}
             >
-              {tab.label}
-              {tab.id === "responses" && data && data.total > 0 && (
-                <span style={{ marginLeft: 6, background: "#5a9aaa", color: "white", borderRadius: 9999, padding: "2px 7px", fontSize: "0.72rem" }}>
-                  {data.total}
-                </span>
-              )}
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                <path d="M23 4v6h-6M1 20v-6h6" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Refresh
             </button>
-          ))}
-        </nav>
 
-        {/* Refresh indicator */}
-        <button
-          onClick={load}
-          title="Refresh"
-          style={{ background: "none", border: "1px solid #e0e8ec", borderRadius: 6, padding: "7px 12px", cursor: "pointer", color: "#888", display: "flex", alignItems: "center", gap: 6, fontSize: "0.8rem" }}
-        >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-            <path d="M23 4v6h-6M1 20v-6h6" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Refresh
-        </button>
+            {/* Hamburger */}
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setMenuOpen((o) => !o)}
+                className="flex flex-col justify-center items-center w-9 h-9 rounded-md border border-[#e0e8ec] gap-[5px] bg-white cursor-pointer"
+                aria-label="Open navigation menu"
+              >
+                <span className={`block w-4 h-[1.5px] bg-[#5a9aaa] transition-all duration-200 ${menuOpen ? "rotate-45 translate-y-[6.5px]" : ""}`} />
+                <span className={`block w-4 h-[1.5px] bg-[#5a9aaa] transition-all duration-200 ${menuOpen ? "opacity-0" : ""}`} />
+                <span className={`block w-4 h-[1.5px] bg-[#5a9aaa] transition-all duration-200 ${menuOpen ? "-rotate-45 -translate-y-[6.5px]" : ""}`} />
+              </button>
+
+              {/* Dropdown */}
+              {menuOpen && (
+                <div className="absolute right-0 top-11 w-48 bg-white border border-[#e8f0f2] rounded-xl shadow-lg overflow-hidden z-30">
+                  {TABS.map((tab, i) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id); setMenuOpen(false); }}
+                      className={`w-full flex items-center justify-between px-4 py-3 text-left text-[0.88rem] cursor-pointer transition-colors ${
+                        activeTab === tab.id
+                          ? "bg-[#5a9aaa]/08 text-[#5a9aaa]"
+                          : "text-[#666] hover:bg-[#f7f9fa]"
+                      } ${i !== TABS.length - 1 ? "border-b border-[#f4f4f4]" : ""}`}
+                      style={{ fontFamily: "Georgia, serif", background: activeTab === tab.id ? "rgba(90,154,170,0.07)" : undefined }}
+                    >
+                      <span className="flex items-center gap-2">
+                        {/* Active dot */}
+                        {activeTab === tab.id && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#5a9aaa] flex-shrink-0" />
+                        )}
+                        {activeTab !== tab.id && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-transparent flex-shrink-0" />
+                        )}
+                        {tab.label}
+                      </span>
+                      {tab.id === "responses" && data && data.total > 0 && (
+                        <span style={{ background: "#5a9aaa", color: "white", borderRadius: 9999, padding: "4px 7px", fontFamily: "Poppins, sans-serif" }}>
+                          {data.total}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Active tab label */}
+        <div className="flex sm:hidden items-center gap-1.5 px-4 py-2.5 border-b border-[#f4f4f4]">
+          <span className="text-[#bbb] text-xs" style={{ fontFamily: "Georgia, serif" }}>Dashboard</span>
+          <span className="text-[#ddd] text-xs">›</span>
+          <span className="text-[#5a9aaa] text-xs font-medium" style={{ fontFamily: "Georgia, serif" }}>{activeLabel}</span>
+        </div>
+
+        {/* Desktop view */}
+        <div className="hidden sm:flex items-center justify-between px-8">
+          <OhryaLogo />
+
+          <div className="flex items-center gap-0 flex-1 ml-8">
+            <nav className="flex gap-0 flex-1">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  style={tabStyle(activeTab === tab.id)}
+                >
+                  {tab.label}
+                  {tab.id === "responses" && data && data.total > 0 && (
+                    <span style={{ marginLeft: 6, background: "#5a9aaa", color: "white", borderRadius: 9999, padding: "7px", fontFamily: "Poppins, sans-serif" }}>
+                      {data.total}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </nav>
+
+            <button
+              onClick={load}
+              title="Refresh"
+              style={{
+                background: "none",
+                border: "1px solid #e0e8ec",
+                borderRadius: 6,
+                padding: "7px 12px",
+                cursor: "pointer",
+                color: "#888",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: "0.8rem",
+                fontFamily: "Georgia, serif",
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                <path d="M23 4v6h-6M1 20v-6h6" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
       </header>
 
       {/* Content */}
-      <main style={{ padding: "32px", maxWidth: 1200, margin: "0 auto" }}>
+      <main className="px-4 py-8 lg:px-12 lg:py-8 mx-auto w-full">
         {loading ? (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300, color: "#aaa" }}>
-            Loading…
-          </div>
+          <Loading />
         ) : !data || data.total === 0 ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: 300, gap: 12, color: "#bbb", textAlign: "center" }}>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
@@ -119,15 +232,9 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <>
-            {activeTab === "insights" && (
-              <InsightsTab />
-            )}
-            {activeTab === "summary" && (
-              <SummaryTab />
-            )}
-            {activeTab === "responses" && (
-              <ResponsesTab />
-            )}
+            {activeTab === "insights" && <InsightsTab />}
+            {activeTab === "summary" && <SummaryTab />}
+            {activeTab === "responses" && <ResponsesTab />}
           </>
         )}
       </main>

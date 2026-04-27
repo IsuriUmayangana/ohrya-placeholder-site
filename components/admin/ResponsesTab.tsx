@@ -10,7 +10,7 @@ interface Response {
   donationAmount: string; willVote: string; willShine: string;
   prefersEarning: string; surveyScore: number; referralScore: number;
   referralCount: number; totalScore: number; submittedAt: string;
-  device: string; dashboardUrl: string;
+  device: string;
 }
 
 const ALL_TIME: DateRange = { from: "", to: "", label: "All time" };
@@ -89,7 +89,6 @@ export default function ResponsesTab() {
       "Referral Bonus": r.referralScore,
       "Friends Referred": r.referralCount,
       "Total Score": r.totalScore,
-      "Dashboard URL": typeof window !== "undefined" ? `${window.location.origin}${r.dashboardUrl}` : r.dashboardUrl,
     }));
   }
 
@@ -133,7 +132,7 @@ export default function ResponsesTab() {
   return (
     <div className="flex flex-col gap-4">
       {/* Toolbar */}
-      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+      <div className="flex items-center gap-2 flex-wrap bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
         {/* Search */}
         <div style={{ position: "relative", flex: "1 1 200px" }}>
           <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }} width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -167,6 +166,21 @@ export default function ResponsesTab() {
           Filters {hasFilters ? `(${activeFilters.length})` : ""}
         </button>
 
+        {/* Export button */}
+        <button
+          className="bg-[#6098AE] text-[#ffffff] hover:bg-[#4a8798] flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          onClick={() => { if (filtered.length > 0) setShowExportModal(true); }}
+          disabled={filtered.length === 0}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Export
+        </button>
+      </div>
+
+      {/* Active filter tags */}
+      <div className="flex items-center gap-2">
         {/* Active filter tags */}
         {activeFilters.map((f, i) => {
           const opLabel = { is_any_of: "is any of", is_not_any_of: "is not any of", is_equal_to: "=", is_not_equal_to: "≠", is_empty: "is empty", is_not_empty: "is not empty" }[f.operator] ?? f.operator;
@@ -187,98 +201,348 @@ export default function ResponsesTab() {
             Clear all
           </button>
         )}
-
-        <span style={{ fontFamily: "Georgia, serif", fontSize: "0.82rem", color: "#aaa", whiteSpace: "nowrap", marginLeft: "auto" }}>
-          {filtered.length} response{filtered.length !== 1 ? "s" : ""}
-        </span>
-
-        {/* Export button */}
-        <button
-          onClick={() => { if (filtered.length > 0) setShowExportModal(true); }}
-          disabled={filtered.length === 0}
-          style={{ display: "flex", alignItems: "center", gap: 7, background: filtered.length > 0 ? "#2d2d2d" : "#e0e8ec", color: filtered.length > 0 ? "white" : "#bbb", border: "none", borderRadius: 7, padding: "8px 16px", fontFamily: "Georgia, serif", fontSize: "0.85rem", cursor: filtered.length > 0 ? "pointer" : "not-allowed", whiteSpace: "nowrap" }}
-          onMouseEnter={(e) => { if (filtered.length > 0) e.currentTarget.style.background = "#444"; }}
-          onMouseLeave={(e) => { if (filtered.length > 0) e.currentTarget.style.background = "#2d2d2d"; }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Export
-        </button>
       </div>
 
-      {/* Table */}
-      <div style={{ background: "white", border: "1px solid #e8f0f2", borderRadius: 10, overflow: "hidden", opacity: loading ? 0.6 : 1, transition: "opacity 0.2s" }}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.82rem" }}>
-            <thead>
-              <tr style={{ background: "#fafafa", borderBottom: "1px solid #e8f0f2" }}>
-                {["Email", "Date", "Campaign", "Give?", "Donation", "Vote?", "Shine?", "Recognition", "Device", "Survey", "Referral", "Total", "Dashboard"].map((h) => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontFamily: "Georgia, serif", fontWeight: "normal", color: "#999", whiteSpace: "nowrap" }}>{h}</th>
+      {/* Results */}
+      <div
+        className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-opacity duration-200"
+        style={{ opacity: loading ? 0.6 : 1 }}
+      >
+        {/* Desktop table */}
+        <div className="hidden md:block overflow-x-auto shadow-sm border-t border-slate-200">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 z-10">
+              <tr className="bg-slate-50/95 backdrop-blur text-slate-500">
+                {[
+                  "Email",
+                  "Date",
+                  "Campaign",
+                  "Give?",
+                  "Donation",
+                  "Vote?",
+                  "Shine?",
+                  "Recognition",
+                  "Device",
+                  "Survey",
+                  "Referral",
+                  "Total",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 whitespace-nowrap border-b border-slate-200"
+                  >
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
+
             <tbody>
               {loading ? (
-                <tr><td colSpan={13} style={{ padding: "40px", textAlign: "center", fontFamily: "Georgia, serif", color: "#ccc" }}>Loading…</td></tr>
-              ) : paginated.length === 0 ? (
-                <tr><td colSpan={13} style={{ padding: "40px", textAlign: "center", fontFamily: "Georgia, serif", color: "#ccc" }}>No responses match your filters.</td></tr>
-              ) : paginated.map((r, i) => (
-                <tr key={r.id} style={{ borderBottom: "1px solid #f5f5f5", background: i % 2 === 0 ? "#fff" : "#fafcfd" }}>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: "#2d2d2d", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.email}</td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: "#aaa", whiteSpace: "nowrap" }}>
-                    {new Date(r.submittedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-                  </td>
-                  <td style={{ padding: "11px 16px" }}>
-                    <span style={{ background: CAMPAIGN_COLORS[r.campaign] || "#f5f5f5", borderRadius: 20, padding: "3px 10px", fontFamily: "Georgia, serif", color: "#555", fontSize: "0.78rem" }}>{r.campaign}</span>
-                  </td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: r.willGive === "Yes" ? "#5a9aaa" : "#aaa" }}>{r.willGive}</td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: "#555" }}>{r.donationAmount || "—"}</td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: r.willVote === "Yes" ? "#5a9aaa" : "#aaa" }}>{r.willVote}</td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: r.willShine === "Yes" ? "#5a9aaa" : "#aaa" }}>{r.willShine}</td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: "#777", fontSize: "0.78rem" }}>{r.prefersEarning}</td>
-                  <td style={{ padding: "11px 16px", fontFamily: "Georgia, serif", color: "#999", fontSize: "0.78rem" }}>{r.device}</td>
-                  <td style={{ padding: "11px 16px", textAlign: "center" }}>
-                    <span style={{ background: "#e8f5f8", color: "#5a9aaa", borderRadius: 20, padding: "3px 10px", fontFamily: "Georgia, serif", fontWeight: "bold" }}>{r.surveyScore}</span>
-                  </td>
-                  <td style={{ padding: "11px 16px", textAlign: "center" }}>
-                    <span style={{ background: r.referralScore > 0 ? "#fff8e6" : "#f5f5f5", color: r.referralScore > 0 ? "#c9a84c" : "#ccc", borderRadius: 20, padding: "3px 10px", fontFamily: "Georgia, serif", fontWeight: "bold" }}>+{r.referralScore}</span>
-                  </td>
-                  <td style={{ padding: "11px 16px", textAlign: "center" }}>
-                    <span style={{ background: "#5a9aaa", color: "white", borderRadius: 20, padding: "3px 12px", fontFamily: "Georgia, serif", fontWeight: "bold" }}>{r.totalScore}</span>
-                  </td>
-                  <td style={{ padding: "11px 16px" }}>
-                    <a href={r.dashboardUrl} target="_blank" rel="noopener noreferrer"
-                      style={{ color: "#5a9aaa", fontFamily: "Georgia, serif", fontSize: "0.78rem", textDecoration: "none", borderBottom: "1px solid #5a9aaa" }}>
-                      View ↗
-                    </a>
+                <tr>
+                  <td colSpan={12} className="px-4 py-12 text-center text-slate-400 text-sm">
+                    Loading…
                   </td>
                 </tr>
-              ))}
+              ) : paginated.length === 0 ? (
+                <tr>
+                  <td colSpan={12} className="px-4 py-12 text-center text-slate-300 text-sm">
+                    No responses match your filters.
+                  </td>
+                </tr>
+              ) : (
+                paginated.map((r, idx) => (
+                  <tr
+                    key={r.id}
+                    className={`border-b border-slate-100 transition-colors duration-150 hover:bg-slate-50 ${
+                      idx % 2 === 0 ? "bg-white" : "bg-slate-50/30"
+                    }`}
+                  >
+                    <td className="px-4 py-3.5 text-slate-700 max-w-[220px] truncate text-[13px] font-medium">
+                      {r.email}
+                    </td>
+
+                    <td className="px-4 py-3.5 text-slate-400 whitespace-nowrap text-[13px]">
+                      {new Date(r.submittedAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+
+                    <td className="px-4 py-3.5">
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset"
+                        style={{
+                          background: CAMPAIGN_COLORS[r.campaign] || "#f8fafc",
+                          color: "#475569",
+                          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.35)",
+                        }}
+                      >
+                        {r.campaign}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3.5 text-[13px]">
+                      <span
+                        className={`inline-flex min-w-[44px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                          r.willGive === "Yes"
+                            ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                            : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
+                        }`}
+                      >
+                        {r.willGive}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3.5 text-slate-500 text-[13px]">
+                      {r.donationAmount ? (
+                        <span className="font-medium text-slate-600">{r.donationAmount}</span>
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-3.5 text-[13px]">
+                      <span
+                        className={`inline-flex min-w-[44px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                          r.willVote === "Yes"
+                            ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                            : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
+                        }`}
+                      >
+                        {r.willVote}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3.5 text-[13px]">
+                      <span
+                        className={`inline-flex min-w-[44px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                          r.willShine === "Yes"
+                            ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                            : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
+                        }`}
+                      >
+                        {r.willShine}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3.5 text-slate-500 text-[12px] max-w-[160px] truncate">
+                      {r.prefersEarning || <span className="text-slate-300">—</span>}
+                    </td>
+
+                    <td className="px-4 py-3.5 text-slate-500 text-[12px] whitespace-nowrap">
+                      {r.device || <span className="text-slate-300">—</span>}
+                    </td>
+
+                    <td className="px-4 py-3.5 text-center">
+                      <span className="inline-flex min-w-[36px] justify-center rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-100 px-2.5 py-1 text-[11px] font-semibold">
+                        {r.surveyScore}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3.5 text-center">
+                      <span
+                        className={`inline-flex min-w-[36px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${
+                          r.referralScore > 0
+                            ? "bg-amber-50 text-amber-700 ring-amber-100"
+                            : "bg-slate-100 text-slate-400 ring-slate-200"
+                        }`}
+                      >
+                        +{r.referralScore}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3.5 text-center">
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                        {r.totalScore}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
 
+        {/* Mobile cards */}
+        <div className="md:hidden">
+          {loading ? (
+            <div className="px-4 py-12 text-center text-slate-400 text-sm">Loading…</div>
+          ) : paginated.length === 0 ? (
+            <div className="px-4 py-12 text-center text-slate-300 text-sm">
+              No responses match your filters.
+            </div>
+          ) : (
+            <div className="p-3 space-y-3 bg-slate-50/40">
+              {paginated.map((r) => (
+                <div
+                  key={r.id}
+                  className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                >
+                  {/* Top */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-semibold text-slate-800 truncate">
+                        {r.email}
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-1">
+                        {new Date(r.submittedAt).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </div>
+
+                    <span
+                      className="inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[10px] font-medium ring-1 ring-inset"
+                      style={{
+                        background: CAMPAIGN_COLORS[r.campaign] || "#f8fafc",
+                        color: "#475569",
+                        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.35)",
+                      }}
+                    >
+                      {r.campaign}
+                    </span>
+                  </div>
+
+                  {/* Yes/No pills */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        r.willGive === "Yes"
+                          ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                          : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
+                      }`}
+                    >
+                      Give: {r.willGive}
+                    </span>
+
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        r.willVote === "Yes"
+                          ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                          : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
+                      }`}
+                    >
+                      Vote: {r.willVote}
+                    </span>
+
+                    <span
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                        r.willShine === "Yes"
+                          ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                          : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
+                      }`}
+                    >
+                      Shine: {r.willShine}
+                    </span>
+                  </div>
+
+                  {/* Detail grid */}
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-3 text-[12px]">
+                    <div>
+                      <p className="text-slate-400 mb-1">Donation</p>
+                      <p className="text-slate-700 font-medium">
+                        {r.donationAmount || <span className="text-slate-300">—</span>}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-400 mb-1">Recognition</p>
+                      <p className="text-slate-700 truncate">
+                        {r.prefersEarning || <span className="text-slate-300">—</span>}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-400 mb-1">Device</p>
+                      <p className="text-slate-700">
+                        {r.device || <span className="text-slate-300">—</span>}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-400 mb-1">Survey</p>
+                      <span className="inline-flex min-w-[36px] justify-center rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-100 px-2.5 py-1 text-[11px] font-semibold">
+                        {r.surveyScore}
+                      </span>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-400 mb-1">Referral</p>
+                      <span
+                        className={`inline-flex min-w-[36px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${
+                          r.referralScore > 0
+                            ? "bg-amber-50 text-amber-700 ring-amber-100"
+                            : "bg-slate-100 text-slate-400 ring-slate-200"
+                        }`}
+                      >
+                        +{r.referralScore}
+                      </span>
+                    </div>
+
+                    <div>
+                      <p className="text-slate-400 mb-1">Total</p>
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                        {r.totalScore}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Pagination */}
         {totalPages > 1 && (
-          <div style={{ display: "flex", justifyContent: "center", gap: 6, padding: "16px", borderTop: "1px solid #f0f0f0" }}>
-            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
-              style={{ padding: "6px 14px", border: "1px solid #e0e8ec", borderRadius: 6, background: "white", fontFamily: "Georgia, serif", fontSize: "0.82rem", cursor: page === 1 ? "not-allowed" : "pointer", color: page === 1 ? "#ccc" : "#5a9aaa" }}>
-              ← Prev
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button key={p} onClick={() => setPage(p)}
-                style={{ padding: "6px 12px", border: "1px solid #e0e8ec", borderRadius: 6, background: p === page ? "#5a9aaa" : "white", color: p === page ? "white" : "#555", fontFamily: "Georgia, serif", fontSize: "0.82rem", cursor: "pointer" }}>
-                {p}
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-4 py-3.5 border-t border-slate-100 bg-slate-50/60">
+            <p className="text-[12px] text-slate-400">
+              Page <span className="font-medium text-slate-600">{page}</span> of{" "}
+              <span className="font-medium text-slate-600">{totalPages}</span>
+            </p>
+
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                ← Prev
               </button>
-            ))}
-            <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-              style={{ padding: "6px 14px", border: "1px solid #e0e8ec", borderRadius: 6, background: "white", fontFamily: "Georgia, serif", fontSize: "0.82rem", cursor: page === totalPages ? "not-allowed" : "pointer", color: page === totalPages ? "#ccc" : "#5a9aaa" }}>
-              Next →
-            </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`min-w-[34px] h-[34px] text-[12px] rounded-xl border transition-colors ${
+                    p === page
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Next →
+              </button>
+            </div>
           </div>
         )}
       </div>
+
+      {/* Response count */}
+      <span className="font-medium text-sm text-[#6098AE] whitespace-nowrap ml-auto">
+          {filtered.length} response{filtered.length !== 1 ? "s" : ""}
+        </span>
 
       {/* Filters modal */}
       {showFiltersModal && (
@@ -291,36 +555,35 @@ export default function ResponsesTab() {
 
       {/* Export modal */}
       {showExportModal && (
-        <div
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center" }}
+        <div className="fixed inset-0 bg-black/35 z-50 flex items-center justify-center"
           onClick={(e) => { if (e.target === e.currentTarget) setShowExportModal(false); }}
         >
-          <div style={{ background: "white", borderRadius: 14, boxShadow: "0 16px 48px rgba(0,0,0,0.18)", width: 440, maxWidth: "95vw", padding: "32px 32px 28px" }}>
+          <div className="bg-white rounded-xl shadow-lg w-140 max-w-95vw p-8">
             {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "Georgia, serif", fontSize: "1.15rem", color: "#2d2d2d", margin: 0 }}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-[#2d2d2d] m-0">
                 Export {filtered.length} response{filtered.length !== 1 ? "s" : ""}
               </h2>
               <button onClick={() => setShowExportModal(false)}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: "1.2rem", lineHeight: 1, padding: 2 }}>✕</button>
+                className="bg-none border-none cursor-pointer text-xl text-[#aaa] p-2">✕</button>
             </div>
 
             {/* Format picker */}
-            <p style={{ fontFamily: "Georgia, serif", fontSize: "0.88rem", color: "#555", marginBottom: 18 }}>Choose your format:</p>
+            <p className="text-sm text-[#555] mb-4">Choose your format:</p>
 
             {(["csv", "xlsx"] as const).map((fmt) => (
               <label key={fmt}
                 onClick={() => setExportFormat(fmt)}
-                style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "14px 16px", border: `1.5px solid ${exportFormat === fmt ? "#2d2d2d" : "#e0e8ec"}`, borderRadius: 10, marginBottom: 10, cursor: "pointer", background: exportFormat === fmt ? "#fafafa" : "white", transition: "border-color 0.15s" }}>
+                className="flex items-start gap-4 p-4 border border-slate-200 rounded-lg mb-4 cursor-pointer bg-white hover:border-slate-300 transition-colors">
                 {/* Radio circle */}
-                <span style={{ width: 18, height: 18, borderRadius: "50%", border: `2px solid ${exportFormat === fmt ? "#2d2d2d" : "#ccc"}`, background: exportFormat === fmt ? "#2d2d2d" : "white", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
-                  {exportFormat === fmt && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "white", display: "block" }} />}
+                <span className="w-5 h-5 rounded-full border-2 border-[#ccc] bg-white inline-flex items-center justify-center flex-shrink-0 mt-1">
+                  {exportFormat === fmt && <span className="w-3 h-3 rounded-full bg-[#5a9aaa] block" />}
                 </span>
                 <span>
-                  <span style={{ fontFamily: "Georgia, serif", fontSize: "0.9rem", color: "#2d2d2d", display: "block", fontWeight: exportFormat === fmt ? "bold" : "normal" }}>
+                  <span className="text-sm text-[#2d2d2d] block font-semibold">
                     .{fmt}
                   </span>
-                  <span style={{ fontFamily: "Georgia, serif", fontSize: "0.8rem", color: "#999" }}>
+                  <span className="text-xs text-[#999]">
                     {fmt === "csv" ? "Plain text data for databases or advanced analysis." : "Works with Excel."}
                   </span>
                 </span>
@@ -328,13 +591,13 @@ export default function ResponsesTab() {
             ))}
 
             {/* Footer buttons */}
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 24 }}>
+            <div className="flex justify-end gap-4 mt-6">
               <button onClick={() => setShowExportModal(false)}
-                style={{ padding: "9px 22px", border: "1px solid #e0e8ec", borderRadius: 8, background: "white", fontFamily: "Georgia, serif", fontSize: "0.88rem", color: "#666", cursor: "pointer" }}>
+                className="px-6 py-2 border border-slate-200 rounded-lg text-sm text-[#666] bg-white cursor-pointer">
                 Cancel
               </button>
               <button onClick={runExport}
-                style={{ padding: "9px 24px", border: "none", borderRadius: 8, background: "#2d2d2d", fontFamily: "Georgia, serif", fontSize: "0.88rem", color: "white", cursor: "pointer" }}>
+                className="px-6 py-2 border-none rounded-lg bg-[#5a9aaa] text-sm text-white cursor-pointer">
                 Export
               </button>
             </div>

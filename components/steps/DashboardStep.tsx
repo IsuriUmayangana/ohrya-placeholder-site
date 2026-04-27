@@ -16,6 +16,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
   const referralLink = `${baseUrl}/?ref=${referralCode}`;
 
+  // Fetch stats from API
   const fetchStats = useCallback(async () => {
     try {
       const res = await fetch(`/api/user/${referralCode}`);
@@ -28,6 +29,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
     }
   }, [referralCode]);
 
+  // Fetch stats every 10 seconds
   useEffect(() => {
     fetchStats();
     // Poll every 10s so score updates live as referrals come in
@@ -40,6 +42,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
   const referralScore = stats ? stats.referralScore : 0;
   const referralCount = stats ? stats.referralCount : 0;
 
+  // Copy link to clipboard
   function copyLink() {
     navigator.clipboard.writeText(referralLink).then(() => {
       setCopied(true);
@@ -47,6 +50,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
     });
   }
 
+  // Calculate progress percentage
   const maxScore = 6;
   const progressPct = Math.min((totalScore / (maxScore + 10)) * 100, 100);
 
@@ -54,17 +58,10 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
     <div className="flex flex-col items-center gap-6 px-4 w-full max-w-lg mx-auto">
       {/* Header */}
       <div className="text-center">
-        <h2
-          style={{
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontSize: "clamp(1.2rem, 2.8vw, 1.6rem)",
-            fontWeight: "400",
-            color: "#2d2d2d",
-          }}
-        >
+        <h2 className="text-2xl font-bold text-slate-900">
           Your Social Impact Dashboard
         </h2>
-        <p style={{ fontFamily: "Georgia, serif", fontSize: "0.9rem", color: "#888", marginTop: 4 }}>
+        <p className="text-sm text-slate-500 mt-2">
           GIVE. VOTE. SHINE.
         </p>
       </div>

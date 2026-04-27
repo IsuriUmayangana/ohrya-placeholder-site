@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import OhryaLogo from "./OhryaLogo";
+import Header from "./ui/Header";
 
 type State = "idle" | "loading" | "error";
 
@@ -38,116 +39,133 @@ export default function MyDashboardGateway() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "white", display: "flex", flexDirection: "column" }}>
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <header style={{ display: "flex", justifyContent: "center", padding: "32px 24px 0" }}>
-        <OhryaLogo />
-      </header>
+      <Header />
 
       {/* Main */}
-      <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px" }}>
-        <div style={{ width: "100%", maxWidth: 440, display: "flex", flexDirection: "column", alignItems: "center", gap: 0 }}>
+      <main className="flex items-center justify-center px-4 py-10 bg-white">
+        <div className="w-full max-w-md">
 
-          {/* Icon */}
-          <div style={{ width: 64, height: 64, borderRadius: "50%", background: "linear-gradient(135deg, #e8f5f8, #d0ecf0)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 24 }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-              <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <circle cx="12" cy="7" r="4" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
+          {/* Card */}
+          <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-sm p-8">
 
-          {/* Heading */}
-          <h1 style={{ fontFamily: "Georgia, serif", fontSize: "1.65rem", fontWeight: 400, color: "#2d2d2d", textAlign: "center", marginBottom: 8 }}>
-            View your dashboard
-          </h1>
-          <p style={{ fontFamily: "Georgia, serif", fontSize: "0.9rem", color: "#999", textAlign: "center", marginBottom: 36, lineHeight: 1.6 }}>
-            Enter the email address you used when you completed the OHRYA survey to see your social impact score and referral progress.
-          </p>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
-            <div style={{ position: "relative" }}>
-              {/* Email icon */}
-              <svg style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke={state === "error" ? "#e74c3c" : "#aaa"} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <input
-                ref={inputRef}
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); if (state === "error") { setState("idle"); setErrorMsg(""); } }}
-                style={{
-                  width: "100%", boxSizing: "border-box",
-                  border: `1.5px solid ${state === "error" ? "#e74c3c" : "#d0dde2"}`,
-                  borderRadius: 10, padding: "13px 14px 13px 42px",
-                  fontFamily: "Georgia, serif", fontSize: "0.95rem",
-                  color: "#2d2d2d", outline: "none", background: "white",
-                  transition: "border-color 0.2s",
-                }}
-                onFocus={(e) => { if (state !== "error") e.currentTarget.style.borderColor = "#5a9aaa"; }}
-                onBlur={(e) => { if (state !== "error") e.currentTarget.style.borderColor = "#d0dde2"; }}
-                suppressHydrationWarning
-              />
+            {/* Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#e8f5f8] to-[#d0ecf0] flex items-center justify-center shadow-inner">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="7" r="4" stroke="#5a9aaa" strokeWidth="2"/>
+                </svg>
+              </div>
             </div>
 
-            {/* Error message */}
-            {errorMsg && (
-              <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 14px", background: "#fff5f5", border: "1px solid #fccaca", borderRadius: 8 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-                  <circle cx="12" cy="12" r="10" stroke="#e74c3c" strokeWidth="2"/>
-                  <path d="M12 8v4M12 16h.01" stroke="#e74c3c" strokeWidth="2" strokeLinecap="round"/>
+            {/* Heading */}
+            <h1 className="text-center text-[1.6rem] text-[#2d2d2d] mb-2 font-serif">
+              View your dashboard
+            </h1>
+
+            <p className="text-center text-sm text-gray-400 mb-8 font-serif leading-relaxed">
+              Enter the email you used for the OHRYA survey to see your social impact score and referral progress.
+            </p>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+              {/* Input */}
+              <div className="relative">
+                <svg
+                  className="absolute left-4 top-1/2 -translate-y-1/2"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    stroke={state === "error" ? "#e74c3c" : "#9ca3af"}
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
                 </svg>
-                <span style={{ fontFamily: "Georgia, serif", fontSize: "0.83rem", color: "#c0392b" }}>{errorMsg}</span>
+
+                <input
+                  ref={inputRef}
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (state === "error") {
+                      setState("idle");
+                      setErrorMsg("");
+                    }
+                  }}
+                  className={`w-full rounded-xl pl-11 pr-4 py-3 text-sm font-serif outline-none transition
+                    ${state === "error"
+                      ? "border border-red-400 focus:border-red-500"
+                      : "border border-[#d0dde2] focus:border-[#5a9aaa]"
+                    }
+                    bg-white text-[#2d2d2d]`}
+                />
               </div>
-            )}
 
-            {/* Submit button */}
-            <button
-              type="submit"
-              disabled={state === "loading"}
-              style={{
-                padding: "13px", borderRadius: 10, border: "none",
-                background: state === "loading" ? "#a8d4de" : "linear-gradient(135deg, #5a9aaa 0%, #4a8798 100%)",
-                color: "white", fontFamily: "Georgia, serif", fontSize: "0.95rem",
-                cursor: state === "loading" ? "not-allowed" : "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                transition: "opacity 0.2s",
-              }}
-            >
-              {state === "loading" ? (
-                <>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{ animation: "spin 0.9s linear infinite" }}>
-                    <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3"/>
-                    <path d="M12 2a10 10 0 0110 10" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-                  </svg>
-                  Looking up your dashboard…
-                </>
-              ) : (
-                <>
-                  View my dashboard
+              {/* Error */}
+              {errorMsg && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="12" r="10" stroke="#e74c3c" strokeWidth="2"/>
+                    <path d="M12 8v4M12 16h.01" stroke="#e74c3c" strokeWidth="2"/>
                   </svg>
-                </>
+                  <span className="text-xs text-red-600 font-serif">{errorMsg}</span>
+                </div>
               )}
-            </button>
-          </form>
 
-          {/* Divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", margin: "28px 0" }}>
-            <div style={{ flex: 1, height: 1, background: "#e8f0f2" }} />
-            <span style={{ fontFamily: "Georgia, serif", fontSize: "0.78rem", color: "#ccc" }}>or</span>
-            <div style={{ flex: 1, height: 1, background: "#e8f0f2" }} />
+              {/* Button */}
+              <button
+                type="submit"
+                disabled={state === "loading"}
+                className={`mt-2 flex  items-center justify-center gap-2 rounded-xl py-3 text-sm font-serif transition-all cursor-pointer
+                  ${state === "loading"
+                    ? "bg-[#a8d4de] cursor-not-allowed"
+                    : "bg-gradient-to-r from-[#5a9aaa] to-[#4a8798] hover:shadow-lg hover:-translate-y-[1px]"
+                  }
+                  text-white`}
+              >
+                {state === "loading" ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Looking up your dashboard…
+                  </>
+                ) : (
+                  <>
+                    View my dashboard
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2"/>
+                    </svg>
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 my-7">
+              <div className="flex-1 h-px bg-[#e8f0f2]" />
+              <span className="text-xs text-gray-300 font-serif">or</span>
+              <div className="flex-1 h-px bg-[#e8f0f2]" />
+            </div>
+
+            {/* CTA */}
+            <p className="text-center text-sm text-gray-400 font-serif">
+              Haven’t taken the survey?{" "}
+              <a
+                href="/"
+                className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80"
+              >
+                Start here →
+              </a>
+            </p>
           </div>
-
-          {/* CTA to take survey */}
-          <p style={{ fontFamily: "Georgia, serif", fontSize: "0.88rem", color: "#999", textAlign: "center" }}>
-            Haven&apos;t taken the survey yet?{" "}
-            <a href="/" style={{ color: "#5a9aaa", textDecoration: "none", borderBottom: "1px solid #5a9aaa" }}>
-              Start here →
-            </a>
-          </p>
         </div>
       </main>
 
