@@ -58,33 +58,12 @@ export default function InsightsTab() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const total = data?.total ?? 0;
-  const estimatedViews   = total > 0 ? Math.round(total / 0.49) : 0;
-  const estimatedStarts  = total > 0 ? Math.round(total / 0.71) : 0;
-  const completionRate   = estimatedStarts > 0 ? `${((total / estimatedStarts) * 100).toFixed(1)}%` : "—";
-  
+  const completionRate = "—";
+
   const bigPicture = [
     {
-      label: "Views",
-      value: total > 0 ? estimatedViews : "—",
-      icon: (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a9aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
-      ),
-    },
-    {
-      label: "Starts",
-      value: total > 0 ? estimatedStarts : "—",
-      icon: (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a9aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="5 3 19 12 5 21 5 3"/>
-        </svg>
-      ),
-    },
-    {
       label: "Submissions",
-      value: total,
+      value: total > 0 ? total : "—",
       icon: (
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a9aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
@@ -93,12 +72,21 @@ export default function InsightsTab() {
         </svg>
       ),
     },
+    {
+      label: "Avg Score",
+      value: total > 0 ? (data?.avgScore ?? "—") : "—",
+      icon: (
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a9aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      ),
+    },
   ];
   
   const bigPictureSideCard = [
     {
       label: "Completion rate",
-      value: total > 0 ? completionRate : "—",
+      value: completionRate,
       icon: (
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
