@@ -58,6 +58,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  async function handleLogout() {
+    await fetch("/api/admin/login", { method: "DELETE" });
+    window.location.href = "/admin/login";
+  }
+
   async function load() {
     try {
       const res = await fetch("/api/admin/stats");
@@ -111,6 +116,19 @@ export default function AdminDashboard() {
                 <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Refresh
+            </button>
+
+            {/* Logout — mobile */}
+            <button
+              onClick={handleLogout}
+              title="Sign out"
+              className="flex items-center gap-1.5 text-[#888] rounded-md px-3 py-1.5 text-[0.8rem] cursor-pointer bg-transparent"
+              style={{ fontFamily: "Georgia, serif", border: "1px solid #e0e8ec" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Sign out
             </button>
 
             {/* Hamburger */}
@@ -213,6 +231,31 @@ export default function AdminDashboard() {
                 <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               Refresh
+            </button>
+
+            {/* Logout — desktop */}
+            <button
+              onClick={handleLogout}
+              title="Sign out"
+              style={{
+                background: "none",
+                border: "1px solid #e0e8ec",
+                borderRadius: 6,
+                padding: "7px 12px",
+                cursor: "pointer",
+                color: "#888",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: "0.8rem",
+                fontFamily: "Georgia, serif",
+                marginLeft: 8,
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Sign out
             </button>
           </div>
         </div>
