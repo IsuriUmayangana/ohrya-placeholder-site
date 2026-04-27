@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 const SESSION_COOKIE = "admin_session";
 const COOKIE_MAX_AGE = 60 * 60 * 8; // 8 hours
 
@@ -13,7 +15,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Server not configured" }, { status: 500 });
   }
 
-  if (password !== adminPassword) {
+  if (password.trim() !== adminPassword.trim()) {
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   }
 

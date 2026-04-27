@@ -27,6 +27,8 @@ function LoginForm() {
 
       if (res.ok) {
         router.push(from);
+      } else if (res.status === 500) {
+        setError("Server configuration error — environment variables may not be loaded.");
       } else {
         setError("Incorrect password. Please try again.");
         setPassword("");
