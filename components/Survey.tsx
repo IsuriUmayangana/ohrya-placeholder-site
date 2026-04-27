@@ -18,6 +18,7 @@ import ProgressBar from "./ui/ProgressBar";
 import MobileNavButton from "./ui/MobileNavButton";
 import Loading from "@/app/loading";
 import NavButton from "./ui/NavButton";
+import Image from "next/image";
 
 const STEPS = [
   "welcome",
@@ -183,11 +184,14 @@ function SurveyInner() {
       {/* Progress Bar */}
       <ProgressBar pct={progressPct} show={showProgress} />
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-8">
+      {/* Header */}
+      <header className="fixed top-2 left-0 right-0 z-20 backdrop-blur bg-white/80 flex flex-col items-center justify-center gap-2 ">
+        <div className="mx-auto px-4 sm:px-6 py-0 flex justify-center">
+            <Image src="/logo.png" alt="Ohrya Logo" className="w-auto h-auto" width={190} height={190} />
+        </div>
 
         {/* Nav Buttons - Desktop */}
-        <div className="w-full flex flex-row items-center gap-2 top-25 fixed px-6">
+        <div className="w-full flex flex-row items-center gap-2 fixed px-6">
           { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
             <NavButton action={goPrev}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
@@ -203,6 +207,10 @@ function SurveyInner() {
             </NavButton>
           )}
         </div>
+    </header>
+
+      {/* Main */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-8">
 
         {/* Step Container */}
         <div className="flex flex-col items-center justify-center text-center lg:px-6 lg:gap-8">
