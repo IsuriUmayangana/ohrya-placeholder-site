@@ -62,18 +62,7 @@ function QuestionChart({ title, data, total }: { title: string; data: DataPoint[
             />
             <Tooltip
               cursor={{ fill: "#f1f5f9" }}
-              formatter={(val: number) => [
-                `${val} (${total > 0 ? Math.round((val / total) * 100) : 0}%)`,
-                "Responses",
-              ]}
-              contentStyle={{
-                fontSize: 12,
-                borderRadius: 8,
-                border: "1px solid #e2e8f0",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-                fontFamily: "inherit",
-              }}
-              labelStyle={{ color: "#475569", fontWeight: 500 }}
+              content={<CustomTooltip total={total} />}
             />
             <Bar
               dataKey="value"
