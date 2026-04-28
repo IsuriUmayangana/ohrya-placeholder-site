@@ -107,7 +107,7 @@ export default function InsightsTab() {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+    <div className="flex flex-col gap-7">
 
       {/* Filter bar */}
       <div className="flex items-center gap-2 flex-wrap bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
@@ -116,7 +116,7 @@ export default function InsightsTab() {
         {(dateRange.label !== "All time" || device !== "All devices") && (
           <button
             onClick={() => { setDateRange(ALL_TIME); setDevice("All devices"); }}
-            style={{ background: "none", border: "none", color: "#aaa", fontFamily: "Georgia, serif", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline" }}
+            className="bg-none border-none text-[#aaa] text-[12px] cursor-pointer text-decoration-underline"
           >
             Clear filters
           </button>
@@ -127,7 +127,7 @@ export default function InsightsTab() {
       <div className={`bg-white h-auto border border-slate-200 rounded-2xl p-6 shadow-sm transition-opacity ${loading ? "opacity-60" : "opacity-100"}`}>
 
         <div className="flex items-center justify-between mb-6">
-          <p className="font-serif text-lg text-[#2d2d2d]">Big picture</p>
+          <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">Big picture</p>
         </div>
 
         {/* Big picture cards */}
@@ -135,7 +135,7 @@ export default function InsightsTab() {
           <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-2 gap-4">
 
             {bigPicture.map((stat, index) => {
-              const isFilled = index === 4;
+              const isFilled = index === 0;
               return (
                 <div
                   key={stat.label}
@@ -218,7 +218,7 @@ export default function InsightsTab() {
 
       {/* Trends */}
       <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-6">
-        <p className="text-lg text-[#2d2d2d] font-medium">Trends</p>
+        <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">Trends</p>
         {loading ? (
           <div className="h-52 flex items-center justify-center">
             <p className="text-[#ccc]">Loading…</p>
@@ -264,7 +264,7 @@ export default function InsightsTab() {
   
       {/* Table Header */}
       <div className="p-6 border-b border-slate-200 bg-slate-50/95 backdrop-blur">
-        <p className="text-lg text-[#2d2d2d] font-medium">
+        <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">
           Question by question
         </p>
       </div>

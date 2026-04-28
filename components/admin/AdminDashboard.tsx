@@ -44,7 +44,6 @@ function tabStyle(active: boolean): React.CSSProperties {
     borderRight: "none",
     borderBottom: active ? "2.5px solid #5a9aaa" : "2.5px solid transparent",
     color: active ? "#5a9aaa" : "#999",
-    fontFamily: "Georgia, serif",
     fontSize: "0.9rem",
     cursor: "pointer",
     transition: "color 0.15s",
@@ -107,7 +106,6 @@ export default function AdminDashboard() {
               title="Refresh"
               className="flex items-center gap-1.5 text-[#888] rounded-md px-3 py-1.5 text-[0.8rem] cursor-pointer bg-transparent"
               style={{
-                fontFamily: "Georgia, serif",
                 border: "1px solid #e0e8ec",
               }}
             >
@@ -123,7 +121,7 @@ export default function AdminDashboard() {
               onClick={handleLogout}
               title="Sign out"
               className="flex items-center gap-1.5 text-[#888] rounded-md px-3 py-1.5 text-[0.8rem] cursor-pointer bg-transparent"
-              style={{ fontFamily: "Georgia, serif", border: "1px solid #e0e8ec" }}
+              style={{ border: "1px solid #e0e8ec" }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
                 <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -182,16 +180,18 @@ export default function AdminDashboard() {
 
         {/* Active tab label */}
         <div className="flex sm:hidden items-center gap-1.5 px-4 py-2.5 border-b border-[#f4f4f4]">
-          <span className="text-[#bbb] text-xs" style={{ fontFamily: "Georgia, serif" }}>Dashboard</span>
+          <span className="text-[#bbb] text-xs">Dashboard</span>
           <span className="text-[#ddd] text-xs">›</span>
-          <span className="text-[#5a9aaa] text-xs font-medium" style={{ fontFamily: "Georgia, serif" }}>{activeLabel}</span>
+          <span className="text-[#5a9aaa] text-xs font-medium">{activeLabel}</span>
         </div>
 
         {/* Desktop view */}
         <div className="hidden sm:flex items-center justify-between px-8">
           <OhryaLogo />
 
-          <div className="flex items-center gap-0 flex-1 ml-8">
+          {/* Navigation */}
+          <div className="flex items-center gap-2 flex-1 ml-8">
+            {/* Navigation */}
             <nav className="flex gap-0 flex-1">
               {TABS.map((tab) => (
                 <button
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                 >
                   {tab.label}
                   {tab.id === "responses" && data && data.total > 0 && (
-                    <span style={{ marginLeft: 6, background: "#5a9aaa", color: "white", borderRadius: 9999, padding: "7px", fontFamily: "Poppins, sans-serif" }}>
+                    <span className="bg-[#5a9aaa] text-white rounded-full px-1.5 py-1 aspect-square text-[0.8rem] font-medium ml-2">
                       {data.total}
                     </span>
                   )}
@@ -209,6 +209,7 @@ export default function AdminDashboard() {
               ))}
             </nav>
 
+            {/* Refresh button */}
             <button
               onClick={load}
               title="Refresh"
@@ -223,7 +224,6 @@ export default function AdminDashboard() {
                 alignItems: "center",
                 gap: 6,
                 fontSize: "0.8rem",
-                fontFamily: "Georgia, serif",
               }}
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
@@ -237,23 +237,10 @@ export default function AdminDashboard() {
             <button
               onClick={handleLogout}
               title="Sign out"
-              style={{
-                background: "none",
-                border: "1px solid #e0e8ec",
-                borderRadius: 6,
-                padding: "7px 12px",
-                cursor: "pointer",
-                color: "#888",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: "0.8rem",
-                fontFamily: "Georgia, serif",
-                marginLeft: 8,
-              }}
+              className="flex items-center gap-1.5 text-[#4a8798] rounded-md px-3 py-1.5 text-[0.8rem] cursor-pointer bg-[#a9d0da]/10 hover:bg-[#a9d0da]/30 transition-colors duration-200 border border-[#4a8798]"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#888" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#4a8798" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               Sign out
             </button>
@@ -270,8 +257,8 @@ export default function AdminDashboard() {
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
               <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="#ccc" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <p style={{ fontFamily: "Georgia, serif", fontSize: "1rem" }}>No survey responses yet.</p>
-            <p style={{ fontFamily: "Georgia, serif", fontSize: "0.85rem", color: "#ccc" }}>Responses will appear here once users complete the survey.</p>
+            <p style={{ fontSize: "1rem" }}>No survey responses yet.</p>
+            <p style={{ fontSize: "0.85rem", color: "#ccc" }}>Responses will appear here once users complete the survey.</p>
           </div>
         ) : (
           <>

@@ -11,16 +11,7 @@ export default function ThankYouStep({ score, campaign, email, onRestart }: Prop
   return (
     <div className="flex flex-col items-center gap-8 px-6 text-center max-w-lg mx-auto">
       <div className="flex flex-col items-center gap-4">
-        <div
-          style={{
-            width: 72,
-            height: 72,
-            borderRadius: "50%",
-            background: "#5a9aaa",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+        <div className="w-18 h-18 rounded-full bg-[#5a9aaa] flex items-center justify-center"
         >
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
             <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -28,38 +19,23 @@ export default function ThankYouStep({ score, campaign, email, onRestart }: Prop
         </div>
 
         <h2
-          style={{
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontSize: "clamp(1.3rem, 3vw, 1.8rem)",
-            fontWeight: "400",
-            color: "#2d2d2d",
-          }}
+          className="text-[20px] lg:text-[28px] font-normal leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance"
         >
           Thank you for taking action!
         </h2>
 
         <p
-          style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "1rem",
-            color: "#555",
-            lineHeight: 1.7,
-          }}
+          className="text-[16px] lg:text-[18px] leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px]"
         >
-          You scored <strong style={{ color: "#5a9aaa" }}>{score} points</strong> on your Social Impact Score.
+          You scored <strong className="text-[#5a9aaa]">{score} points</strong> on your Social Impact Score.
           <br />
           We&apos;ll let you know when the first{" "}
-          <strong style={{ color: "#2d2d2d" }}>{campaign}</strong> campaigns go live
+          <strong className="text-[#2d2d2d]">{campaign}</strong> campaigns go live
           {email ? ` at ${email}` : ""}.
         </p>
 
         <p
-          style={{
-            fontFamily: "Georgia, serif",
-            fontSize: "0.95rem",
-            color: "#777",
-            letterSpacing: "0.05em",
-          }}
+          className="text-[16px] lg:text-[18px] leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px] text-[#777]"
         >
           GIVE. VOTE. SHINE.
         </p>

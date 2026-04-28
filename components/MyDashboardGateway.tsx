@@ -61,11 +61,11 @@ export default function MyDashboardGateway() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-center text-[1.6rem] text-[#2d2d2d] mb-2 font-serif">
+            <h1 className="text-center text-[1.6rem] text-[#2d2d2d] mb-2 font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] lg:whitespace-nowrap">
               View your dashboard
             </h1>
 
-            <p className="text-center text-sm text-gray-400 mb-8 font-serif leading-relaxed">
+            <p className="text-center text-sm text-[#777] mb-8 leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px]">
               Enter the email you used for the OHRYA survey to see your social impact score and referral progress.
             </p>
 
@@ -101,7 +101,7 @@ export default function MyDashboardGateway() {
                       setErrorMsg("");
                     }
                   }}
-                  className={`w-full rounded-xl pl-11 pr-4 py-3 text-sm font-serif outline-none transition
+                  className={`w-full rounded-xl pl-11 pr-4 py-3 text-sm outline-none transition
                     ${state === "error"
                       ? "border border-red-400 focus:border-red-500"
                       : "border border-[#d0dde2] focus:border-[#5a9aaa]"
@@ -117,7 +117,7 @@ export default function MyDashboardGateway() {
                     <circle cx="12" cy="12" r="10" stroke="#e74c3c" strokeWidth="2"/>
                     <path d="M12 8v4M12 16h.01" stroke="#e74c3c" strokeWidth="2"/>
                   </svg>
-                  <span className="text-xs text-red-600 font-serif">{errorMsg}</span>
+                  <span className="text-xs text-red-600">{errorMsg}</span>
                 </div>
               )}
 
@@ -125,7 +125,7 @@ export default function MyDashboardGateway() {
               <button
                 type="submit"
                 disabled={state === "loading"}
-                className={`mt-2 flex  items-center justify-center gap-2 rounded-xl py-3 text-sm font-serif transition-all cursor-pointer
+                className={`mt-2 flex  items-center justify-center gap-2 rounded-xl py-3 text-sm transition-all cursor-pointer
                   ${state === "loading"
                     ? "bg-[#a8d4de] cursor-not-allowed"
                     : "bg-gradient-to-r from-[#5a9aaa] to-[#4a8798] hover:shadow-lg hover:-translate-y-[1px]"
@@ -151,12 +151,12 @@ export default function MyDashboardGateway() {
             {/* Divider */}
             <div className="flex items-center gap-3 my-7">
               <div className="flex-1 h-px bg-[#e8f0f2]" />
-              <span className="text-xs text-gray-300 font-serif">or</span>
+              <span className="text-xs text-gray-300">or</span>
               <div className="flex-1 h-px bg-[#e8f0f2]" />
             </div>
 
             {/* CTA */}
-            <p className="text-center text-sm text-gray-400 font-serif">
+            <p className="text-center text-sm text-[#777]">
               Haven’t taken the survey?{" "}
               <a
                 href="/"

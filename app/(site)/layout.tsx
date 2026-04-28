@@ -1,6 +1,5 @@
 'use client';
 
-import Header from "@/components/ui/Header";
 import ReferralBanner from "@/components/ui/ReferralBanner";
 import { useSearchParams } from "next/navigation";
 

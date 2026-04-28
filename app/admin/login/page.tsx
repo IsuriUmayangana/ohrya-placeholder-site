@@ -59,7 +59,6 @@ function LoginForm() {
             />
             <h1
               className="text-[1.05rem] text-slate-700 text-center leading-snug"
-              style={{ fontFamily: "Georgia, serif" }}
             >
               Admin Access
             </h1>
@@ -97,7 +96,6 @@ function LoginForm() {
                 type="submit"
                 disabled={loading || !password}
                 className="w-full py-3 rounded-xl bg-[#6098AE] text-white text-[0.875rem] font-medium hover:bg-[#4a8798] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer mt-1"
-                style={{ fontFamily: "Georgia, serif" }}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
