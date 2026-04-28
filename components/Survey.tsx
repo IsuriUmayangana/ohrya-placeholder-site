@@ -151,11 +151,35 @@ function SurveyInner() {
       return;
     }
     if (currentStep === "email") {
-      if (!answers.email || !answers.email.includes("@")) {
-        setStepError("Please enter a valid email address.");
+      const trimmed = answers.email.trim();
+
+      if (!trimmed) {
+        setStepError("Please enter your email address.");
         return;
       }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      if (!emailRegex.test(trimmed)) {
+        setStepError("Please enter a valid email address (e.g. name@example.com).");
+        return;
+      }
+
       setStepError("");
+      setSubmitting(true);
+
+      try {
+        const check = await fetch(`/api/user/by-email?email=${encodeURIComponent(trimmed)}`);
+        if (check.ok) {
+          setStepError("This email has already completed the survey. Visit My Dashboard to view your results.");
+          setSubmitting(false);
+          return;
+        }
+      } catch {
+        // Network error during duplicate check — proceed anyway
+      }
+
+      // Store trimmed email before submitting
+      setAnswers((a) => ({ ...a, email: trimmed }));
       await submitAndShowReferral();
       return;
     }
