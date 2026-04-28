@@ -42,3 +42,4 @@ next-env.d.ts
 
 # persistent local database (contains real user data)
 /data/db.json
+/data/otps.json
