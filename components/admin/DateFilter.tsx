@@ -36,6 +36,17 @@ export default function DateFilter({ value, onChange }: Props) {
   const [clickCount, setClickCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
 
+  const [dropdownAlign, setDropdownAlign] = useState<"left" | "right">("right");
+
+  function handleOpen() {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const btnCenter = rect.left + rect.width / 2;
+      setDropdownAlign(btnCenter > window.innerWidth / 2 ? "right" : "left");
+    }
+    setOpen((o) => !o);
+  }
+
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -108,7 +119,7 @@ export default function DateFilter({ value, onChange }: Props) {
     <div ref={ref} style={{ position: "relative" }}>
 
       {/* Date filter button */}
-      <button style={btnStyle} onClick={() => setOpen((o) => !o)}>
+      <button style={btnStyle} onClick={handleOpen}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="3" y="4" width="18" height="18" rx="2" stroke="#888" strokeWidth="1.8"/>
           <path d="M16 2v4M8 2v4M3 10h18" stroke="#888" strokeWidth="1.8" strokeLinecap="round"/>
@@ -119,12 +130,13 @@ export default function DateFilter({ value, onChange }: Props) {
       {/* Date filter modal */}
       {open && (
         <div style={{
-          position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 100,
+          position: "absolute", top: "calc(100% + 8px)", zIndex: 100, ...(dropdownAlign === "right" ? { right: 0 } : { left: 0 }),
           background: "white", borderRadius: 12,
           boxShadow: "0 8px 32px rgba(0,0,0,0.14)", border: "1px solid #e8f0f2",
           display: "flex", flexDirection: "column",
           minWidth: isMobile ? "min(92vw, 330px)" : 540,
           maxWidth: isMobile ? "92vw" : "none",
+          
         }}>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
             {/* Presets */}
