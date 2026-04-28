@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import DateFilter, { type DateRange } from "./DateFilter";
 import DeviceFilter from "./DeviceFilter";
 import useCountUp from "@/hooks/useCountUp";
+import CardWidget from "../ui/CardWidget";
 
 interface DropOffRow { question: string; views: number; answered: number; }
 interface StatsData {
@@ -59,6 +60,7 @@ export default function InsightsTab() {
 
   const total = data?.total ?? 0;
   const completionRate = "—";
+  const avgTimeToComplete = data?.avgTimeToComplete ?? "—";
 
   const bigPicture = [
     {
@@ -81,19 +83,6 @@ export default function InsightsTab() {
         </svg>
       ),
     },
-  ];
-  
-  const bigPictureSideCard = [
-    {
-      label: "Completion rate",
-      value: completionRate,
-      icon: (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-          <polyline points="22 4 12 14.01 9 11.01"/>
-        </svg>
-      ),
-    },
     {
       label: "Time to complete",
       value: total > 0 ? (data?.avgTimeToComplete ?? "—") : "—",
@@ -105,6 +94,7 @@ export default function InsightsTab() {
       ),
     },
   ];
+  
 
   return (
     <div className="flex flex-col gap-7">
@@ -131,81 +121,11 @@ export default function InsightsTab() {
         </div>
 
         {/* Big picture cards */}
-        <div className="grid lg:grid-cols-2 md:grid-cols-2  gap-4">
-          <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-2 gap-4">
+        <div className="grid lg:grid-cols-3 md:grid-cols-3  lg:gap-10 gap-5">
+          <CardWidget title="Submissions" value={total} theme="blue" variant="solid" subtitle="Total submissions" icons="submissions" />
+          <CardWidget title="Avg Score" value={data?.avgScore ?? 0} theme="teal" variant="outline" icons="score" subtitle="Score" />
+          <CardWidget title="Time to complete" value={avgTimeToComplete} theme="teal" variant="outline" icons="time" subtitle="Average time to complete" />
 
-            {bigPicture.map((stat, index) => {
-              const isFilled = index === 0;
-              return (
-                <div
-                  key={stat.label}
-                  className={`relative rounded-[18px] p-5 pb-4 overflow-hidden transition-all duration-200 hover:-translate-y-[3px] ${
-                    isFilled
-                      ? "bg-[#5a9aaa] border-0"
-                      : "bg-white border border-[#5a9aaa]/20 hover:border-[#5a9aaa]/40"
-                  }`}
-                >
-                  {/* Decorative circle in top-right corner */}
-                  <div className={`absolute -bottom-5 -right-5 w-20 h-20 rounded-full pointer-events-none ${
-                    isFilled ? "bg-white/10" : "bg-[#5a9aaa]/07"
-                  }`} />
-
-                  <div className="flex items-center justify-between">
-                    {/* Label */}
-                    <p className={`text-[12px] font-bold uppercase tracking-[0.04em] mb-1.5 ${
-                      isFilled ? "text-white/65" : "text-[#5a9aaa]"
-                    }`}>
-                      {stat.label}
-                    </p>
-                    {/* Icon pill */}
-                    <div className={`w-9 h-9 rounded-[12px] flex items-center justify-center mb-4 ${
-                      isFilled ? "bg-white/20" : "bg-[#5a9aaa]/12"
-                    }`}>
-                      {stat.icon}
-                    </div>
-                  </div>
-
-                  {/* Value */}
-                  <p className={`text-[34px] font-light leading-none tracking-[-0.03em] mb-3.5 ${
-                    isFilled ? "text-white" : "text-[#2d2d2d]"
-                  }`}>
-                    <AnimatedStat value={stat.value} />
-                  </p>
-
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-4">
-            {/* Side cards — amber accent */}
-            {bigPictureSideCard.map((stat) => (
-              <div
-                key={stat.label}
-                className="relative rounded-[18px] p-5 pb-4 overflow-hidden bg-white border border-[#c9a84c]/25 hover:-translate-y-[3px] transition-all duration-200"
-              >
-                {/* Decorative circle */}
-                <div className="absolute -top-5 -right-5 w-20 h-20 rounded-full bg-[#c9a84c]/08 pointer-events-none" />
-
-                <div className="flex items-center justify-between">
-                  {/* Label */}
-                  <p className="text-[12px] font-bold uppercase tracking-[0.04em] mb-1.5 text-[#c9a84c]">
-                    {stat.label}
-                  </p>
-                  {/* Icon pill */}
-                  <div className="w-9 h-9 rounded-[12px] flex items-center justify-center mb-4 bg-[#c9a84c]/15">
-                    {stat.icon}
-                  </div>
-                </div>
-
-                {/* Value */}
-                <p className="text-[34px] font-light leading-none tracking-[-0.03em] mb-3.5 text-[#2d2d2d]">
-                  <AnimatedStat value={stat.value} />
-                </p>
-
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* No submissions message */}
