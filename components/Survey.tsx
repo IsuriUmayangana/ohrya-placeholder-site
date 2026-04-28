@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, Suspense } from "react";
+import { useState, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import WelcomeStep from "./steps/WelcomeStep";
@@ -12,6 +12,7 @@ import VoteStep from "./steps/VoteStep";
 import ShineStep from "./steps/ShineStep";
 import RecognitionStep from "./steps/RecognitionStep";
 import EmailStep from "./steps/EmailStep";
+import EmailVerifyStep from "./steps/EmailVerifyStep";
 import ReferralStep from "./steps/ReferralStep";
 import StepButton from "./ui/StepButton";
 import ProgressBar from "./ui/ProgressBar";
@@ -32,6 +33,7 @@ const STEPS = [
   "recognition",
   "score-welldone",
   "email",
+  "email-verify",
   "referral-share",
 ] as const;
 
@@ -63,6 +65,15 @@ function SurveyInner() {
 
   const [emailError, setEmailError] = useState("");
 
+  // Email OTP verification (survey)
+  const [otpToken, setOtpToken] = useState("");
+  const [surveyOtp, setSurveyOtp] = useState<string[]>(Array(6).fill(""));
+  const [emailVerifyStatus, setEmailVerifyStatus] = useState<
+    "idle" | "verifying" | "error" | "resending"
+  >("idle");
+  const [emailVerifyError, setEmailVerifyError] = useState("");
+  const surveyVerifyingRef = useRef(false);
+
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Answers>({
@@ -80,7 +91,7 @@ function SurveyInner() {
 
   const [stepError, setStepError] = useState("");
 
-  function goNext() {
+  const goNext = useCallback(() => {
     if (currentStep === "welcome" && !startedAt) {
       setStartedAt(new Date().toISOString());
     }
@@ -90,14 +101,14 @@ function SurveyInner() {
       setMaxStepReached((max) => Math.max(max, next));
       return next;
     });
-  }
+  }, [currentStep, startedAt]);
 
-  function goPrev() {
+  const goPrev = useCallback(() => {
     setDirection(-1);
     setStepIndex((i) => Math.max(i - 1, 0));
-  }
+  }, []);
 
-  async function submitAndShowReferral() {
+  const submitAndShowReferral = useCallback(async () => {
     setSubmitting(true);
     try {
       const res = await fetch("/api/responses", {
@@ -122,7 +133,7 @@ function SurveyInner() {
       setSubmitting(false);
       goNext();
     }
-  }
+  }, [answers, referredBy, startedAt, goNext]);
 
   async function handleStepNext() {
     // Validate required question steps
@@ -168,24 +179,156 @@ function SurveyInner() {
       setSubmitting(true);
 
       try {
+        // Duplicate check
         const check = await fetch(`/api/user/by-email?email=${encodeURIComponent(trimmed)}`);
         if (check.ok) {
           setStepError("This email has already completed the survey. Visit My Dashboard to view your results.");
           setSubmitting(false);
           return;
         }
+
+        // Send OTP to verify the email is real
+        const res = await fetch("/api/user/send-verification-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: trimmed }),
+        });
+
+        if (!res.ok) {
+          const { error } = await res.json();
+          setStepError(error ?? "Failed to send verification code. Please try again.");
+          setSubmitting(false);
+          return;
+        }
+
+        const { token } = await res.json();
+        setOtpToken(token);
+        setAnswers((a) => ({ ...a, email: trimmed }));
+        setSurveyOtp(Array(6).fill(""));
+        setEmailVerifyStatus("idle");
+        setEmailVerifyError("");
+        surveyVerifyingRef.current = false;
       } catch {
-        // Network error during duplicate check — proceed anyway
+        setStepError("Network error. Please check your connection.");
+        setSubmitting(false);
+        return;
       }
 
-      // Store trimmed email before submitting
-      setAnswers((a) => ({ ...a, email: trimmed }));
-      await submitAndShowReferral();
+      setSubmitting(false);
+      goNext();
+      return;
+    }
+
+    if (currentStep === "email-verify") {
+      // Handled by auto-submit in OTP boxes — nothing needed here
       return;
     }
   
     setStepError("");
     goNext();
+  }
+
+  // ── Survey email OTP handlers ────────────────────────────────────────────
+
+  const handleSurveyOtpVerify = useCallback(
+    async (code: string) => {
+      if (surveyVerifyingRef.current) return;
+      surveyVerifyingRef.current = true;
+      setEmailVerifyStatus("verifying");
+      setEmailVerifyError("");
+
+      try {
+        const res = await fetch("/api/user/verify-email-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: otpToken, code }),
+        });
+
+        if (res.ok) {
+          await submitAndShowReferral();
+        } else {
+          const { error } = await res.json();
+          setEmailVerifyError(error ?? "Invalid code. Please try again.");
+          setEmailVerifyStatus("error");
+          setSurveyOtp(Array(6).fill(""));
+          surveyVerifyingRef.current = false;
+        }
+      } catch {
+        setEmailVerifyError("Network error. Please check your connection.");
+        setEmailVerifyStatus("error");
+        surveyVerifyingRef.current = false;
+      }
+    },
+    [otpToken, submitAndShowReferral]
+  );
+
+  function handleSurveyOtpChange(index: number, value: string) {
+    if (!/^\d*$/.test(value)) return;
+    const digit = value.slice(-1);
+    const next = [...surveyOtp];
+    next[index] = digit;
+    setSurveyOtp(next);
+    if (emailVerifyStatus === "error") {
+      setEmailVerifyStatus("idle");
+      setEmailVerifyError("");
+    }
+    if (next.every((d) => d !== "") && digit) {
+      handleSurveyOtpVerify(next.join(""));
+    }
+  }
+
+  function handleSurveyOtpKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace") {
+      if (surveyOtp[index]) {
+        const next = [...surveyOtp];
+        next[index] = "";
+        setSurveyOtp(next);
+      } else if (index > 0) {
+        const next = [...surveyOtp];
+        next[index - 1] = "";
+        setSurveyOtp(next);
+      }
+    }
+  }
+
+  function handleSurveyOtpPaste(e: React.ClipboardEvent) {
+    e.preventDefault();
+    const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!text) return;
+    const next = Array(6).fill("");
+    for (let i = 0; i < text.length; i++) next[i] = text[i];
+    setSurveyOtp(next);
+    if (text.length === 6) handleSurveyOtpVerify(text);
+  }
+
+  async function handleSurveyResendOtp() {
+    setEmailVerifyStatus("resending");
+    try {
+      const res = await fetch("/api/user/send-verification-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: answers.email }),
+      });
+      if (res.ok) {
+        const { token } = await res.json();
+        setOtpToken(token);
+        setSurveyOtp(Array(6).fill(""));
+        setEmailVerifyError("");
+        surveyVerifyingRef.current = false;
+      }
+    } catch {
+      // silently ignore resend errors
+    }
+    setEmailVerifyStatus("idle");
+  }
+
+  function handleSurveyChangeEmail() {
+    setOtpToken("");
+    setSurveyOtp(Array(6).fill(""));
+    setEmailVerifyStatus("idle");
+    setEmailVerifyError("");
+    surveyVerifyingRef.current = false;
+    goPrev();
   }
 
   const restart = useCallback(() => {
@@ -200,7 +343,7 @@ function SurveyInner() {
   const questionIdx = QUESTION_STEPS.indexOf(currentStep as string);
   const showProgress = questionIdx !== -1;
   const progressPct = showProgress ? ((questionIdx + 1) / QUESTION_STEPS.length) * 100 : 0;
-  const showNav = currentStep !== "welcome" && currentStep !== "referral-share";
+  const showNav = currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "email-verify";
 
   return (
     <div className="relative flex flex-col bg-white">
@@ -216,14 +359,14 @@ function SurveyInner() {
 
         {/* Nav Buttons - Desktop */}
         <div className="w-full flex flex-row items-center gap-2 fixed px-6">
-          { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
+          { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && currentStep !== "email-verify" && (
             <NavButton action={goPrev}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
             </NavButton>
           )}
-          { currentStep !== "welcome" && stepIndex < maxStepReached && (
+          { currentStep !== "welcome" && currentStep !== "email-verify" && stepIndex < maxStepReached && (
             <NavButton action={goNext}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -281,13 +424,26 @@ function SurveyInner() {
               )}
               {currentStep === "email" && (
                 <EmailStep
-                value={answers.email}
-                onChange={(v) => {
-                  setAnswers((a) => ({ ...a, email: v }));
-                  setStepError("");
-                }}
-                error={emailError}
-              />
+                  value={answers.email}
+                  onChange={(v) => {
+                    setAnswers((a) => ({ ...a, email: v }));
+                    setStepError("");
+                  }}
+                  error={emailError}
+                />
+              )}
+              {currentStep === "email-verify" && (
+                <EmailVerifyStep
+                  email={answers.email}
+                  otp={surveyOtp}
+                  onOtpChange={handleSurveyOtpChange}
+                  onOtpKeyDown={handleSurveyOtpKeyDown}
+                  onOtpPaste={handleSurveyOtpPaste}
+                  status={emailVerifyStatus}
+                  error={emailVerifyError}
+                  onResend={handleSurveyResendOtp}
+                  onChangeEmail={handleSurveyChangeEmail}
+                />
               )}
               {currentStep === "referral-share" && (
                 <ReferralStep referralCode={referralCode} emailSlug={emailSlug} />
@@ -307,7 +463,7 @@ function SurveyInner() {
         <div className="flex lg:flex-col flex-row items-center lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
 
           {/* Previous Button */}
-          {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
+          {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && currentStep !== "email-verify" && (<MobileNavButton action={goPrev}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
             </svg>
@@ -316,15 +472,12 @@ function SurveyInner() {
           {currentStep === "welcome" && (
             <StepButton onClick={handleStepNext}>Get Started</StepButton>
           )}
-          {currentStep !== "welcome" && currentStep !== "email" && currentStep !== "referral-share" && (
-            <StepButton onClick={handleStepNext}>OK</StepButton>
-          )}
-          {currentStep === "email" && (
+          {currentStep !== "welcome" && currentStep !== "email-verify" && currentStep !== "referral-share" && (
             <StepButton onClick={handleStepNext}>OK</StepButton>
           )}
 
           {/* Next Button */}
-          {currentStep !== "welcome" && stepIndex < maxStepReached && (
+          {currentStep !== "welcome" && currentStep !== "email-verify" && stepIndex < maxStepReached && (
             <MobileNavButton action={goNext}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
