@@ -148,7 +148,7 @@ export default function CardWidget({
             {/* Bottom */}
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                    <span className="text-5xl pl-5 font-medium text-gray-900">
+                    <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium text-gray-900">
                         <AnimatedStat value={value} />
                     </span>
                     {badge && (
@@ -191,7 +191,7 @@ export default function CardWidget({
           {/* Bottom */}
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-5xl pl-5 font-medium text-gray-900">
+              <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium text-gray-900">
                 <AnimatedStat value={value} />
               </span>
               {badge && (

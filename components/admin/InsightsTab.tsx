@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import DateFilter, { type DateRange } from "./DateFilter";
 import DeviceFilter from "./DeviceFilter";
@@ -59,42 +59,26 @@ export default function InsightsTab() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const total = data?.total ?? 0;
-  const completionRate = "—";
   const avgTimeToComplete = data?.avgTimeToComplete ?? "—";
 
-  const bigPicture = [
-    {
-      label: "Submissions",
-      value: total > 0 ? total : "—",
-      icon: (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a9aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
-          <rect x="9" y="3" width="6" height="4" rx="1"/>
-          <path d="M9 12h6M9 16h4"/>
-        </svg>
-      ),
-    },
-    {
-      label: "Avg Score",
-      value: total > 0 ? (data?.avgScore ?? "—") : "—",
-      icon: (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5a9aaa" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-      ),
-    },
-    {
-      label: "Time to complete",
-      value: total > 0 ? (data?.avgTimeToComplete ?? "—") : "—",
-      icon: (
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 7v5l3 3"/>
-        </svg>
-      ),
-    },
-  ];
+  const [activeSlide, setActiveSlide] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const totalSlides = 3;
   
+  const scrollToSlide = (index: number) => {
+    if (!sliderRef.current) return;
+    const slideWidth = sliderRef.current.offsetWidth;
+    sliderRef.current.scrollTo({ left: slideWidth * index, behavior: "smooth" });
+    setActiveSlide(index);
+  };
+
+  const handleScroll = () => {
+    if (!sliderRef.current) return;
+    const slideWidth = sliderRef.current.offsetWidth;
+    const scrollLeft = sliderRef.current.scrollLeft;
+    const newIndex = Math.round(scrollLeft / slideWidth);
+    setActiveSlide(newIndex);
+  };
 
   return (
     <div className="flex flex-col gap-7">
@@ -120,8 +104,44 @@ export default function InsightsTab() {
           <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">Big picture</p>
         </div>
 
-        {/* Big picture cards */}
-        <div className="grid lg:grid-cols-3 md:grid-cols-3  lg:gap-10 gap-5">
+        {/* Mobile slider Cards */}
+        <div className="md:hidden">
+          <div
+            ref={sliderRef}
+            onScroll={handleScroll}
+            className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-1 pb-2 scrollbar-hide"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            <div className="flex-shrink-0 w-full snap-center">
+              <CardWidget title="Submissions" value={total} theme="blue" variant="solid" subtitle="Total submissions" icons="submissions" />
+            </div>
+            <div className="flex-shrink-0 w-full snap-center">
+              <CardWidget title="Avg Score" value={data?.avgScore ?? 0} theme="teal" variant="outline" icons="score" subtitle="Score" />
+            </div>
+            <div className="flex-shrink-0 w-full snap-center">
+              <CardWidget title="Time to complete" value={avgTimeToComplete} theme="teal" variant="outline" icons="time" subtitle="Average time to complete" />
+            </div>
+          </div>
+
+          {/* Dot indicators */}
+          <div className="flex justify-center gap-2 mt-3">
+            {Array.from({ length: totalSlides }).map((_, i) => (
+              <button
+                key={i}
+                onClick={() => scrollToSlide(i)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  activeSlide === i
+                    ? "w-6 bg-[#4a8798]"
+                    : "w-2 bg-[#a9d0da]"
+                }`}
+                aria-label={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop cards */}
+        <div className="md:grid lg:grid-cols-3 md:grid-cols-3 md:gap-5 lg:gap-10 hidden">
           <CardWidget title="Submissions" value={total} theme="blue" variant="solid" subtitle="Total submissions" icons="submissions" />
           <CardWidget title="Avg Score" value={data?.avgScore ?? 0} theme="teal" variant="outline" icons="score" subtitle="Score" />
           <CardWidget title="Time to complete" value={avgTimeToComplete} theme="teal" variant="outline" icons="time" subtitle="Average time to complete" />
