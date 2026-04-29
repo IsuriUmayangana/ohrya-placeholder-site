@@ -41,7 +41,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-t from-[#a9d0da] to-[#EFE4C8] flex items-center justify-center p-4">
+    <div className="min-h-screen admin-login-animation flex items-center justify-center p-4">
 
         {/* Card */}
         <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-4">
