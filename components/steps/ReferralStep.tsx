@@ -36,7 +36,7 @@ export default function ReferralStep({ referralCode, emailSlug }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 px-6 w-full max-w-lg mx-auto text-center mt-25">
+    <div className="flex flex-col items-center gap-8 px-6 w-full max-w-lg mx-auto text-center mt-45 md:mt-10 lg:mt-40">
 
       {/* Icon */}
       <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#A18330] to-[#D9C281] flex items-center justify-center">
@@ -98,17 +98,16 @@ export default function ReferralStep({ referralCode, emailSlug }: Props) {
 
       {/* CTA */}
       <button
-        className="btn-primary"
+        className="btn-primary flex items-center justify-center gap-2"
         onClick={() => router.push(dashboardUrl)}
         style={{ minWidth: 200 }}
       >
-        View My Dashboard →
+        View My Dashboard 
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
       </button>
 
-      {/* Dashboard URL */}
-      <p className="text-sm text-slate-500">
-        Your dashboard will be at: <span className="text-[#4a8798] cursor-pointer hover:underline">{typeof window !== "undefined" ? window.location.origin : ""}{dashboardUrl}</span>
-      </p>
     </div>
   );
 }
