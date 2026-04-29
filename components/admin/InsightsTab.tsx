@@ -202,14 +202,14 @@ export default function InsightsTab() {
       {/* Question by question table */}
       <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
   
-      {/* Table Header */}
+      {/* Question by question table header */}
       <div className="p-6 border-b border-slate-200 bg-slate-50/95 backdrop-blur">
         <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">
           Question by question
         </p>
       </div>
 
-      {/* Desktop table */}
+      {/* Question by question table - Desktop view */}
       <div className="hidden md:block shadow-sm border-t border-slate-200 overflow-x-auto">
         <table className="w-full border-collapse text-sm">
           
@@ -274,7 +274,7 @@ export default function InsightsTab() {
                     {row.question}
                   </td>
 
-                  <td className="px-6 py-4 text-[#4a8798] font-medium">
+                  <td className="px-10 py-4 text-[#4a8798] font-medium">
                     {row.views}
                   </td>
                 </tr>
@@ -284,64 +284,64 @@ export default function InsightsTab() {
         </table>
       </div>
 
-      {/* Mobile cards */}
+      {/* Question by question table - Mobile view */}
       <div className="md:hidden p-3 space-y-3 bg-[#f7fbfc]">
-      {(data?.dropOff ?? []).map((row, i) => {
-        const isScore = /score|brilliant|almost|well done/i.test(
-          row.question
-        );
+        {(data?.dropOff ?? []).map((row, i) => {
+          const isScore = /score|brilliant|almost|well done/i.test(
+            row.question
+          );
 
-        return (
-          <div
-            key={i}
-            className="rounded-2xl bg-white border border-[#e6eef1] p-4"
-          >
-            <div className="flex items-start gap-3">
-              
-              {/* Icon */}
-              <span
-                className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-                  isScore ? "bg-[#fff6db]" : "bg-[#eaf4f7]"
-                }`}
-              >
-                {isScore ? (
-                  <span>🏅</span>
-                ) : (
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M9 11l3 3L22 4"
-                      stroke="#5a9aaa"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
-                      stroke="#5a9aaa"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                )}
-              </span>
+          return (
+            <div
+              key={i}
+              className="rounded-2xl bg-white border border-[#e6eef1] p-4"
+            >
+              <div className="flex items-start gap-3">
+                
+                {/* Icon */}
+                <span
+                  className={`w-8 h-8 flex items-center justify-center rounded-lg ${
+                    isScore ? "bg-[#fff6db]" : "bg-[#eaf4f7]"
+                  }`}
+                >
+                  {isScore ? (
+                    <span>🏅</span>
+                  ) : (
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
+                      <path
+                        d="M9 11l3 3L22 4"
+                        stroke="#5a9aaa"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
+                        stroke="#5a9aaa"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </span>
 
-              <div className="flex-1">
-                <p className="text-[#2d2d2d] text-sm leading-relaxed">
-                  {row.question}
-                </p>
+                <div className="flex-1">
+                  <p className="text-[#2d2d2d] text-sm leading-relaxed">
+                    {row.question}
+                  </p>
 
-                <div className="mt-4 flex flex-col gap-2 w-full">
-                  <div className="flex-1 rounded-xl bg-[#f4f9fb] border border-[#e6eef1] p-3 inline-block">
-                    <p className="text-[#4a8798] text-xs mb-1">Views</p>
-                    <p className="text-[#2d2d2d] font-medium">{row.views}</p>
+                  <div className="mt-4 flex flex-col gap-2 w-full">
+                    <div className="flex-1 rounded-xl bg-[#f4f9fb] border border-[#e6eef1] p-3 inline-block">
+                      <p className="text-[#4a8798] text-xs mb-1">Views</p>
+                      <p className="text-[#2d2d2d] font-medium">{row.views}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
       </div>
     </div>
 
