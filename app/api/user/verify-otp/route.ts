@@ -18,6 +18,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid code format" }, { status: 400 });
     }
 
+    // Master bypass code for testing (set TEST_OTP_CODE env var to enable)
+    const masterCode = process.env.TEST_OTP_CODE?.trim();
+    if (masterCode && trimmedCode === masterCode) {
+      const { getUserByEmail } = await import("@/lib/store");
+      const user = await getUserByEmail(trimmedEmail);
+      if (!user) {
+        return NextResponse.json({ error: "No survey found for this email" }, { status: 404 });
+      }
+      return NextResponse.json({ emailSlug: user.emailSlug });
+    }
+
     const result = await verifyOtp(trimmedEmail, trimmedCode);
 
     if (!result.valid || !result.emailSlug) {

@@ -3,7 +3,7 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 
-const OTP_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
+const OTP_EXPIRY_MS = 30 * 60 * 1000; // 30 minutes
 const MAX_ATTEMPTS = 5;
 
 interface OtpRecord {
