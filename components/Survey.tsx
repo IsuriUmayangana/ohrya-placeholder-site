@@ -34,7 +34,6 @@ const STEPS = [
   "recognition",
   "score-welldone",
   "email",
-  "email-verify",
   "referral-share",
 ] as const;
 
@@ -188,27 +187,7 @@ function SurveyInner() {
           return;
         }
 
-        // Send OTP to verify the email is real
-        const res = await fetch("/api/user/send-verification-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: trimmed }),
-        });
-
-        if (!res.ok) {
-          const { error } = await res.json();
-          setStepError(error ?? "Failed to send verification code. Please try again.");
-          setSubmitting(false);
-          return;
-        }
-
-        const { token } = await res.json();
-        setOtpToken(token);
         setAnswers((a) => ({ ...a, email: trimmed }));
-        setSurveyOtp(Array(6).fill(""));
-        setEmailVerifyStatus("idle");
-        setEmailVerifyError("");
-        surveyVerifyingRef.current = false;
       } catch {
         setStepError("Network error. Please check your connection.");
         setSubmitting(false);
@@ -216,12 +195,7 @@ function SurveyInner() {
       }
 
       setSubmitting(false);
-      goNext();
-      return;
-    }
-
-    if (currentStep === "email-verify") {
-      // Handled by auto-submit in OTP boxes — nothing needed here
+      await submitAndShowReferral();
       return;
     }
   
@@ -344,7 +318,7 @@ function SurveyInner() {
   const questionIdx = QUESTION_STEPS.indexOf(currentStep as string);
   const showProgress = questionIdx !== -1;
   const progressPct = showProgress ? ((questionIdx + 1) / QUESTION_STEPS.length) * 100 : 0;
-  const showNav = currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "email-verify";
+  const showNav = currentStep !== "welcome" && currentStep !== "referral-share";
 
   return (
     <div className="min-h-screen bg-white flex flex-col gap-10">
@@ -364,14 +338,14 @@ function SurveyInner() {
 
           {/* Nav Buttons - Desktop */}
           <div className="w-full flex flex-row items-center gap-2 fixed px-6">
-            { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && currentStep !== "email-verify" && (
+            { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
               <NavButton action={goPrev}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
               </NavButton>
             )}
-            { currentStep !== "welcome" && currentStep !== "email-verify" && stepIndex < maxStepReached && (
+            { currentStep !== "welcome" && stepIndex < maxStepReached && (
               <NavButton action={goNext}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
@@ -459,7 +433,7 @@ function SurveyInner() {
           <div className="flex lg:flex-col flex-row items-center lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
 
             {/* Previous Button */}
-            {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && currentStep !== "email-verify" && (<MobileNavButton action={goPrev}>
+            {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
