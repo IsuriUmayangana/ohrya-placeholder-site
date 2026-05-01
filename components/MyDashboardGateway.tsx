@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Header from "./ui/Header";
+import Image from "next/image";
 
 const OTP_LENGTH = 6;
 
@@ -27,7 +28,6 @@ export default function MyDashboardGateway() {
   const verifyingRef = useRef(false);
 
   // ── Send OTP ──────────────────────────────────────────────────────────────
-
   async function sendOtp(targetEmail: string) {
     setEmailStatus("loading");
     setEmailError("");
@@ -68,7 +68,6 @@ export default function MyDashboardGateway() {
   }
 
   // ── Verify OTP ────────────────────────────────────────────────────────────
-
   const handleVerifyOtp = useCallback(
     async (code: string) => {
       if (verifyingRef.current) return;
@@ -104,7 +103,6 @@ export default function MyDashboardGateway() {
   );
 
   // ── OTP input handlers ─────────────────────────────────────────────────────
-
   function handleOtpChange(index: number, value: string) {
     if (!/^\d*$/.test(value)) return;
     const digit = value.slice(-1);
@@ -123,6 +121,7 @@ export default function MyDashboardGateway() {
     }
   }
 
+  // ── OTP input keydown handler ────────────────────────────────────────────────
   function handleOtpKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Backspace") {
       if (otp[index]) {
@@ -142,6 +141,7 @@ export default function MyDashboardGateway() {
     }
   }
 
+  // ── OTP input paste handler ────────────────────────────────────────────────
   function handleOtpPaste(e: React.ClipboardEvent) {
     e.preventDefault();
     const text = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
@@ -156,6 +156,7 @@ export default function MyDashboardGateway() {
     }
   }
 
+  // ── Change email handler ────────────────────────────────────────────────────
   function handleChangeEmail() {
     setScreen("email");
     setEmailStatus("idle");
@@ -166,241 +167,234 @@ export default function MyDashboardGateway() {
     verifyingRef.current = false;
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
-
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <Header />
+    <div className="min-h-screen admin-login-animation flex items-center justify-center p-4">
 
-      <main className="flex items-center justify-center px-4 py-10 bg-white">
-        <div className="w-full max-w-md">
-          <div className="bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-sm p-8">
-
-            {screen === "email" ? (
-              /* ── Email screen ── */
-              <>
-                <div className="flex justify-center mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#e8f5f8] to-[#d0ecf0] flex items-center justify-center shadow-inner">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"
-                        stroke="#5a9aaa"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <circle cx="12" cy="7" r="4" stroke="#5a9aaa" strokeWidth="2" />
-                    </svg>
-                  </div>
-                </div>
-
-                <h1 className="text-center text-[1.6rem] text-[#2d2d2d] mb-2 font-serif">
-                  View your dashboard
-                </h1>
-                <p className="text-center text-sm text-gray-400 mb-8 font-serif leading-relaxed">
-                  Enter the email you used for the OHRYA survey. We'll send a
-                  one-time code to verify it's you.
-                </p>
-
-                <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
-                  <div className="relative">
-                    <svg
-                      className="absolute left-4 top-1/2 -translate-y-1/2"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <path
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                        stroke={emailStatus === "error" ? "#e74c3c" : "#9ca3af"}
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <input
-                      ref={emailInputRef}
-                      type="email"
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (emailStatus === "error") {
-                          setEmailStatus("idle");
-                          setEmailError("");
-                        }
-                      }}
-                      className={`w-full rounded-xl pl-11 pr-4 py-3 text-sm font-serif outline-none transition
-                        ${
-                          emailStatus === "error"
-                            ? "border border-red-400 focus:border-red-500"
-                            : "border border-[#d0dde2] focus:border-[#5a9aaa]"
-                        }
-                        bg-white text-[#2d2d2d]`}
-                    />
-                  </div>
-
-                  {emailError && (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="#e74c3c" strokeWidth="2" />
-                        <path d="M12 8v4M12 16h.01" stroke="#e74c3c" strokeWidth="2" />
-                      </svg>
-                      <span className="text-xs text-red-600 font-serif">{emailError}</span>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    disabled={emailStatus === "loading"}
-                    className={`mt-2 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-serif transition-all cursor-pointer
-                      ${
-                        emailStatus === "loading"
-                          ? "bg-[#a8d4de] cursor-not-allowed"
-                          : "bg-gradient-to-r from-[#5a9aaa] to-[#4a8798] hover:shadow-lg hover:-translate-y-[1px]"
-                      }
-                      text-white`}
-                  >
-                    {emailStatus === "loading" ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Sending code…
-                      </>
-                    ) : (
-                      <>
-                        Continue
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                <div className="flex items-center gap-3 my-7">
-                  <div className="flex-1 h-px bg-[#e8f0f2]" />
-                  <span className="text-xs text-gray-300 font-serif">or</span>
-                  <div className="flex-1 h-px bg-[#e8f0f2]" />
-                </div>
-
-                <p className="text-center text-sm text-gray-400 font-serif">
-                  Haven't taken the survey?{" "}
-                  <a
-                    href="/"
-                    className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80"
-                  >
-                    Start here →
-                  </a>
-                </p>
-              </>
-            ) : (
-              /* ── OTP screen ── */
-              <>
-                <div className="flex justify-center mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#e8f5f8] to-[#d0ecf0] flex items-center justify-center shadow-inner">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                      <rect
-                        x="5"
-                        y="11"
-                        width="14"
-                        height="10"
-                        rx="2"
-                        stroke="#5a9aaa"
-                        strokeWidth="2"
-                      />
-                      <path
-                        d="M8 11V7a4 4 0 018 0v4"
-                        stroke="#5a9aaa"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <circle cx="12" cy="16" r="1.5" fill="#5a9aaa" />
-                    </svg>
-                  </div>
-                </div>
-
-                <h1 className="text-center text-[1.6rem] text-[#2d2d2d] mb-2 font-serif">
-                  Check your email
-                </h1>
-                <p className="text-center text-sm text-gray-400 mb-1 font-serif leading-relaxed">
-                  We sent a 6-digit code to
-                </p>
-                <p className="text-center text-sm text-[#5a9aaa] font-serif mb-8 font-medium">
-                  {email}
-                </p>
-
-                {/* 6-box OTP input */}
-                <div
-                  className="flex gap-2 justify-center mb-2"
-                  onPaste={handleOtpPaste}
-                >
-                  {Array.from({ length: OTP_LENGTH }).map((_, i) => (
-                    <input
-                      key={i}
-                      ref={(el) => {
-                        otpRefs.current[i] = el;
-                      }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={otp[i]}
-                      disabled={otpStatus === "loading"}
-                      onChange={(e) => handleOtpChange(i, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className={`w-11 h-14 text-center text-2xl font-serif rounded-xl border outline-none transition-all
-                        ${
-                          otpStatus === "error"
-                            ? "border-red-400 bg-red-50 text-red-600"
-                            : otp[i]
-                            ? "border-[#5a9aaa] bg-[#f0f9fb] text-[#2d2d2d]"
-                            : "border-[#d0dde2] focus:border-[#5a9aaa] bg-white text-[#2d2d2d]"
-                        }
-                        ${otpStatus === "loading" ? "opacity-50 cursor-not-allowed" : ""}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Status feedback */}
-                <div className="min-h-[36px] flex items-center justify-center mb-2">
-                  {otpStatus === "loading" && (
-                    <div className="flex items-center gap-2 text-sm text-gray-400 font-serif">
-                      <div className="w-4 h-4 border-2 border-[#5a9aaa]/30 border-t-[#5a9aaa] rounded-full animate-spin" />
-                      Verifying…
-                    </div>
-                  )}
-                  {otpError && (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200 w-full">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="#e74c3c" strokeWidth="2" />
-                        <path d="M12 8v4M12 16h.01" stroke="#e74c3c" strokeWidth="2" />
-                      </svg>
-                      <span className="text-xs text-red-600 font-serif">{otpError}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer actions */}
-                <div className="flex items-center justify-between mt-4">
-                  <button
-                    type="button"
-                    onClick={handleChangeEmail}
-                    className="text-xs text-gray-400 font-serif hover:text-[#5a9aaa] transition"
-                  >
-                    ← Change email
-                  </button>
-                  <button
-                    type="button"
-                    disabled={emailStatus === "loading"}
-                    onClick={() => sendOtp(email.trim())}
-                    className="text-xs text-[#5a9aaa] font-serif hover:opacity-70 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    {emailStatus === "loading" ? "Sending…" : "Resend code"}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+      {/* Card */}
+      <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-4">
+        {/* OHRYA Logo */}
+        <div className="flex flex-col items-center pt-4">
+          <Image
+            src="/logo.png"
+            alt="Ohrya"
+            width={160}
+            height={160}
+            className="w-auto h-auto"
+            style={{ maxHeight: 60, width: "auto" }}
+          />
         </div>
-      </main>
+        {/* Email screen */}
+        {screen === "email" ? (
+          /* ── Email screen ── */
+          <>
+          {/* Header */}
+          <div className="flex flex-col items-center px-6">
+            <h1 className="text-[1.6rem] font-medium text-slate-700 text-center leading-snug">
+              View your dashboard
+            </h1>
+            <p className="text-[0.85rem] text-slate-400 text-center mt-1">
+              Enter the email you used for the OHRYA survey. We'll send a
+              one-time code to verify it's you.
+            </p>
+          </div>
+
+          {/* Form */}
+          <div className="px-8 py-6">
+            <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
+              <div className="relative">
+                <svg
+                  className="absolute left-4 top-1/2 -translate-y-1/2"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    stroke={emailStatus === "error" ? "#e74c3c" : "#9ca3af"}
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <input
+                  ref={emailInputRef}
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailStatus === "error") {
+                      setEmailStatus("idle");
+                      setEmailError("");
+                    }
+                  }}
+                  className={`w-full rounded-xl pl-11 pr-4 py-3 text-sm font-serif outline-none transition
+                    ${
+                      emailStatus === "error"
+                        ? "border border-red-400 focus:border-red-500"
+                        : "border border-[#d0dde2] focus:border-[#5a9aaa]"
+                    }
+                    bg-white text-[#2d2d2d]`}
+                />
+              </div>
+
+              {/* Error message */}
+              {emailError && (
+                <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-lg px-3 py-2">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="shrink-0">
+                    <circle cx="12" cy="12" r="10" stroke="#ef4444" strokeWidth="2"/>
+                    <path d="M12 8v4M12 16h.01" stroke="#ef4444" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  <p className="text-[0.78rem] text-red-500">{emailError}</p>
+                </div>
+              )}
+
+              {/* Continue button */}
+              <button
+                type="submit"
+                disabled={emailStatus === "loading"}
+                className={`w-full py-3 rounded-xl bg-[#6098AE] text-white text-[0.875rem] font-medium cursor-pointer mt-1
+                  ${
+                    emailStatus === "loading"
+                      ? "bg-[#6098AE] cursor-not-allowed opacity-50"
+                      : "bg-[#6098AE] hover:bg-[#4a8798] active:scale-[0.98] transition-all"
+                  }
+                  text-white`}
+              >
+                {emailStatus === "loading" ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Sending code…
+                  </>
+                ) : (
+                  <>
+                    Continue
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Or separator */}
+          <div className="flex items-center gap-3 m-4 ">
+            <div className="h-px bg-slate-100 mx-auto w-full" />
+            <span className="text-xs text-gray-300 font-serif">or</span>
+            <div className="h-px bg-slate-100 mx-auto w-full" />
+          </div>
+
+          {/* Haven't taken the survey? */}
+          <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-2 pb-4">
+            Haven't taken the survey?{" "}
+            <a
+              href="/"
+              className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80 flex items-center gap-2"
+            >
+              Start here
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12h14M12 5l7 7-7 7" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </a>
+          </p>
+        </>
+        ) : (
+          /* ── OTP screen ── */
+          <>
+            {/* Header */}
+            <div className="flex flex-col items-center gap-1">
+              <h1
+                className="text-[1.6rem] font-medium text-slate-700 text-center leading-snug"
+              >
+                Check your email
+              </h1>
+              <p className="text-[0.85rem] text-slate-400 text-center mt-1">
+                We sent a 6-digit code to
+                <span className="text-[#5a9aaa] font-medium px-2">test@test.com {email}</span>
+              </p>
+            </div>
+
+            {/* 6-box OTP input */}
+            <div
+              className="flex gap-2 md:gap-3 lg:gap-3 justify-center my-4"
+              onPaste={handleOtpPaste}
+            >
+              {Array.from({ length: OTP_LENGTH }).map((_, i) => (
+                <input
+                  key={i}
+                  ref={(el) => {
+                    otpRefs.current[i] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={otp[i]}
+                  disabled={otpStatus === "loading"}
+                  onChange={(e) => handleOtpChange(i, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                  className={`w-10 h-10 md:w-14 md:h-14 lg:w-14 lg:h-14 text-center text-xl md:text-2xl lg:text-2xl rounded-xl border outline-none transition-all
+                    ${
+                      otpStatus === "error"
+                        ? "border-red-400 bg-red-50 text-red-600"
+                        : otp[i]
+                        ? "border-[#5a9aaa] bg-[#f0f9fb] text-[#2d2d2d]"
+                        : "border-[#d0dde2] focus:border-[#5a9aaa] bg-white text-[#2d2d2d]"
+                    }
+                    ${otpStatus === "loading" ? "opacity-50 cursor-not-allowed" : ""}`}
+                />
+              ))}
+            </div>
+
+            {/* Status feedback */}
+            <div className=" flex items-center justify-center mb-2">
+              {otpStatus === "loading" && (
+                <div className="flex items-center gap-2 text-sm text-gray-400 ">
+                  <div className="w-4 h-4 border-2 border-[#5a9aaa]/30 border-t-[#5a9aaa] rounded-full animate-spin" />
+                  Verifying…
+                </div>
+              )}
+              {otpError && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 border border-red-200 w-full">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="#e74c3c" strokeWidth="2" />
+                    <path d="M12 8v4M12 16h.01" stroke="#e74c3c" strokeWidth="2" />
+                  </svg>
+                  <span className="text-xs text-red-600 font-serif">{otpError}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Resend code button */}
+            <div className=" w-full flex items-center justify-center gap-2 pb-4">
+              {/* Resend code button */}
+              <button
+                type="button"
+                disabled={emailStatus === "loading"}
+                onClick={() => sendOtp(email.trim())}
+                className="text-xs text-[#5a9aaa] hover:opacity-70 hover:underline transition font-normal cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {emailStatus === "loading" ? "Sending…" : "Resend code"}
+              </button>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-slate-100 my-4 mx-auto w-full max-w-xs" />
+
+            {/* Change email button */}
+            <div className="flex items-center justify-center gap-2 pb-4 flex-col md:flex-row lg:flex-row">
+              <p className="text-center text-[0.85rem] text-gray-400 ">
+                Want to change the email?
+              </p>
+              <button
+                type="button"
+                onClick={handleChangeEmail}
+                className="text-xs text-[#5a9aaa] hover:text-[#5a9aaa] hover:opacity-70 hover:underline transition font-medium cursor-pointer"
+              >
+                Change email
+              </button>
+            </div>
+          </>
+        )}
+  
+      </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
