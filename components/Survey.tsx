@@ -441,19 +441,6 @@ function SurveyInner() {
                     error={emailError}
                   />
                 )}
-                {currentStep === "email-verify" && (
-                  <EmailVerifyStep
-                    email={answers.email}
-                    otp={surveyOtp}
-                    onOtpChange={handleSurveyOtpChange}
-                    onOtpKeyDown={handleSurveyOtpKeyDown}
-                    onOtpPaste={handleSurveyOtpPaste}
-                    status={emailVerifyStatus}
-                    error={emailVerifyError}
-                    onResend={handleSurveyResendOtp}
-                    onChangeEmail={handleSurveyChangeEmail}
-                  />
-                )}
                 {currentStep === "referral-share" && (
                   <ReferralStep referralCode={referralCode} emailSlug={emailSlug} />
                 )}
@@ -481,12 +468,12 @@ function SurveyInner() {
             {currentStep === "welcome" && (
               <StepButton onClick={handleStepNext}>Get Started</StepButton>
             )}
-            {currentStep !== "welcome" && currentStep !== "email-verify" && currentStep !== "referral-share" && (
+            {currentStep !== "welcome" && currentStep !== "referral-share" && (
               <StepButton onClick={handleStepNext}>OK</StepButton>
             )}
 
             {/* Next Button */}
-            {currentStep !== "welcome" && currentStep !== "email-verify" && stepIndex < maxStepReached && (
+            {currentStep !== "welcome" && stepIndex < maxStepReached && (
               <MobileNavButton action={goNext}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
