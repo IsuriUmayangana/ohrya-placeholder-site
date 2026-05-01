@@ -16,6 +16,29 @@ export default function MyDashboardGateway() {
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed) {
+      emailInputRef.current?.focus();
+      return;
+    }
+
+    setStatus("loading");
+    setError("");
+
+    try {
+      const res = await fetch(`/api/user/by-email?email=${encodeURIComponent(trimmed)}`);
+      if (res.ok) {
+        const data = await res.json();
+        router.push(`/dashboard/${data.emailSlug}`);
+      } else {
+        setError("No survey found for this email. Please check and try again.");
+        setStatus("error");
+      }
+    } catch {
+      setError("Network error. Please check your connection.");
+      setStatus("error");
+    }
   }
 
   return (
@@ -107,8 +130,7 @@ export default function MyDashboardGateway() {
             >
               {status === "loading" ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Sending code…
+                  Loading…
                 </>
               ) : (
                 <>
@@ -142,7 +164,6 @@ export default function MyDashboardGateway() {
   
       </div>
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
