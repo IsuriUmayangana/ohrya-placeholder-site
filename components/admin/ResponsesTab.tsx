@@ -134,7 +134,7 @@ export default function ResponsesTab() {
       {/* Toolbar */}
       <div className="flex items-center gap-2 flex-wrap bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
         {/* Search */}
-        <div style={{ position: "relative", flex: "1 1 200px" }}>
+        <div className="relative flex-1 w-[200px]">
           <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }} width="14" height="14" viewBox="0 0 24 24" fill="none">
             <circle cx="11" cy="11" r="8" stroke="#aaa" strokeWidth="2"/>
             <path d="M21 21l-4.35-4.35" stroke="#aaa" strokeWidth="2" strokeLinecap="round"/>
@@ -142,7 +142,7 @@ export default function ResponsesTab() {
           <input
             type="text" placeholder="Search responses…" value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={{ ...inputStyle, width: "100%", paddingLeft: 32 }}
+            className="w-full p-3 pl-10 border border-[#e0e8ec] rounded-lg text-[12px] text-[#2d2d2d] bg-white outline-none"
           />
         </div>
 
@@ -157,7 +157,7 @@ export default function ResponsesTab() {
             background: hasFilters ? "#5a9aaa" : "white",
             color: hasFilters ? "white" : "#444",
             border: "1px solid #e0e8ec", borderRadius: 7, padding: "7px 14px",
-            fontFamily: "Georgia, serif", fontSize: "0.85rem", cursor: "pointer", whiteSpace: "nowrap",
+            fontSize: "0.85rem", cursor: "pointer", whiteSpace: "nowrap",
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -186,10 +186,10 @@ export default function ResponsesTab() {
           const opLabel = { is_any_of: "is any of", is_not_any_of: "is not any of", is_equal_to: "=", is_not_equal_to: "≠", is_empty: "is empty", is_not_empty: "is not empty" }[f.operator] ?? f.operator;
           const valLabel = f.values.length > 0 ? f.values.join(", ") : "";
           return (
-            <span key={i} style={{ display: "flex", alignItems: "center", gap: 5, background: "#e8f5f8", borderRadius: 20, padding: "4px 12px", fontFamily: "Georgia, serif", fontSize: "0.78rem", color: "#5a9aaa", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span key={i} className="flex items-center gap-5 bg-[#e8f5f8] rounded-2xl p-3 text-[12px] text-[#5a9aaa] max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap">
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{f.fieldId.replace(/([A-Z])/g, " $1").trim()} {opLabel}{valLabel ? `: ${valLabel}` : ""}</span>
               <button onClick={() => setActiveFilters((a) => a.filter((_, idx) => idx !== i))}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#5a9aaa", fontSize: "0.9rem", lineHeight: 1, padding: 0, flexShrink: 0 }}>✕</button>
+                className="bg-none border-none cursor-pointer text-[14px] leading-none p-0 flex-shrink-0 text-[#5a9aaa]">✕</button>
             </span>
           );
         })}
@@ -197,7 +197,7 @@ export default function ResponsesTab() {
         {/* Clear all */}
         {hasFilters && (
           <button onClick={() => setActiveFilters([])}
-            style={{ background: "none", border: "none", color: "#aaa", fontFamily: "Georgia, serif", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline" }}>
+            className="bg-none border-none text-[#aaa] text-[12px] cursor-pointer text-decoration-underline">
             Clear all
           </button>
         )}

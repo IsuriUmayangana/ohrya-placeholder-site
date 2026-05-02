@@ -16,9 +16,6 @@
 
   --error-color: #c0392b !important;
 
-  /* Fonts */
-  --primary-font: "Poppins", sans-serif; 
-
   /* Padding */
   --padding-small: 1rem;
   --padding-medium: 2rem;
@@ -47,7 +44,6 @@ body {
   height: 100%;
   max-height: 100vh;
   overflow-y: auto;
-  font-family: var(--primary-font) !important;
   background: var(--background-color);
   color: var(--text-color-dark);
 }
@@ -82,7 +78,6 @@ body {
   border-radius: 9999px;
   padding: 12px 32px;
   font-size: 1rem;
-  font-family: var(--primary-font);
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
   letter-spacing: 0.03em;
@@ -105,7 +100,6 @@ body {
   border-radius: 9999px;
   padding: 12px 32px;
   font-size: 1rem;
-  font-family: var(--primary-font);
 }
 
 .btn-primary-outline:hover {
@@ -137,7 +131,6 @@ body {
   justify-content: center;
   gap: 8px;
   font-size: var(--font-body-medium);
-  font-family: var(--primary-font);
   cursor: pointer;
   width: 35px !important;
   height: 35px !important;
@@ -173,7 +166,6 @@ body {
   background: var(--background-color);
   color: var(--primary-color);
   font-size: 0.95rem;
-  font-family: var(--primary-font);
   cursor: pointer;
   transition: all 0.15s ease;
   text-align: center;
@@ -231,7 +223,6 @@ body {
 .error-message {
   color: var(--error-color);
   font-size: var(--font-body-medium) !important;
-  font-family: var(--primary-font);
 }
 
 
@@ -241,8 +232,11 @@ body {
   color: var(--text-color-light);
   text-align: center;
   padding: 10px 16px;
-  font-family: var(--primary-font);
   font-size: var(--font-body-medium);
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 /* Loading Animation - Main */
@@ -263,3 +257,145 @@ body {
   background-color: var(--primary-color);
   border-radius: 9999px;
 }
+
+
+
+/* Admin Login Animation */
+.admin-login-animation {
+  background: radial-gradient(100% 100% at var(--43-x-position) var(--43-y-position), #efe4c8 -89%, transparent), radial-gradient(100% 100% at var(--44-x-position) var(--44-y-position), #a9d0da -1%, transparent), #ffffff;
+  animation-name: main;
+  animation-iteration-count: infinite;
+  animation-duration: 7s;
+  transition-timing-function: ease-in-out;
+}
+
+@property --4-x-position {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 26.0546875%;
+}
+
+@property --4-y-position {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 83.515625%;
+}
+
+@property --43-x-position {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 55.19531250000001%;
+}
+
+@property --43-y-position {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 3.5937499999999996%;
+}
+
+@property --44-x-position {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 55.39062500000001%;
+}
+
+@property --44-y-position {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 75.1171875%;
+}
+
+:root {
+  --4-x-position: 26.0546875%;
+  --4-y-position: 83.515625%;
+  --5-x-position: 80%;
+  --5-y-position: 20%;
+  --9-x-position: 55.00000000000001%;
+  --9-y-position: 7.3046875%;
+  --10-x-position: 52.85156250000001%;
+  --10-y-position: 94.0625%;
+  --11-x-position: 55.39062500000001%;
+  --11-y-position: 4.1796875%;
+  --12-x-position: 52.85156250000001%;
+  --12-y-position: 94.0625%;
+  --13-x-position: 55.39062500000001%;
+  --13-y-position: 4.1796875%;
+  --14-x-position: 54.02343750000001%;
+  --14-y-position: 96.9921875%;
+  --15-x-position: 55.19531250000001%;
+  --15-y-position: 3.5937499999999996%;
+  --16-x-position: 54.02343750000001%;
+  --16-y-position: 96.9921875%;
+  --17-x-position: 55.19531250000001%;
+  --17-y-position: 3.5937499999999996%;
+  --18-x-position: 52.65625000000001%;
+  --18-y-position: 80.5859375%;
+  --19-x-position: 55.19531250000001%;
+  --19-y-position: 3.5937499999999996%;
+  --20-x-position: 54.41406250000001%;
+  --20-y-position: 70.625%;
+  --21-x-position: 55.19531250000001%;
+  --21-y-position: 3.5937499999999996%;
+  --22-x-position: 55.39062500000001%;
+  --22-y-position: 75.1171875%;
+  --23-x-position: 55.19531250000001%;
+  --23-y-position: 3.5937499999999996%;
+  --24-x-position: 55.19531250000001%;
+  --24-y-position: 3.5937499999999996%;
+  --25-x-position: 55.19531250000001%;
+  --25-y-position: 3.5937499999999996%;
+  --26-x-position: 55.19531250000001%;
+  --26-y-position: 3.5937499999999996%;
+  --27-x-position: 55.19531250000001%;
+  --27-y-position: 3.5937499999999996%;
+  --28-x-position: 55.19531250000001%;
+  --28-y-position: 3.5937499999999996%;
+  --29-x-position: 55.19531250000001%;
+  --29-y-position: 3.5937499999999996%;
+  --30-x-position: 55.19531250000001%;
+  --30-y-position: 3.5937499999999996%;
+  --31-x-position: 55.19531250000001%;
+  --31-y-position: 3.5937499999999996%;
+  --32-x-position: 55.19531250000001%;
+  --32-y-position: 3.5937499999999996%;
+  --33-x-position: 55.19531250000001%;
+  --33-y-position: 3.5937499999999996%;
+  --34-x-position: 55.19531250000001%;
+  --34-y-position: 3.5937499999999996%;
+  --35-x-position: 55.19531250000001%;
+  --35-y-position: 3.5937499999999996%;
+  --36-x-position: 55.19531250000001%;
+  --36-y-position: 3.5937499999999996%;
+  --37-x-position: 55.19531250000001%;
+  --37-y-position: 3.5937499999999996%;
+  --38-x-position: 55.19531250000001%;
+  --38-y-position: 3.5937499999999996%;
+  --39-x-position: 55.19531250000001%;
+  --39-y-position: 3.5937499999999996%;
+  --40-x-position: 55.19531250000001%;
+  --40-y-position: 3.5937499999999996%;
+  --41-x-position: 55.19531250000001%;
+  --41-y-position: 3.5937499999999996%;
+  --42-x-position: 55.19531250000001%;
+  --42-y-position: 3.5937499999999996%;
+  --43-x-position: 55.19531250000001%;
+  --43-y-position: 3.5937499999999996%;
+  --44-x-position: 55.39062500000001%;
+  --44-y-position: 75.1171875%;
+}
+
+@keyframes main {
+  25% {
+    --43-x-position: 85%;
+    --43-y-position: 80%;
+  }
+
+  50% {
+    --43-x-position: 15%;
+    --43-y-position: 85%;
+    --44-x-position: 20%;
+    --44-y-position: 20%;
+  }
+}
+
+

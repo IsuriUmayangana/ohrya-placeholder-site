@@ -36,6 +36,17 @@ export default function DateFilter({ value, onChange }: Props) {
   const [clickCount, setClickCount] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
 
+  const [dropdownAlign, setDropdownAlign] = useState<"left" | "right">("right");
+
+  function handleOpen() {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      const btnCenter = rect.left + rect.width / 2;
+      setDropdownAlign(btnCenter > window.innerWidth / 2 ? "right" : "left");
+    }
+    setOpen((o) => !o);
+  }
+
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -100,14 +111,15 @@ export default function DateFilter({ value, onChange }: Props) {
   const btnStyle: React.CSSProperties = {
     display: "flex", alignItems: "center", gap: 6,
     background: "white", border: "1px solid #e0e8ec",
-    borderRadius: 7, padding: "7px 14px",
-    fontFamily: "Georgia, serif", fontSize: "0.85rem", color: "#444",
+    borderRadius: 7, padding: "7px 14px", fontSize: "0.85rem", color: "#444",
     cursor: "pointer", whiteSpace: "nowrap",
   };
 
   return (
     <div ref={ref} style={{ position: "relative" }}>
-      <button style={btnStyle} onClick={() => setOpen((o) => !o)}>
+
+      {/* Date filter button */}
+      <button style={btnStyle} onClick={handleOpen}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <rect x="3" y="4" width="18" height="18" rx="2" stroke="#888" strokeWidth="1.8"/>
           <path d="M16 2v4M8 2v4M3 10h18" stroke="#888" strokeWidth="1.8" strokeLinecap="round"/>
@@ -115,14 +127,16 @@ export default function DateFilter({ value, onChange }: Props) {
         {value.label}
       </button>
 
+      {/* Date filter modal */}
       {open && (
         <div style={{
-          position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 100,
+          position: "absolute", top: "calc(100% + 8px)", zIndex: 100, ...(dropdownAlign === "right" ? { right: 0 } : { left: 0 }),
           background: "white", borderRadius: 12,
           boxShadow: "0 8px 32px rgba(0,0,0,0.14)", border: "1px solid #e8f0f2",
           display: "flex", flexDirection: "column",
           minWidth: isMobile ? "min(92vw, 330px)" : 540,
           maxWidth: isMobile ? "92vw" : "none",
+          
         }}>
           <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row" }}>
             {/* Presets */}
@@ -140,7 +154,7 @@ export default function DateFilter({ value, onChange }: Props) {
                   style={{
                     display: "block", width: "100%", textAlign: "left",
                     padding: isMobile ? "8px 12px" : "10px 20px", border: "none", cursor: "pointer",
-                    fontFamily: "Georgia, serif", fontSize: "0.85rem",
+                    fontSize: "0.85rem",
                     background: activePreset === p.label ? "#f0f8fa" : "transparent",
                     color: activePreset === p.label ? "#5a9aaa" : "#444",
                     fontWeight: activePreset === p.label ? "bold" : "normal",
@@ -158,7 +172,7 @@ export default function DateFilter({ value, onChange }: Props) {
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
                 <button onClick={() => { if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); } else setCalMonth(m => m - 1); }}
                   style={{ background: "none", border: "none", cursor: "pointer", fontSize: "1rem", color: "#888", padding: "4px 8px" }}>‹</button>
-                <span style={{ fontFamily: "Georgia, serif", fontSize: "0.9rem", color: "#2d2d2d" }}>
+                <span style={{ fontSize: "0.9rem", color: "#2d2d2d" }}>
                   {MONTHS[calMonth]} {calYear}
                 </span>
                 <button onClick={() => { if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); } else setCalMonth(m => m + 1); }}
@@ -168,7 +182,7 @@ export default function DateFilter({ value, onChange }: Props) {
               {/* Day headers */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, marginBottom: 4 }}>
                 {DAYS.map((d) => (
-                  <div key={d} style={{ textAlign: "center", fontFamily: "Georgia, serif", fontSize: "0.72rem", color: "#bbb", padding: "2px 0" }}>{d}</div>
+                  <div key={d} style={{ textAlign: "center", fontSize: "0.72rem", color: "#bbb", padding: "2px 0" }}>{d}</div>
                 ))}
               </div>
 
@@ -186,7 +200,7 @@ export default function DateFilter({ value, onChange }: Props) {
                       style={{
                         textAlign: "center", padding: isMobile ? "8px 2px" : "6px 2px",
                         border: "none", borderRadius: isSel ? 6 : 4,
-                        cursor: "pointer", fontFamily: "Georgia, serif", fontSize: "0.82rem",
+                        cursor: "pointer", fontSize: "0.82rem",
                         background: isSel ? "#5a9aaa" : isIn ? "#e8f5f8" : "transparent",
                         color: isSel ? "white" : isIn ? "#5a9aaa" : isToday ? "#5a9aaa" : "#333",
                         fontWeight: isSel || isToday ? "bold" : "normal",
@@ -200,7 +214,7 @@ export default function DateFilter({ value, onChange }: Props) {
 
               {/* Selected range display */}
               {selecting.from && (
-                <p style={{ fontFamily: "Georgia, serif", fontSize: "0.75rem", color: "#aaa", marginTop: 12, textAlign: "center" }}>
+                <p style={{ fontSize: "0.75rem", color: "#aaa", marginTop: 12, textAlign: "center" }}>
                   {selecting.from}{selecting.to && selecting.to !== selecting.from ? ` → ${selecting.to}` : ""}
                 </p>
               )}

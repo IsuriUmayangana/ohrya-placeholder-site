@@ -180,7 +180,7 @@ export default function SummaryTab() {
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 mb-6 flex-wrap bg-white rounded-lg p-4 border border-slate-200 shadow-sm justify-between">
+      <div className="flex justify-between items-center gap-2 mb-6 flex-wrap bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
 
         {/* Date filter */}
         <div className="flex items-center gap-2">
