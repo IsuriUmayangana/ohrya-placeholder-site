@@ -16,8 +16,9 @@ export default function DashboardPage({ slug }: Props) {
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const referralLink = stats ? `https://form.ohrya.org/?ref=${stats.referralCode}` : "";
-  const dashboardUrl = `https://dashboard.ohrya.org/dashboard/${slug}`;
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const referralLink = stats ? `${baseUrl}/?ref=${stats.referralCode}` : "";
+  const dashboardUrl = `${baseUrl}/dashboard/${slug}`;
 
   // Fetch stats from API
   const fetchStats = useCallback(async () => {

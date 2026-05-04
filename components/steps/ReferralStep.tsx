@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   referralCode: string;
@@ -9,9 +10,11 @@ interface Props {
 
 export default function ReferralStep({ referralCode, emailSlug }: Props) {
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
 
-  const referralLink = `https://form.ohrya.org/?ref=${referralCode}`;
-  const dashboardUrl = `https://dashboard.ohrya.org/dashboard/${emailSlug}`;
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+  const referralLink = `${baseUrl}/?ref=${referralCode}`;
+  const dashboardUrl = `/dashboard/${emailSlug}`;
 
   // Encode WhatsApp text
   const whatsappText = encodeURIComponent(
@@ -94,18 +97,17 @@ export default function ReferralStep({ referralCode, emailSlug }: Props) {
       </div>
 
       {/* CTA */}
-      <a
-        href={dashboardUrl}
-        className="btn-primary"
-        style={{ minWidth: 200, textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+      <button
+        className="btn-primary flex items-center justify-center gap-2"
+        onClick={() => router.push(dashboardUrl)}
+        style={{ minWidth: 200 }}
       >
-        View My Dashboard →
-      </a>
+        View My Dashboard 
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+        </svg>
+      </button>
 
-      {/* Dashboard URL */}
-      <p className="text-sm text-slate-500">
-        Your dashboard will be at: <span className="text-[#4a8798] cursor-pointer hover:underline">{dashboardUrl}</span>
-      </p>
     </div>
   );
 }
