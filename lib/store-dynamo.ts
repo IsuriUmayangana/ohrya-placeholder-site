@@ -12,7 +12,16 @@ import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 
 const REGION = process.env.AWS_REGION ?? "us-east-1";
 
-const doc = DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }));
+function makeCredentials() {
+  const accessKeyId = process.env.OHRYA_AWS_KEY_ID;
+  const secretAccessKey = process.env.OHRYA_AWS_SECRET;
+  if (accessKeyId && secretAccessKey) return { accessKeyId, secretAccessKey };
+  return undefined;
+}
+
+const doc = DynamoDBDocumentClient.from(
+  new DynamoDBClient({ region: REGION, credentials: makeCredentials() })
+);
 
 export const REFERRAL_CODE_GSI = "ReferralCodeIndex";
 export const EMAIL_SLUG_GSI = "EmailSlugIndex";

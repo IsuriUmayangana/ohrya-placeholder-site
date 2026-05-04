@@ -18,6 +18,8 @@ const nextConfig: NextConfig = {
     ADMIN_SESSION_SECRET: process.env.ADMIN_SESSION_SECRET ?? "",
     DYNAMODB_TABLE_NAME: process.env.DYNAMODB_TABLE_NAME ?? "",
     SES_FROM_EMAIL: process.env.SES_FROM_EMAIL ?? "",
+    OHRYA_AWS_KEY_ID: process.env.OHRYA_AWS_KEY_ID ?? "",
+    OHRYA_AWS_SECRET: process.env.OHRYA_AWS_SECRET ?? "",
   },
 };
 
