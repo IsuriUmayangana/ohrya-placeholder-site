@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface Props {
   referralCode: string;
@@ -10,11 +9,9 @@ interface Props {
 
 export default function ReferralStep({ referralCode, emailSlug }: Props) {
   const [copied, setCopied] = useState(false);
-  const router = useRouter();
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const referralLink = `${baseUrl}/?ref=${referralCode}`;
-  const dashboardUrl = `/dashboard/${emailSlug}`;
+  const referralLink = `https://form.ohrya.org/?ref=${referralCode}`;
+  const dashboardUrl = `https://dashboard.ohrya.org/dashboard/${emailSlug}`;
 
   // Encode WhatsApp text
   const whatsappText = encodeURIComponent(
@@ -97,17 +94,17 @@ export default function ReferralStep({ referralCode, emailSlug }: Props) {
       </div>
 
       {/* CTA */}
-      <button
+      <a
+        href={dashboardUrl}
         className="btn-primary"
-        onClick={() => router.push(dashboardUrl)}
-        style={{ minWidth: 200 }}
+        style={{ minWidth: 200, textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
       >
         View My Dashboard →
-      </button>
+      </a>
 
       {/* Dashboard URL */}
       <p className="text-sm text-slate-500">
-        Your dashboard will be at: <span className="text-[#4a8798] cursor-pointer hover:underline">{typeof window !== "undefined" ? window.location.origin : ""}{dashboardUrl}</span>
+        Your dashboard will be at: <span className="text-[#4a8798] cursor-pointer hover:underline">{dashboardUrl}</span>
       </p>
     </div>
   );
