@@ -15,6 +15,8 @@ export async function GET() {
     AWS_SESSION_TOKEN: process.env.AWS_SESSION_TOKEN ? "present" : "(not set)",
     AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: process.env.AWS_CONTAINER_CREDENTIALS_RELATIVE_URI || "(not set)",
     AWS_CONTAINER_CREDENTIALS_FULL_URI: process.env.AWS_CONTAINER_CREDENTIALS_FULL_URI || "(not set)",
+    AWS_WEB_IDENTITY_TOKEN_FILE: process.env.AWS_WEB_IDENTITY_TOKEN_FILE || "(not set)",
+    AWS_ROLE_ARN: process.env.AWS_ROLE_ARN || "(not set)",
     OHRYA_AWS_KEY_ID: process.env.OHRYA_AWS_KEY_ID ? `${process.env.OHRYA_AWS_KEY_ID.slice(0, 8)}...` : "(empty)",
     DYNAMODB_TABLE_NAME: tableName || "(empty)",
   };
