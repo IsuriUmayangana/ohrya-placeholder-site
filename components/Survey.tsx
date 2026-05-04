@@ -108,8 +108,11 @@ function SurveyInner() {
     setStepIndex((i) => Math.max(i - 1, 0));
   }, []);
 
+  const [submitError, setSubmitError] = useState("");
+
   const submitAndShowReferral = useCallback(async () => {
     setSubmitting(true);
+    setSubmitError("");
     try {
       const res = await fetch("/api/responses", {
         method: "POST",
@@ -123,15 +126,15 @@ function SurveyInner() {
         }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save response");
       if (data.response?.referralCode) setReferralCode(data.response.referralCode);
       if (data.response?.emailSlug) setEmailSlug(data.response.emailSlug);
-    } catch {
-      const fallback = Math.random().toString(36).slice(2, 8).toUpperCase();
-      setReferralCode(fallback);
-      setEmailSlug(`user-${fallback.toLowerCase()}`);
+      goNext();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setSubmitError(msg);
     } finally {
       setSubmitting(false);
-      goNext();
     }
   }, [answers, referredBy, startedAt, goNext]);
 
@@ -427,6 +430,19 @@ function SurveyInner() {
             <p className="error-message">
               {stepError}
             </p>
+          )}
+
+          {/* Submit Error */}
+          {submitError && (
+            <div className="flex flex-col items-center gap-2 px-4 py-3 mx-4 rounded-xl bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600 text-center">{submitError}</p>
+              <button
+                onClick={submitAndShowReferral}
+                className="text-xs text-white bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-lg transition-all cursor-pointer"
+              >
+                Try again
+              </button>
+            </div>
           )}
 
           {/* Step Buttons */}

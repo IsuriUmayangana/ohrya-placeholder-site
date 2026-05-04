@@ -43,8 +43,11 @@ const useDynamo = Boolean(process.env.DYNAMODB_TABLE_NAME?.trim());
 async function getDynamoClient() {
   const { DynamoDBClient } = await import("@aws-sdk/client-dynamodb");
   const { DynamoDBDocumentClient } = await import("@aws-sdk/lib-dynamodb");
+  const accessKeyId = process.env.OHRYA_AWS_KEY_ID;
+  const secretAccessKey = process.env.OHRYA_AWS_SECRET;
+  const credentials = accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : undefined;
   return DynamoDBDocumentClient.from(
-    new DynamoDBClient({ region: process.env.AWS_REGION ?? "us-east-1" })
+    new DynamoDBClient({ region: process.env.AWS_REGION ?? "us-east-1", credentials })
   );
 }
 
