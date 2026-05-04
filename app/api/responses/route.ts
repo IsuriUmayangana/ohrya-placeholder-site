@@ -29,8 +29,10 @@ export async function POST(req: NextRequest) {
       device: detectDevice(ua),
     });
     return NextResponse.json({ success: true, response });
-  } catch {
-    return NextResponse.json({ success: false, error: "Invalid request" }, { status: 400 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[api/responses POST]", message);
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
