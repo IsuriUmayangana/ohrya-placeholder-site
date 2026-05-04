@@ -2,17 +2,12 @@ import "server-only";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 
-function makeSesCredentials() {
+function getSesClient() {
   const accessKeyId = process.env.OHRYA_AWS_KEY_ID;
   const secretAccessKey = process.env.OHRYA_AWS_SECRET;
-  if (accessKeyId && secretAccessKey) return { accessKeyId, secretAccessKey };
-  return undefined;
+  const credentials = accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : undefined;
+  return new SESClient({ region: process.env.AWS_REGION ?? "us-east-1", credentials });
 }
-
-const client = new SESClient({
-  region: process.env.AWS_REGION ?? "us-east-1",
-  credentials: makeSesCredentials(),
-});
 
 export async function sendOtpEmail(to: string, code: string): Promise<void> {
   const from = process.env.SES_FROM_EMAIL;
@@ -22,6 +17,7 @@ export async function sendOtpEmail(to: string, code: string): Promise<void> {
     return;
   }
 
+  const client = getSesClient();
   await client.send(
     new SendEmailCommand({
       Source: from,

@@ -10,18 +10,13 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 
-const REGION = process.env.AWS_REGION ?? "us-east-1";
-
-function makeCredentials() {
+function getDoc() {
+  const region = process.env.AWS_REGION ?? "us-east-1";
   const accessKeyId = process.env.OHRYA_AWS_KEY_ID;
   const secretAccessKey = process.env.OHRYA_AWS_SECRET;
-  if (accessKeyId && secretAccessKey) return { accessKeyId, secretAccessKey };
-  return undefined;
+  const credentials = accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : undefined;
+  return DynamoDBDocumentClient.from(new DynamoDBClient({ region, credentials }));
 }
-
-const doc = DynamoDBDocumentClient.from(
-  new DynamoDBClient({ region: REGION, credentials: makeCredentials() })
-);
 
 export const REFERRAL_CODE_GSI = "ReferralCodeIndex";
 export const EMAIL_SLUG_GSI = "EmailSlugIndex";
@@ -69,6 +64,8 @@ export async function dynamoSaveResponse(
 ): Promise<SurveyResponse> {
   const tbl = tableName();
   const referredBy = (data.referredBy || "").trim().toUpperCase();
+
+  const doc = getDoc();
 
   if (referredBy) {
     const q = await doc.send(
@@ -119,10 +116,7 @@ export async function dynamoSaveResponse(
   await doc.send(
     new PutCommand({
       TableName: tbl,
-      Item: {
-        ...response,
-        emailLower,
-      },
+      Item: { ...response, emailLower },
     })
   );
 
@@ -130,6 +124,7 @@ export async function dynamoSaveResponse(
 }
 
 export async function dynamoGetUserByCode(code: string): Promise<PublicUserStats | null> {
+  const doc = getDoc();
   const tbl = tableName();
   const q = await doc.send(
     new QueryCommand({
@@ -146,6 +141,7 @@ export async function dynamoGetUserByCode(code: string): Promise<PublicUserStats
 }
 
 export async function dynamoGetUserBySlug(slug: string): Promise<PublicUserStats | null> {
+  const doc = getDoc();
   const tbl = tableName();
   const q = await doc.send(
     new QueryCommand({
@@ -162,6 +158,7 @@ export async function dynamoGetUserBySlug(slug: string): Promise<PublicUserStats
 }
 
 export async function dynamoGetUserByEmail(email: string): Promise<PublicUserStats | null> {
+  const doc = getDoc();
   const tbl = tableName();
   const q = await doc.send(
     new QueryCommand({
@@ -178,6 +175,7 @@ export async function dynamoGetUserByEmail(email: string): Promise<PublicUserSta
 }
 
 export async function dynamoGetAllResponses(): Promise<SurveyResponse[]> {
+  const doc = getDoc();
   const tbl = tableName();
   const out: SurveyResponse[] = [];
   let cursor: Record<string, unknown> | undefined;
