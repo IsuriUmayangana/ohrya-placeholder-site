@@ -410,7 +410,7 @@ function SurveyInner() {
                 />
               )}
               {currentStep === "referral-share" && (
-                <ReferralStep referralCode={referralCode} emailSlug={emailSlug} />
+                <ReferralStep referralCode={referralCode} emailSlug={emailSlug} email={answers.email} />
               )}
             </motion.div>
           </AnimatePresence>
