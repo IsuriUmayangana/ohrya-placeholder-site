@@ -96,7 +96,7 @@ export default function AdminDashboard() {
       <AdminDashboardNav activeTab={activeTab} onTabChange={setActiveTab} onRefresh={load} onLogout={handleLogout} totalResponses={data?.total || 0} />
 
       {/* Content */}
-      <main className="px-4 py-8 lg:px-12 mx-auto w-full pt-45 md:pt-35">
+      <main className="px-4 py-8 lg:px-12 mx-auto w-full flex-1 pt-40 lg:pt-35">
         {loading ? (
           <Loading />
         ) : !data || data.total === 0 ? (
