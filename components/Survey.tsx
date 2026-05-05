@@ -84,7 +84,7 @@ function SurveyInner() {
   const [emailSlug, setEmailSlug] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [startedAt, setStartedAt] = useState<string>("");
-  const showRefBanner = !!referredBy && stepIndex === 0;
+  const showRefBanner = !!referredBy ;
 
   const currentStep: Step = STEPS[stepIndex];
   const [maxStepReached, setMaxStepReached] = useState(0);
@@ -326,7 +326,8 @@ function SurveyInner() {
   return (
     <div className="min-h-screen bg-white flex flex-col gap-10">
 
-      <div className="fixed z-20 flex flex-col gap-0 py-0 px-0 top-0 left-0 right-0">
+      {/* Top Bar */}
+      <div className="flex-1 fixed z-20 flex flex-col gap-0 py-0 px-0 top-0 left-0 right-0">
         {/* Referral Banner */}
         <div className="flex-1">
           {showRefBanner && <ReferralBanner />}
@@ -451,7 +452,7 @@ function SurveyInner() {
           )}
 
           {/* Step Buttons */}
-          <div className="flex lg:flex-col flex-row items-center lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
+          <div className="flex lg:flex-col flex-row items-center md:justify-center md:static lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
 
             {/* Previous Button */}
             {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
