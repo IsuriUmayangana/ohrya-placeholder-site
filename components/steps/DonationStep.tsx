@@ -5,16 +5,18 @@ import { useState } from "react";
 interface Props {
   value: string;
   onChange: (val: string) => void;
+  onNext: (val: string) => void;
 }
 
 const amounts = ["$25", "$50", "$75", "$100", "$150", "$200"];
 
-export default function DonationStep({ value, onChange }: Props) {
+export default function DonationStep({ value, onChange, onNext }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(amt: string) {
     setSelected(amt);
     onChange(amt);
+    onNext(amt);
   }
 
   return (

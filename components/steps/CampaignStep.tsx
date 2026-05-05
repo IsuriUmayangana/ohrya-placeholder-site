@@ -6,6 +6,7 @@ import Image from "next/image";
 interface Props {
   value: string;
   onChange: (val: string) => void;
+  onNext: (val: string  ) => void;
 }
 
 const campaigns = [
@@ -29,12 +30,13 @@ const campaigns = [
   },
 ];
 
-export default function CampaignStep({ value, onChange }: Props) {
+export default function CampaignStep({ value, onChange, onNext }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(id: string) {
     setSelected(id);
     onChange(id);
+    onNext(id);
   }
 
   return (
