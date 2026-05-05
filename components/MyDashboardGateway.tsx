@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "./ui/Header";
 import Image from "next/image";
 
 type Stage = "email" | "otp";
 type Status = "idle" | "loading" | "error" | "success";
 
-export default function MyDashboardGateway() {
+function MyDashboardGatewayInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [stage, setStage] = useState<Stage>("email");
   const [email, setEmail] = useState("");
@@ -20,11 +21,21 @@ export default function MyDashboardGateway() {
 
   const emailInputRef = useRef<HTMLInputElement>(null);
   const otpInputRef = useRef<HTMLInputElement>(null);
+  const autoSentRef = useRef(false);
+
+  useEffect(() => {
+    const prefill = searchParams.get("email");
+    if (prefill && !autoSentRef.current) {
+      autoSentRef.current = true;
+      setEmail(prefill);
+      sendOtp(prefill);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Step 1: send OTP ────────────────────────────────────────────────────────
-  async function handleSendOtp(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = email.trim();
+  async function sendOtp(emailToSend: string) {
+    const trimmed = emailToSend.trim();
     if (!trimmed) { emailInputRef.current?.focus(); return; }
 
     setStatus("loading");
@@ -52,6 +63,11 @@ export default function MyDashboardGateway() {
       setError("Network error. Please check your connection.");
       setStatus("error");
     }
+  }
+
+  async function handleSendOtp(e: React.FormEvent) {
+    e.preventDefault();
+    await sendOtp(email);
   }
 
   // ── Step 2: verify OTP ──────────────────────────────────────────────────────
@@ -100,28 +116,8 @@ export default function MyDashboardGateway() {
 
   async function handleResend() {
     if (resendCooldown > 0) return;
-    setError("");
     setOtp("");
-    setStatus("loading");
-    try {
-      const res = await fetch("/api/user/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setStatus("idle");
-        startResendCooldown();
-        setTimeout(() => otpInputRef.current?.focus(), 100);
-      } else {
-        setError(data.error ?? "Failed to resend code.");
-        setStatus("error");
-      }
-    } catch {
-      setError("Network error. Please try again.");
-      setStatus("error");
-    }
+    await sendOtp(email);
   }
 
   // ── UI ──────────────────────────────────────────────────────────────────────
@@ -323,6 +319,14 @@ export default function MyDashboardGateway() {
       </div>
 
     </div>
+  );
+}
+
+export default function MyDashboardGateway() {
+  return (
+    <Suspense>
+      <MyDashboardGatewayInner />
+    </Suspense>
   );
 }
 

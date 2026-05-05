@@ -5,9 +5,10 @@ import { useState } from "react";
 interface Props {
   referralCode: string;
   emailSlug: string;
+  email: string;
 }
 
-export default function ReferralStep({ referralCode, emailSlug }: Props) {
+export default function ReferralStep({ referralCode, emailSlug, email }: Props) {
   const [copied, setCopied] = useState(false);
 
   const referralLink = `https://form.ohrya.org/?ref=${referralCode}`;
@@ -94,18 +95,15 @@ export default function ReferralStep({ referralCode, emailSlug }: Props) {
       </div>
 
       {/* CTA */}
-      <button
+      <a
+        href={`/my-dashboard?email=${encodeURIComponent(email)}`}
         className="btn-primary text-[0.875rem] font-medium flex items-center justify-center gap-2"
-        onClick={() => window.open(dashboardUrl, '_blank')}
-        style={{ minWidth: 200 }}
       >
         View My Dashboard 
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
           <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" />
         </svg>
-      </button>
-
-
+      </a>
     </div>
   );
 }
