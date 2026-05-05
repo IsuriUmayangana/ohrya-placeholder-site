@@ -153,7 +153,7 @@ function QuestionDropdown({ value, onChange }: { value: string; onChange: (field
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-8 w-full border border-slate-200 rounded-lg p-3 text-sm text-[#bbb] bg-white cursor-pointer text-left">
+        className="flex items-center gap-2 w-full border border-slate-200 rounded-lg p-3 text-sm text-[#bbb] bg-white cursor-pointer text-left">
         {value && (
           <span className="w-6 h-6 rounded-md bg-[#e8f5f8] inline-flex items-center justify-center flex-shrink-0">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#5a9aaa" strokeWidth="2.5" strokeLinecap="round"/></svg>
@@ -175,7 +175,7 @@ function QuestionDropdown({ value, onChange }: { value: string; onChange: (field
           <div className="max-h-60 overflow-y-auto">
             {filtered.map((q) => (
               <button key={q.fieldId} onClick={() => { onChange(q.fieldId); setOpen(false); setSearch(""); }}
-                className="flex items-center gap-10 w-full text-left p-3 border-none cursor-pointer text-sm text-[#333] bg-white hover:bg-[#f0f8fa]">
+                className="flex items-center gap-5 w-full text-left p-3 border-none cursor-pointer text-sm text-[#333] bg-white hover:bg-[#f0f8fa]">
                 <span style={{ width: 22, height: 22, borderRadius: 4, background: "#e8f5f8", display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#5a9aaa" strokeWidth="2.5" strokeLinecap="round"/></svg>
                 </span>
@@ -222,7 +222,7 @@ export default function FiltersModal({ initial, onApply, onClose }: Props) {
       className="fixed inset-0 bg-black/18 z-50 flex items-center justify-center p-2 lg:p-0"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white rounded-xl shadow-lg w-140 max-w-95vw h-auto flex flex-col">
+      <div className="bg-white rounded-xl shadow-lg w-140 max-w-95vw min-h-[500px] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <div className="flex items-center gap-10">
@@ -233,14 +233,14 @@ export default function FiltersModal({ initial, onApply, onClose }: Props) {
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-6">
           {pending.map((filter, i) => {
             const question = QUESTIONS.find((q) => q.fieldId === filter.fieldId);
             const showValues = needsValues(filter.operator);
             return (
               <div key={i} className="bg-[#fafcfd] border border-slate-200 rounded-lg p-4">
                 {/* Row 1: Question + delete */}
-                <div className="flex gap-8 items-center">
+                <div className="flex gap-4 items-center">
                   <div className="flex-1">
                     <QuestionDropdown value={filter.fieldId} onChange={(id) => update(i, { fieldId: id, values: [] })} />
                   </div>
