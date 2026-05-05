@@ -5,14 +5,16 @@ import { useState } from "react";
 interface Props {
   value: string;
   onChange: (val: string) => void;
+  onNext: (val: string) => void;
 }
 
-export default function ShineStep({ value, onChange }: Props) {
+export default function ShineStep({ value, onChange, onNext }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(opt: string) {
     setSelected(opt);
     onChange(opt);
+    onNext(opt);
   }
 
   return (

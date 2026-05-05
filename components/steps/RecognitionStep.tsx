@@ -5,6 +5,7 @@ import { useState } from "react";
 interface Props {
   value: string;
   onChange: (val: string) => void;
+  onNext: (val: string) => void;
 }
 
 const options = [
@@ -12,12 +13,13 @@ const options = [
   { id: "No", label: "No, I prefer chance" },
 ];
 
-export default function RecognitionStep({ value, onChange }: Props) {
+export default function RecognitionStep({ value, onChange, onNext }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(id: string) {
     setSelected(id);
     onChange(id);
+    onNext(id);
   }
 
   return (

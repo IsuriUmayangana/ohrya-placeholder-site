@@ -120,7 +120,15 @@ body {
   padding: 12px !important;
   width: 40px !important;
   height: 40px !important;
-  display: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.btn-mobile-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .btn-nav {

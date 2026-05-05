@@ -97,12 +97,12 @@ export default function DashboardNav({
       </div>
 
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between px-4 py-1 border-b border-[#f4f4f4]">
+      <div className="lg:hidden flex items-center justify-between px-4 py-0.5 border-b border-[#f4f4f4]">
         <OhryaLogo />
 
         <button
           onClick={() => setMenuOpen(true)}
-          className="flex flex-col justify-center items-center w-9 h-9 rounded-md border border-[#e0e8ec] gap-[5px]"
+          className="flex flex-col justify-center items-center w-8 h-8 rounded-md border border-[#e0e8ec] gap-[4px]"
         >
           <span className="w-4 h-[1.5px] bg-[#5a9aaa]" />
           <span className="w-4 h-[1.5px] bg-[#5a9aaa]" />
@@ -111,7 +111,7 @@ export default function DashboardNav({
       </div>
 
       {/* Mobile breadcrumb */}
-      <div className="lg:hidden flex items-center gap-2 px-4 py-2 border-b border-[#f4f4f4] text-xs">
+      <div className="lg:hidden flex items-center gap-2 px-4 py-1 border-b border-[#f4f4f4] text-xs">
         <span className="text-[#bbb]">Dashboard</span>
         <span className="text-[#ddd]">›</span>
         <span className="text-[#5a9aaa] font-medium">{activeLabel}</span>
@@ -122,7 +122,7 @@ export default function DashboardNav({
         <div className="fixed inset-0 z-50 bg-white flex flex-col">
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3 ">
+          <div className="flex items-center justify-between px-4 py-0.5 ">
             <OhryaLogo />
             <button onClick={() => setMenuOpen(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#4a8798" className="size-6">

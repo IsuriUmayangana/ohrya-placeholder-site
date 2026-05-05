@@ -6,16 +6,18 @@ import StepButton from "../ui/StepButton";
 interface Props {
   value: string;
   onChange: (val: string) => void;
+  onNext: (val: string) => void;
 }
 
 const options = ["Yes", "Not Yet"];
 
-export default function GiveStep({ value, onChange }: Props) {
+export default function GiveStep({ value, onChange, onNext }: Props) {
   const [selected, setSelected] = useState(value);
 
   function handleSelect(opt: string) {
     setSelected(opt);
     onChange(opt);
+    onNext(opt);
   }
 
   return (

@@ -73,10 +73,11 @@ export default function DashboardPage({ slug }: Props) {
     <div className="min-h-screen bg-[#f6f8f9]">
       {/* Header */}
       <header className="sticky top-0 z-20 backdrop-blur bg-white/80 border-b border-slate-200/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex justify-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-0 flex justify-center">
           <OhryaLogo />
         </div>
       </header>
+
       {/* Main */}
       <main className="mx-auto px-4 py-8 lg:px-12">
 

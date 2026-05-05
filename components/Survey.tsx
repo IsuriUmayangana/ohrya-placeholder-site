@@ -138,29 +138,30 @@ function SurveyInner() {
     }
   }, [answers, referredBy, startedAt, goNext]);
 
-  async function handleStepNext() {
+  // Handle step next
+  async function handleStepNext(currentValue?: string) {
     // Validate required question steps
-    if (currentStep === "campaign" && !answers.campaign) {
+    if (currentStep === "campaign" && !currentValue && !answers.campaign) {
       setStepError("Please select a campaign to continue.");
       return;
     }
-    if (currentStep === "give" && !answers.willGive) {
+    if (currentStep === "give" && !currentValue && !answers.willGive) {
       setStepError("Please make a selection to continue.");
       return;
     }
-    if (currentStep === "donation" && !answers.donationAmount) {
+    if (currentStep === "donation" && !currentValue && !answers.donationAmount) {
       setStepError("Please make a selection to continue.");
       return;
     }
-    if (currentStep === "vote" && !answers.willVote) {
+    if (currentStep === "vote" && !currentValue && !answers.willVote) {
       setStepError("Please make a selection to continue.");
       return;
     }
-    if (currentStep === "shine" && !answers.willShine) {
+    if (currentStep === "shine" && !currentValue && !answers.willShine) {
       setStepError("Please make a selection to continue.");
       return;
     }
-    if (currentStep === "recognition" && !answers.prefersEarning) {
+    if (currentStep === "recognition" && !currentValue && !answers.prefersEarning) {
       setStepError("Please make a selection to continue.");
       return;
     }
@@ -341,24 +342,6 @@ function SurveyInner() {
             <div className="mx-auto px-4 sm:px-6 py-0 flex justify-center">
                 <Image src="/logo.png" alt="Ohrya Logo" className="w-auto h-auto" width={190} height={190} />
             </div>
-
-            {/* Nav Buttons - Desktop */}
-            <div className="w-full flex flex-row items-center gap-2 fixed px-6">
-              { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
-                <NavButton action={goPrev}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                  </svg>
-                </NavButton>
-              )}
-              { currentStep !== "welcome" && stepIndex < maxStepReached && (
-                <NavButton action={goNext}>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                  </svg>
-                </NavButton>
-              )}
-            </div>
           </header>
         </div>
 
@@ -388,31 +371,31 @@ function SurveyInner() {
               >
                 {currentStep === "welcome" && <WelcomeStep />}
                 {currentStep === "campaign" && (
-                  <CampaignStep value={answers.campaign} onChange={(v) => { setAnswers((a) => ({ ...a, campaign: v })); setStepError(""); }} />
+                  <CampaignStep value={answers.campaign} onChange={(v) => { setAnswers((a) => ({ ...a, campaign: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "give" && (
-                  <GiveStep value={answers.willGive} onChange={(v) => { setAnswers((a) => ({ ...a, willGive: v })); setStepError(""); }}  />
+                  <GiveStep value={answers.willGive} onChange={(v) => { setAnswers((a) => ({ ...a, willGive: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "score-brilliant" && (
                   <ScoreStep score={surveyScore} variant="brilliant"  />
                 )}
                 {currentStep === "donation" && (
-                  <DonationStep value={answers.donationAmount} onChange={(v) => { setAnswers((a) => ({ ...a, donationAmount: v })); setStepError(""); }}  />
+                  <DonationStep value={answers.donationAmount} onChange={(v) => { setAnswers((a) => ({ ...a, donationAmount: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "vote" && (
-                  <VoteStep value={answers.willVote} onChange={(v) => { setAnswers((a) => ({ ...a, willVote: v })); setStepError(""); }} />
+                  <VoteStep value={answers.willVote} onChange={(v) => { setAnswers((a) => ({ ...a, willVote: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "score-almost" && (
                   <ScoreStep score={surveyScore} variant="almost"  />
                 )}
                 {currentStep === "shine" && (
-                  <ShineStep value={answers.willShine} onChange={(v) => { setAnswers((a) => ({ ...a, willShine: v })); setStepError(""); }}  />
+                  <ShineStep value={answers.willShine} onChange={(v) => { setAnswers((a) => ({ ...a, willShine: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "score-welldone" && (
                   <ScoreStep score={surveyScore} variant="welldone"  />
                 )}
                 {currentStep === "recognition" && (
-                  <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} />
+                  <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "email" && (
                   <EmailStep
@@ -452,15 +435,21 @@ function SurveyInner() {
           )}
 
           {/* Step Buttons */}
-          <div className="flex lg:flex-col flex-row items-center md:justify-center md:static lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
+          <div className="flex flex-row items-center justify-center justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full p-4">
 
             {/* Previous Button */}
-            {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-              </svg>
-            </MobileNavButton>)}
+            {currentStep !== "welcome" && currentStep !== "referral-share" && (
+              <MobileNavButton
+                action={goPrev}
+                disabled={currentStep === "campaign"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </MobileNavButton>
+            )}
 
+            {/* Get Started Button */}
             {currentStep === "welcome" && (
               <StepButton onClick={handleStepNext}>
                 Get Started
@@ -469,13 +458,15 @@ function SurveyInner() {
                 </svg>
               </StepButton>
             )}
-            {currentStep !== "welcome" && currentStep !== "referral-share" && (
-              <StepButton onClick={handleStepNext}>OK</StepButton>
+
+            {/* Submit Button */}
+            {currentStep === "email" && (
+              <StepButton onClick={() => handleStepNext()}>Submit</StepButton>
             )}
 
             {/* Next Button */}
-            {currentStep !== "welcome" && stepIndex < maxStepReached && (
-              <MobileNavButton action={goNext}>
+            {currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "email" && (
+              <MobileNavButton action={() => handleStepNext()}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                 </svg>
