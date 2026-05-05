@@ -77,7 +77,9 @@ export default function DashboardNav({
             onClick={onRefresh}
             className="flex items-center cursor-pointer gap-2 border border-[#e0e8ec] px-3 py-1.5 rounded-md text-sm text-[#666] hover:bg-[#f7f9fa]"
           >
-            <RefreshIcon />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
             Refresh
           </button>
 
@@ -86,7 +88,9 @@ export default function DashboardNav({
             onClick={onLogout}
             className="flex items-center cursor-pointer gap-2 border border-[#4a8798] text-[#4a8798] px-3 py-1.5 rounded-md text-sm hover:bg-[#a9d0da]/20"
           >
-            <LogoutIcon stroke="#4a8798" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+            </svg>
             Sign out
           </button>
         </div>
@@ -118,9 +122,13 @@ export default function DashboardNav({
         <div className="fixed inset-0 z-50 bg-white flex flex-col">
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b">
+          <div className="flex items-center justify-between px-5 py-3 ">
             <OhryaLogo />
-            <button onClick={() => setMenuOpen(false)}>✕</button>
+            <button onClick={() => setMenuOpen(false)}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#4a8798" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
           {/* Tabs */}
@@ -132,13 +140,18 @@ export default function DashboardNav({
                   onTabChange(tab.id);
                   setMenuOpen(false);
                 }}
-                className={`w-full text-left px-6 py-4 border-b cursor-pointer ${
+                className={`w-full text-left px-6 py-4 cursor-pointer ${
                   activeTab === tab.id
                     ? "text-[#5a9aaa] bg-[#5a9aaa]/10"
                     : "text-[#444]"
                 }`}
               >
                 {tab.label}
+                {tab.id === "responses" && totalResponses && totalResponses > 0 && (
+                  <span className="ml-2 bg-[#5a9aaa] text-white text-xs rounded-full px-2 py-0.5">
+                    {totalResponses}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -149,16 +162,20 @@ export default function DashboardNav({
                 onClick={onRefresh}
                 className="flex items-center cursor-pointer gap-2 border border-[#e0e8ec] px-3 py-1.5 rounded-md text-sm text-[#666] hover:bg-[#f7f9fa]"
             >
-                <RefreshIcon />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
                 Refresh
             </button>
 
             {/* Logout button */}
             <button
                 onClick={onLogout}
-                className="flex items-center cursor-pointer gap-2 border border-[#4a8798] text-[#4a8798] px-3 py-1.5 rounded-md text-sm hover:bg-[#a9d0da]/20"
+                className="flex items-center cursor-pointer gap-2 border border-[#4a8798] text-[#4a8798] px-3 py-1.5 rounded-md text-sm bg-[#4a8798]/20"
             >
-                <LogoutIcon stroke="#4a8798" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                </svg>
                 Sign out
             </button>
           </div>
@@ -168,19 +185,3 @@ export default function DashboardNav({
   );
 }
 
-/* Icons remain same */
-function RefreshIcon() {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <path d="M23 4v6h-6M1 20v-6h6" stroke="#888" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function LogoutIcon({ stroke }: { stroke: string }) {
-  return (
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-      <path d="M9 21H5M16 17l5-5-5-5M21 12H9" stroke={stroke} strokeWidth="2" />
-    </svg>
-  );
-}

@@ -93,7 +93,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#f7f9fa] w-full overflow-x-hidden">
-      <AdminDashboardNav activeTab={activeTab} onTabChange={setActiveTab} onRefresh={load} onLogout={handleLogout} />
+      <AdminDashboardNav activeTab={activeTab} onTabChange={setActiveTab} onRefresh={load} onLogout={handleLogout} totalResponses={data?.total || 0} />
 
       {/* Content */}
       <main className="px-4 py-8 lg:px-12 mx-auto w-full pt-45 md:pt-35">

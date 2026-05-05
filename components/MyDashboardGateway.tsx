@@ -145,10 +145,10 @@ export default function MyDashboardGateway() {
           <>
             <div className="flex flex-col items-center px-6">
               <h1 className="text-[1.6rem] font-medium text-slate-700 text-center leading-snug">
-                View your dashboard
+                View Your Dashboard
               </h1>
               <p className="text-[0.85rem] text-slate-400 text-center mt-1">
-                Enter the email you used for the OHRYA survey. We'll send you a verification code.
+                Enter the email you used for the OHRYA survey. We&apos;ll send you a verification code.
               </p>
             </div>
 
@@ -196,7 +196,7 @@ export default function MyDashboardGateway() {
                 >
                   {status === "loading" ? <Spinner label="Sending code…" /> : (
                     <>
-                      Send verification code
+                      Send Verification Code
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                         <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" />
                       </svg>
@@ -220,7 +220,7 @@ export default function MyDashboardGateway() {
                 href="/"
                 className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80 flex items-center gap-2"
               >
-                Start here
+                Start Here
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                   <path d="M5 12h14M12 5l7 7-7 7" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
@@ -234,7 +234,7 @@ export default function MyDashboardGateway() {
               <h1
                 className="text-[1.6rem] font-medium text-slate-700 text-center leading-snug"
               >
-                Check your email
+                Check Your Email
               </h1>
               <p className="text-[0.85rem] text-slate-400 text-center mt-1">
                 We sent a 6-digit code to
@@ -249,7 +249,7 @@ export default function MyDashboardGateway() {
                   ref={otpInputRef}
                   type="text"
                   inputMode="numeric"
-                  placeholder="Enter 6-digit code"
+                  placeholder="Enter 6-digit Code"
                   maxLength={6}
                   value={otp}
                   onChange={(e) => {
@@ -298,7 +298,7 @@ export default function MyDashboardGateway() {
                   onClick={handleResend}
                   className="text-xs text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-70 cursor-pointer"
                 >
-                  Resend code
+                  Resend Code
                 </button>
               )}
             </div>
