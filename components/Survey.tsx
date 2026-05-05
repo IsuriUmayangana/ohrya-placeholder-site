@@ -456,7 +456,12 @@ function SurveyInner() {
             </MobileNavButton>)}
 
             {currentStep === "welcome" && (
-              <StepButton onClick={handleStepNext}>Get Started</StepButton>
+              <StepButton onClick={handleStepNext}>
+                Get Started
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" />
+                </svg>
+              </StepButton>
             )}
             {currentStep !== "welcome" && currentStep !== "referral-share" && (
               <StepButton onClick={handleStepNext}>OK</StepButton>
