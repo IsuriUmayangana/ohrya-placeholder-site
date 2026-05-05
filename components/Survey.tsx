@@ -328,35 +328,40 @@ function SurveyInner() {
 
       <div className="fixed z-20 flex flex-col gap-0 py-0 px-0 top-0 left-0 right-0">
         {/* Referral Banner */}
-        {showRefBanner && <ReferralBanner />}
+        <div className="flex-1">
+          {showRefBanner && <ReferralBanner />}
+        </div>
+        <div className="flex-1">
+          <ProgressBar pct={progressPct} show={showProgress} />
+        </div>
+        <div className="flex-1">
+          {/* Header */}
+          <header className="fixed left-0 right-0 z-20 backdrop-blur bg-white/80 flex flex-col items-center justify-center gap-2 ">
+            <div className="mx-auto px-4 sm:px-6 py-0 flex justify-center">
+                <Image src="/logo.png" alt="Ohrya Logo" className="w-auto h-auto" width={190} height={190} />
+            </div>
 
-        {/* Progress Bar */}
-        <ProgressBar pct={progressPct} show={showProgress} />
+            {/* Nav Buttons - Desktop */}
+            <div className="w-full flex flex-row items-center gap-2 fixed px-6">
+              { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
+                <NavButton action={goPrev}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                  </svg>
+                </NavButton>
+              )}
+              { currentStep !== "welcome" && stepIndex < maxStepReached && (
+                <NavButton action={goNext}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                </NavButton>
+              )}
+            </div>
+          </header>
+        </div>
 
-        {/* Header */}
-        <header className="fixed top-2 left-0 right-0 z-20 backdrop-blur bg-white/80 flex flex-col items-center justify-center gap-2 ">
-          <div className="mx-auto px-4 sm:px-6 py-0 flex justify-center">
-              <Image src="/logo.png" alt="Ohrya Logo" className="w-auto h-auto" width={190} height={190} />
-          </div>
-
-          {/* Nav Buttons - Desktop */}
-          <div className="w-full flex flex-row items-center gap-2 fixed px-6">
-            { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
-              <NavButton action={goPrev}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
-              </NavButton>
-            )}
-            { currentStep !== "welcome" && stepIndex < maxStepReached && (
-              <NavButton action={goNext}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </NavButton>
-            )}
-          </div>
-        </header>
+          
   
       </div>
       
