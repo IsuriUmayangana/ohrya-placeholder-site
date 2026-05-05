@@ -34,7 +34,7 @@ export default function DeviceFilter({ value, onChange }: Props) {
           display: "flex", alignItems: "center", gap: 6,
           background: "white", border: "1px solid #e0e8ec",
           borderRadius: 7, padding: "7px 14px",
-          fontFamily: "Georgia, serif", fontSize: "0.85rem", color: "#444",
+          fontSize: "0.85rem", color: "#444",
           cursor: "pointer", whiteSpace: "nowrap",
         }}
       >
@@ -62,7 +62,7 @@ export default function DeviceFilter({ value, onChange }: Props) {
               style={{
                 display: "block", width: "100%", textAlign: "left",
                 padding: "11px 18px", border: "none", cursor: "pointer",
-                fontFamily: "Georgia, serif", fontSize: "0.85rem",
+                fontSize: "0.85rem",
                 background: value === d ? "#f0f8fa" : "white",
                 color: value === d ? "#5a9aaa" : "#444",
                 fontWeight: value === d ? "bold" : "normal",

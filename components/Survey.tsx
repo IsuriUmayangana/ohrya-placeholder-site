@@ -20,6 +20,7 @@ import MobileNavButton from "./ui/MobileNavButton";
 import Loading from "@/app/loading";
 import NavButton from "./ui/NavButton";
 import Image from "next/image";
+import ReferralBanner from "./ui/ReferralBanner";
 
 const STEPS = [
   "welcome",
@@ -83,7 +84,7 @@ function SurveyInner() {
   const [emailSlug, setEmailSlug] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [startedAt, setStartedAt] = useState<string>("");
-  const showRefBanner = !!referredBy && stepIndex === 0;
+  const showRefBanner = !!referredBy ;
 
   const currentStep: Step = STEPS[stepIndex];
   const [maxStepReached, setMaxStepReached] = useState(0);
@@ -323,144 +324,164 @@ function SurveyInner() {
   const showNav = currentStep !== "welcome" && currentStep !== "referral-share";
 
   return (
-    <div className="relative flex flex-col bg-white">
+    <div className="min-h-screen bg-white flex flex-col gap-10">
 
-      {/* Progress Bar */}
-      <ProgressBar pct={progressPct} show={showProgress} />
+      {/* Top Bar */}
+      <div className="flex-1 fixed z-20 flex flex-col gap-0 py-0 px-0 top-0 left-0 right-0">
+        {/* Referral Banner */}
+        <div className="flex-1">
+          {showRefBanner && <ReferralBanner />}
+        </div>
+        <div className="flex-1">
+          <ProgressBar pct={progressPct} show={showProgress} />
+        </div>
+        <div className="flex-1">
+          {/* Header */}
+          <header className="fixed left-0 right-0 z-20 backdrop-blur bg-white/80 flex flex-col items-center justify-center gap-2 ">
+            <div className="mx-auto px-4 sm:px-6 py-0 flex justify-center">
+                <Image src="/logo.png" alt="Ohrya Logo" className="w-auto h-auto" width={190} height={190} />
+            </div>
 
-      {/* Header */}
-      <header className="fixed top-2 left-0 right-0 z-20 backdrop-blur bg-white/80 flex flex-col items-center justify-center gap-2 ">
-        <div className="mx-auto px-4 sm:px-6 py-0 flex justify-center">
-            <Image src="/logo.png" alt="Ohrya Logo" className="w-auto h-auto" width={190} height={190} />
+            {/* Nav Buttons - Desktop */}
+            <div className="w-full flex flex-row items-center gap-2 fixed px-6">
+              { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
+                <NavButton action={goPrev}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                  </svg>
+                </NavButton>
+              )}
+              { currentStep !== "welcome" && stepIndex < maxStepReached && (
+                <NavButton action={goNext}>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                </NavButton>
+              )}
+            </div>
+          </header>
         </div>
 
-        {/* Nav Buttons - Desktop */}
-        <div className="w-full flex flex-row items-center gap-2 fixed px-6">
-          { currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (
-            <NavButton action={goPrev}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-              </svg>
-            </NavButton>
-          )}
-          { currentStep !== "welcome" && stepIndex < maxStepReached && (
-            <NavButton action={goNext}>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="#ffffff" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-              </svg>
-            </NavButton>
-          )}
-        </div>
-    </header>
+          
+  
+      </div>
+      
 
       {/* Main */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-8">
+      <div className="flex-1 flex items-center justify-center px-4 py-4">
 
-        {/* Step Container */}
-        <div className="flex flex-col items-center justify-center text-center lg:px-6 lg:gap-8">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentStep}
-              custom={direction}
-              variants={{
-                enter: (d: number) => ({ opacity: 0, y: d > 0 ? 50 : -50 }),
-                center: { opacity: 1, y: 0 },
-                exit: (d: number) => ({ opacity: 0, y: d > 0 ? -50 : 50 }),
-              }}
-              initial="enter" animate="center" exit="exit"
-              transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="w-full"
-            >
-              {currentStep === "welcome" && <WelcomeStep />}
-              {currentStep === "campaign" && (
-                <CampaignStep value={answers.campaign} onChange={(v) => { setAnswers((a) => ({ ...a, campaign: v })); setStepError(""); }} />
-              )}
-              {currentStep === "give" && (
-                <GiveStep value={answers.willGive} onChange={(v) => { setAnswers((a) => ({ ...a, willGive: v })); setStepError(""); }}  />
-              )}
-              {currentStep === "score-brilliant" && (
-                <ScoreStep score={surveyScore} variant="brilliant"  />
-              )}
-              {currentStep === "donation" && (
-                <DonationStep value={answers.donationAmount} onChange={(v) => { setAnswers((a) => ({ ...a, donationAmount: v })); setStepError(""); }}  />
-              )}
-              {currentStep === "vote" && (
-                <VoteStep value={answers.willVote} onChange={(v) => { setAnswers((a) => ({ ...a, willVote: v })); setStepError(""); }} />
-              )}
-              {currentStep === "score-almost" && (
-                <ScoreStep score={surveyScore} variant="almost"  />
-              )}
-              {currentStep === "shine" && (
-                <ShineStep value={answers.willShine} onChange={(v) => { setAnswers((a) => ({ ...a, willShine: v })); setStepError(""); }}  />
-              )}
-              {currentStep === "score-welldone" && (
-                <ScoreStep score={surveyScore} variant="welldone"  />
-              )}
-              {currentStep === "recognition" && (
-                <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} />
-              )}
-              {currentStep === "email" && (
-                <EmailStep
-                  value={answers.email}
-                  onChange={(v) => {
-                    setAnswers((a) => ({ ...a, email: v }));
-                    setStepError("");
-                  }}
-                  error={emailError}
-                />
-              )}
-              {currentStep === "referral-share" && (
-                <ReferralStep referralCode={referralCode} emailSlug={emailSlug} email={answers.email} />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Step Error */}
-        {stepError && (
-          <p className="error-message">
-            {stepError}
-          </p>
-        )}
-
-        {/* Submit Error */}
-        {submitError && (
-          <div className="flex flex-col items-center gap-2 px-4 py-3 mx-4 rounded-xl bg-red-50 border border-red-200">
-            <p className="text-sm text-red-600 text-center">{submitError}</p>
-            <button
-              onClick={submitAndShowReferral}
-              className="text-xs text-white bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-lg transition-all cursor-pointer"
-            >
-              Try again
-            </button>
+        <div className="relative center-content-y flex flex-col items-center justify-center gap-8">
+          {/* Step Container */}
+          <div className="flex flex-col items-center justify-center text-center lg:px-6 lg:gap-8">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={currentStep}
+                custom={direction}
+                variants={{
+                  enter: (d: number) => ({ opacity: 0, y: d > 0 ? 50 : -50 }),
+                  center: { opacity: 1, y: 0 },
+                  exit: (d: number) => ({ opacity: 0, y: d > 0 ? -50 : 50 }),
+                }}
+                initial="enter" animate="center" exit="exit"
+                transition={{ duration: 0.35, ease: "easeInOut" }}
+                className="w-full"
+              >
+                {currentStep === "welcome" && <WelcomeStep />}
+                {currentStep === "campaign" && (
+                  <CampaignStep value={answers.campaign} onChange={(v) => { setAnswers((a) => ({ ...a, campaign: v })); setStepError(""); }} />
+                )}
+                {currentStep === "give" && (
+                  <GiveStep value={answers.willGive} onChange={(v) => { setAnswers((a) => ({ ...a, willGive: v })); setStepError(""); }}  />
+                )}
+                {currentStep === "score-brilliant" && (
+                  <ScoreStep score={surveyScore} variant="brilliant"  />
+                )}
+                {currentStep === "donation" && (
+                  <DonationStep value={answers.donationAmount} onChange={(v) => { setAnswers((a) => ({ ...a, donationAmount: v })); setStepError(""); }}  />
+                )}
+                {currentStep === "vote" && (
+                  <VoteStep value={answers.willVote} onChange={(v) => { setAnswers((a) => ({ ...a, willVote: v })); setStepError(""); }} />
+                )}
+                {currentStep === "score-almost" && (
+                  <ScoreStep score={surveyScore} variant="almost"  />
+                )}
+                {currentStep === "shine" && (
+                  <ShineStep value={answers.willShine} onChange={(v) => { setAnswers((a) => ({ ...a, willShine: v })); setStepError(""); }}  />
+                )}
+                {currentStep === "score-welldone" && (
+                  <ScoreStep score={surveyScore} variant="welldone"  />
+                )}
+                {currentStep === "recognition" && (
+                  <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} />
+                )}
+                {currentStep === "email" && (
+                  <EmailStep
+                    value={answers.email}
+                    onChange={(v) => {
+                      setAnswers((a) => ({ ...a, email: v }));
+                      setStepError("");
+                    }}
+                    error={emailError}
+                  />
+                )}
+                {currentStep === "referral-share" && (
+                  <ReferralStep referralCode={referralCode} emailSlug={emailSlug} email={answers.email} />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
-        )}
 
-        {/* Step Buttons */}
-        <div className="flex lg:flex-col flex-row items-center lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
-
-          {/* Previous Button */}
-          {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-          </MobileNavButton>)}
-
-          {currentStep === "welcome" && (
-            <StepButton onClick={handleStepNext}>Get Started</StepButton>
-          )}
-          {currentStep !== "welcome" && currentStep !== "referral-share" && (
-            <StepButton onClick={handleStepNext}>OK</StepButton>
+          {/* Step Error */}
+          {stepError && (
+            <p className="error-message">
+              {stepError}
+            </p>
           )}
 
-          {/* Next Button */}
-          {currentStep !== "welcome" && stepIndex < maxStepReached && (
-            <MobileNavButton action={goNext}>
+          {/* Submit Error */}
+          {submitError && (
+            <div className="flex flex-col items-center gap-2 px-4 py-3 mx-4 rounded-xl bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600 text-center">{submitError}</p>
+              <button
+                onClick={submitAndShowReferral}
+                className="text-xs text-white bg-red-500 hover:bg-red-600 px-4 py-1.5 rounded-lg transition-all cursor-pointer"
+              >
+                Try again
+              </button>
+            </div>
+          )}
+
+          {/* Step Buttons */}
+          <div className="flex lg:flex-col flex-row items-center md:justify-center md:static lg:justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full fixed bottom-0 lg:static p-4">
+
+            {/* Previous Button */}
+            {currentStep !== "welcome" && currentStep !== "campaign" && currentStep !== "referral-share" && (<MobileNavButton action={goPrev}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
               </svg>
-            </MobileNavButton>
-          )}
+            </MobileNavButton>)}
+
+            {currentStep === "welcome" && (
+              <StepButton onClick={handleStepNext}>
+                Get Started
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" />
+                </svg>
+              </StepButton>
+            )}
+            {currentStep !== "welcome" && currentStep !== "referral-share" && (
+              <StepButton onClick={handleStepNext}>OK</StepButton>
+            )}
+
+            {/* Next Button */}
+            {currentStep !== "welcome" && stepIndex < maxStepReached && (
+              <MobileNavButton action={goNext}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+              </MobileNavButton>
+            )}
+          </div>
         </div>
       </div>
     </div>

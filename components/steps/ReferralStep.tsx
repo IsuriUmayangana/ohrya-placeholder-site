@@ -34,7 +34,7 @@ export default function ReferralStep({ referralCode, emailSlug, email }: Props) 
   }
 
   return (
-    <div className="flex flex-col items-center gap-8 px-6 w-full max-w-lg mx-auto text-center">
+    <div className="flex flex-col items-center gap-8 px-6 w-full max-w-lg mx-auto text-center mt-45 md:mt-10 lg:mt-40">
 
       {/* Icon */}
       <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#A18330] to-[#D9C281] flex items-center justify-center">
@@ -58,7 +58,7 @@ export default function ReferralStep({ referralCode, emailSlug, email }: Props) 
       <div className="w-full flex items-center gap-2 border border-[#5A9AAA] rounded-lg p-3 bg-[#EEF5F6]">
 
         {/* Link */}
-        <span className="flex-1 font-mono text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">
+        <span className="flex-1 text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">
           {referralLink}
         </span>
 
@@ -97,10 +97,12 @@ export default function ReferralStep({ referralCode, emailSlug, email }: Props) 
       {/* CTA */}
       <a
         href={`/my-dashboard?email=${encodeURIComponent(email)}`}
-        className="btn-primary"
-        style={{ minWidth: 200, textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+        className="btn-primary text-[0.875rem] font-medium flex items-center justify-center gap-2"
       >
-        View My Dashboard →
+        View My Dashboard 
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" />
+        </svg>
       </a>
     </div>
   );

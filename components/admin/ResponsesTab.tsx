@@ -134,7 +134,7 @@ export default function ResponsesTab() {
       {/* Toolbar */}
       <div className="flex items-center gap-2 flex-wrap bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
         {/* Search */}
-        <div style={{ position: "relative", flex: "1 1 200px" }}>
+        <div className="relative flex-1 w-[200px]">
           <svg style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }} width="14" height="14" viewBox="0 0 24 24" fill="none">
             <circle cx="11" cy="11" r="8" stroke="#aaa" strokeWidth="2"/>
             <path d="M21 21l-4.35-4.35" stroke="#aaa" strokeWidth="2" strokeLinecap="round"/>
@@ -142,7 +142,7 @@ export default function ResponsesTab() {
           <input
             type="text" placeholder="Search responses…" value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={{ ...inputStyle, width: "100%", paddingLeft: 32 }}
+            className="w-full p-3 pl-10 border border-[#e0e8ec] rounded-lg text-[12px] text-[#2d2d2d] bg-white outline-none"
           />
         </div>
 
@@ -157,7 +157,7 @@ export default function ResponsesTab() {
             background: hasFilters ? "#5a9aaa" : "white",
             color: hasFilters ? "white" : "#444",
             border: "1px solid #e0e8ec", borderRadius: 7, padding: "7px 14px",
-            fontFamily: "Georgia, serif", fontSize: "0.85rem", cursor: "pointer", whiteSpace: "nowrap",
+            fontSize: "0.85rem", cursor: "pointer", whiteSpace: "nowrap",
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -186,10 +186,10 @@ export default function ResponsesTab() {
           const opLabel = { is_any_of: "is any of", is_not_any_of: "is not any of", is_equal_to: "=", is_not_equal_to: "≠", is_empty: "is empty", is_not_empty: "is not empty" }[f.operator] ?? f.operator;
           const valLabel = f.values.length > 0 ? f.values.join(", ") : "";
           return (
-            <span key={i} style={{ display: "flex", alignItems: "center", gap: 5, background: "#e8f5f8", borderRadius: 20, padding: "4px 12px", fontFamily: "Georgia, serif", fontSize: "0.78rem", color: "#5a9aaa", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span key={i} className="flex items-center gap-5 bg-[#e8f5f8] rounded-2xl p-3 text-[12px] text-[#5a9aaa] max-w-[260px] overflow-hidden text-ellipsis whitespace-nowrap">
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{f.fieldId.replace(/([A-Z])/g, " $1").trim()} {opLabel}{valLabel ? `: ${valLabel}` : ""}</span>
               <button onClick={() => setActiveFilters((a) => a.filter((_, idx) => idx !== i))}
-                style={{ background: "none", border: "none", cursor: "pointer", color: "#5a9aaa", fontSize: "0.9rem", lineHeight: 1, padding: 0, flexShrink: 0 }}>✕</button>
+                className="bg-none border-none cursor-pointer text-[14px] leading-none p-0 flex-shrink-0 text-[#5a9aaa]">✕</button>
             </span>
           );
         })}
@@ -197,11 +197,16 @@ export default function ResponsesTab() {
         {/* Clear all */}
         {hasFilters && (
           <button onClick={() => setActiveFilters([])}
-            style={{ background: "none", border: "none", color: "#aaa", fontFamily: "Georgia, serif", fontSize: "0.8rem", cursor: "pointer", textDecoration: "underline" }}>
+            className="bg-none border-none text-[#aaa] text-[12px] cursor-pointer text-decoration-underline">
             Clear all
           </button>
         )}
       </div>
+
+      {/* Response count */}
+      <span className="font-normal text-[12px] text-[#2d2d2d]/70 whitespace-nowrap ml-auto">
+        {filtered.length} response{filtered.length !== 1 ? "s" : ""}
+      </span>
 
       {/* Results */}
       <div
@@ -354,7 +359,7 @@ export default function ResponsesTab() {
                     </td>
 
                     <td className="px-4 py-3.5 text-center">
-                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#2d2d2d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
                         {r.totalScore}
                       </span>
                     </td>
@@ -485,7 +490,7 @@ export default function ResponsesTab() {
 
                     <div>
                       <p className="text-slate-400 mb-1">Total</p>
-                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#2d2d2d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
                         {r.totalScore}
                       </span>
                     </div>
@@ -500,37 +505,41 @@ export default function ResponsesTab() {
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-4 py-3.5 border-t border-slate-100 bg-slate-50/60">
             <p className="text-[12px] text-slate-400">
-              Page <span className="font-medium text-slate-600">{page}</span> of{" "}
-              <span className="font-medium text-slate-600">{totalPages}</span>
+              Page <span className="font-medium text-[#2d2d2d]">{page}</span> of{" "}
+              <span className="font-medium text-[#4a8798]">{totalPages}</span>
             </p>
 
+            {/* Pagination buttons */}
             <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              {/* Previous button */}
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 ← Prev
               </button>
 
+              {/* Page buttons */}
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPage(p)}
                   className={`min-w-[34px] h-[34px] text-[12px] rounded-xl border transition-colors ${
                     p === page
-                      ? "bg-slate-900 text-white border-slate-900"
-                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                      ? "bg-[#4a8798] text-white border-[#4a8798] font-bold"
+                      : "bg-white text-[#a9d0da] border-[#a9d0da]/50 hover:border-[#a9d0da] hover:bg-[#a9d0da]/50 hover:text-[#4a8798] cursor-pointer"
                   }`}
                 >
                   {p}
                 </button>
               ))}
 
+              {/* Next button */}
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 Next →
               </button>
@@ -538,11 +547,6 @@ export default function ResponsesTab() {
           </div>
         )}
       </div>
-
-      {/* Response count */}
-      <span className="font-medium text-sm text-[#6098AE] whitespace-nowrap ml-auto">
-          {filtered.length} response{filtered.length !== 1 ? "s" : ""}
-        </span>
 
       {/* Filters modal */}
       {showFiltersModal && (

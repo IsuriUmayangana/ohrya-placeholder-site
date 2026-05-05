@@ -41,29 +41,27 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f7f9fa] flex items-center justify-center p-4">
-      <div className="w-full max-w-[400px]">
+    <div className="min-h-screen admin-login-animation flex items-center justify-center p-4">
 
         {/* Card */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-4">
 
-          {/* Header strip with logo */}
-          <div className="flex flex-col items-center pt-8 pb-6 px-8 border-b border-slate-50">
+          {/* Header with logo */}
+          <div className="flex flex-col items-center pt-8">
             <Image
               src="/logo.png"
               alt="Ohrya"
-              width={120}
-              height={120}
-              className="w-auto h-auto mb-4"
-              style={{ maxHeight: 56, width: "auto" }}
+              width={160}
+              height={160}
+              className="w-auto h-auto"
+              style={{ maxHeight: 60, width: "auto" }}
             />
             <h1
-              className="text-[1.05rem] text-slate-700 text-center leading-snug"
-              style={{ fontFamily: "Georgia, serif" }}
+              className="text-[1.6rem] font-medium text-slate-700 text-center leading-snug"
             >
               Admin Access
             </h1>
-            <p className="text-[0.78rem] text-slate-400 text-center mt-1">
+            <p className="text-[0.85rem] text-slate-400 text-center mt-1">
               Enter your password to continue
             </p>
           </div>
@@ -97,7 +95,6 @@ function LoginForm() {
                 type="submit"
                 disabled={loading || !password}
                 className="w-full py-3 rounded-xl bg-[#6098AE] text-white text-[0.875rem] font-medium hover:bg-[#4a8798] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer mt-1"
-                style={{ fontFamily: "Georgia, serif" }}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -113,14 +110,16 @@ function LoginForm() {
               </button>
             </form>
           </div>
-        </div>
 
-        {/* Footer */}
-        <p className="text-center text-[0.72rem] text-slate-300 mt-5">
-          Ohrya Admin · Restricted Access
-        </p>
+          {/* Divider */}
+          <div className="h-px bg-slate-100 my-4 mx-auto w-full max-w-xs" />
+
+          {/* Footer */}
+          <p className="text-center text-[0.72rem] text-[#4a8798] mt-5 leading-tight">
+            OHRYA Admin · <span className="text-[#888]">Restricted Access</span>
+          </p>
+        </div>
       </div>
-    </div>
   );
 }
 
