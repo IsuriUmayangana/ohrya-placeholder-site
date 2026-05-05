@@ -105,10 +105,6 @@ export default function ReferralStep({ referralCode, emailSlug }: Props) {
         </svg>
       </button>
 
-      {/* Dashboard URL */}
-      <p className="text-sm text-slate-500">
-        Your dashboard will be at: <span className="text-[#4a8798] cursor-pointer hover:underline">{dashboardUrl}</span>
-      </p>
 
     </div>
   );
