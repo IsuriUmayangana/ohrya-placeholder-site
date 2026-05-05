@@ -203,6 +203,11 @@ export default function ResponsesTab() {
         )}
       </div>
 
+      {/* Response count */}
+      <span className="font-normal text-[12px] text-[#2d2d2d]/70 whitespace-nowrap ml-auto">
+        {filtered.length} response{filtered.length !== 1 ? "s" : ""}
+      </span>
+
       {/* Results */}
       <div
         className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden transition-opacity duration-200"
@@ -354,7 +359,7 @@ export default function ResponsesTab() {
                     </td>
 
                     <td className="px-4 py-3.5 text-center">
-                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#2d2d2d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
                         {r.totalScore}
                       </span>
                     </td>
@@ -485,7 +490,7 @@ export default function ResponsesTab() {
 
                     <div>
                       <p className="text-slate-400 mb-1">Total</p>
-                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-slate-900 text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#2d2d2d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
                         {r.totalScore}
                       </span>
                     </div>
@@ -500,37 +505,41 @@ export default function ResponsesTab() {
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-4 py-3.5 border-t border-slate-100 bg-slate-50/60">
             <p className="text-[12px] text-slate-400">
-              Page <span className="font-medium text-slate-600">{page}</span> of{" "}
-              <span className="font-medium text-slate-600">{totalPages}</span>
+              Page <span className="font-medium text-[#2d2d2d]">{page}</span> of{" "}
+              <span className="font-medium text-[#4a8798]">{totalPages}</span>
             </p>
 
+            {/* Pagination buttons */}
             <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              {/* Previous button */}
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 ← Prev
               </button>
 
+              {/* Page buttons */}
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPage(p)}
                   className={`min-w-[34px] h-[34px] text-[12px] rounded-xl border transition-colors ${
                     p === page
-                      ? "bg-slate-900 text-white border-slate-900"
-                      : "bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                      ? "bg-[#4a8798] text-white border-[#4a8798] font-bold"
+                      : "bg-white text-[#a9d0da] border-[#a9d0da]/50 hover:border-[#a9d0da] hover:bg-[#a9d0da]/50 hover:text-[#4a8798] cursor-pointer"
                   }`}
                 >
                   {p}
                 </button>
               ))}
 
+              {/* Next button */}
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="px-3.5 py-2 text-[12px] rounded-xl bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 Next →
               </button>
@@ -538,11 +547,6 @@ export default function ResponsesTab() {
           </div>
         )}
       </div>
-
-      {/* Response count */}
-      <span className="font-medium text-sm text-[#6098AE] whitespace-nowrap ml-auto">
-          {filtered.length} response{filtered.length !== 1 ? "s" : ""}
-        </span>
 
       {/* Filters modal */}
       {showFiltersModal && (
