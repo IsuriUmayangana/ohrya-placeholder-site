@@ -434,19 +434,16 @@ function SurveyInner() {
             </div>
           )}
 
-          {/* Step Buttons */}
-          <div className="flex flex-row items-center justify-center justify-center text-center gap-2 lg:px-6 lg:gap-8 w-full p-4">
-
-            {/* Previous Button */}
-            {currentStep !== "welcome" && currentStep !== "referral-share" && (
-              <MobileNavButton
-                action={goPrev}
-                disabled={currentStep === "campaign"}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
-              </MobileNavButton>
+          {/* Score Buttons */}
+          <div className="flex flex-row items-center justify-center justify-center text-center gap-2 lg:px-6 lg:gap-5 w-full p-4">
+            {currentStep === "score-brilliant" && (
+              <StepButton onClick={handleStepNext}>Next</StepButton>
+            )}
+            {currentStep === "score-almost" && (
+              <StepButton onClick={handleStepNext}>Next</StepButton>
+            )}
+            {currentStep === "score-welldone" && (
+              <StepButton onClick={handleStepNext}>Next</StepButton>
             )}
 
             {/* Get Started Button */}
@@ -459,9 +456,34 @@ function SurveyInner() {
               </StepButton>
             )}
 
+            {currentStep === "email" &&(
+              <MobileNavButton action={goPrev}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </MobileNavButton>
+            )}
+
             {/* Submit Button */}
             {currentStep === "email" && (
               <StepButton onClick={() => handleStepNext()}>Submit</StepButton>
+            )}
+
+          </div>
+
+          {/* Step Buttons */}
+          <div className="fixed bottom-30 left-0 right-0 flex flex-row items-center justify-center gap-4 px-4">
+
+            {/* Previous Button */}
+            {currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "email" && (
+              <MobileNavButton
+                action={goPrev}
+                disabled={currentStep === "campaign"}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </MobileNavButton>
             )}
 
             {/* Next Button */}

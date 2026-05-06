@@ -125,15 +125,15 @@ function MyDashboardGatewayInner() {
     <div className="min-h-screen admin-login-animation flex items-center justify-center p-4">
       
       {/* Card */}
-      <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-4">
-        <div className="flex flex-col items-center pt-4">
+      <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden py-8">
+        <div className="flex flex-col items-center">
             <Image
               src="/logo.png"
               alt="Ohrya"
               width={160}
               height={160}
               className="w-auto h-auto"
-              style={{ maxHeight: 60, width: "auto" }}
+              style={{ maxHeight: 80, width: "auto" }}
             />
         </div>
 
@@ -210,7 +210,7 @@ function MyDashboardGatewayInner() {
             </div>
 
             {/* Haven't taken the survey? */}
-            <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-2 pb-4">
+            <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-2 ">
               Haven't taken the survey?{" "}
               <a
                 href="/"
@@ -309,9 +309,13 @@ function MyDashboardGatewayInner() {
             {/* Use a different email */}
             <button
               onClick={() => { setStage("email"); setError(""); setOtp(""); setStatus("idle"); }}
-              className="mt-3 w-full text-center text-xs text-gray-400 hover:text-[#5a9aaa] cursor-pointer"
+              className="mt-3 w-full text-center text-xs text-gray-400 hover:text-[#5a9aaa] cursor-pointer flex items-center justify-center gap-1"
             >
-              ← Use a Different Email
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#5a9aaa" className="size-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+              </svg>
+
+              Use a Different Email
             </button>
           </>
         )}

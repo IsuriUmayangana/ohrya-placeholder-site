@@ -44,17 +44,17 @@ function LoginForm() {
     <div className="min-h-screen admin-login-animation flex items-center justify-center p-4">
 
         {/* Card */}
-        <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-4">
+        <div className="max-w-lg w-full bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden py-8">
 
           {/* Header with logo */}
-          <div className="flex flex-col items-center pt-8">
+          <div className="flex flex-col items-center">
             <Image
               src="/logo.png"
               alt="Ohrya"
               width={160}
               height={160}
               className="w-auto h-auto"
-              style={{ maxHeight: 60, width: "auto" }}
+              style={{ maxHeight: 80, width: "auto" }}
             />
             <h1
               className="text-[1.6rem] font-medium text-slate-700 text-center leading-snug"
@@ -115,7 +115,7 @@ function LoginForm() {
           <div className="h-px bg-slate-100 my-4 mx-auto w-full max-w-xs" />
 
           {/* Footer */}
-          <p className="text-center text-[0.72rem] text-[#4a8798] mt-5 leading-tight">
+          <p className="text-center text-[0.72rem] text-[#4a8798] leading-tight">
             OHRYA Admin · <span className="text-[#888]">Restricted Access</span>
           </p>
         </div>

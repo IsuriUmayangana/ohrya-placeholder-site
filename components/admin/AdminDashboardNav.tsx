@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import OhryaLogo from "../OhryaLogo";
+import Image from "next/image";
 
 type TabId = "insights" | "summary" | "responses";
 
@@ -98,7 +99,14 @@ export default function DashboardNav({
 
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between px-4 py-0.5 border-b border-[#f4f4f4]">
-        <OhryaLogo />
+        <Image
+          src="/logo.png"
+          alt="Ohrya"
+          width={160}
+          height={160}
+          className="w-auto h-auto"
+          style={{ maxHeight: 80, width: "auto" }}
+        />
 
         <button
           onClick={() => setMenuOpen(true)}
@@ -123,7 +131,14 @@ export default function DashboardNav({
 
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-0.5 ">
-            <OhryaLogo />
+            <Image
+              src="/logo.png"
+              alt="Ohrya"
+              width={160}
+              height={160}
+              className="w-auto h-auto"
+              style={{ maxHeight: 80, width: "auto" }}
+            />
             <button onClick={() => setMenuOpen(false)}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#4a8798" className="size-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />

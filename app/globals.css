@@ -157,7 +157,6 @@ body {
   .btn-primary {
     padding: 12px 32px !important;
     display: flex !important;
-    width: 100% !important;
     justify-content: center;
   }
   .btn-nav {
@@ -406,3 +405,13 @@ body {
 }
 
 
+.dashboard-logo {
+  max-height: 120px;
+  width: auto;
+}
+
+@media (max-width: 767px) {
+  .dashboard-logo {
+    max-height: 80px;
+  }
+}
