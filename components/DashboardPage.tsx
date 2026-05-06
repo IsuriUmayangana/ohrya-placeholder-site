@@ -5,6 +5,7 @@ import OhryaLogo from "./OhryaLogo";
 import type { PublicUserStats } from "@/lib/survey-types";
 import Loading from "@/app/loading";
 import NotFound from "./ui/NotFond";
+import Image from "next/image";
 
 interface Props {
   slug: string;
@@ -74,7 +75,13 @@ export default function DashboardPage({ slug }: Props) {
       {/* Header */}
       <header className="sticky top-0 z-20 backdrop-blur bg-white/80 border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-0 flex justify-center">
-          <OhryaLogo />
+          <Image
+            src="/logo.png"
+            alt="Ohrya"
+            width={160}
+            height={160}
+            className="w-auto h-auto dashboard-logo"
+          />
         </div>
       </header>
 

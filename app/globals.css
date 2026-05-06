@@ -406,3 +406,13 @@ body {
 }
 
 
+.dashboard-logo {
+  max-height: 120px;
+  width: auto;
+}
+
+@media (max-width: 767px) {
+  .dashboard-logo {
+    max-height: 80px;
+  }
+}
