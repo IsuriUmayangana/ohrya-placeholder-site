@@ -197,14 +197,11 @@ export default function DashboardPage({ slug }: Props) {
             {/* Referral card */}
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-5">
-                <p className="text-xs uppercase tracking-[0.18em] text-[#2d2d2d] font-bold">Your referral score</p>
-                <h3 className="text-base font-semibold text-[#2d2d2d]">+{stats!.referralScore}</h3>
-                <p className="text-sm text-[#64748b] mt-1 leading-6">
+                <p className="text-base font-semibold text-[#2d2d2d]">Your referral score</p>
+                <p className="text-sm text-[#64748b] leading-6">
                   Each friend who completes the survey gives you{" "}
                   <span className="font-semibold text-[#c9a84c]">+1 point</span>.
                 </p>
-              </div>
-              <div className="flex items-start gap-4">
                 {/* Referrals */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
@@ -218,23 +215,20 @@ export default function DashboardPage({ slug }: Props) {
                   </div>
                 </div>
               </div>
-                
             </div>
 
             {/* Share and earn more points */}
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-5">
-                <div>
-                  <h3 className="text-base font-semibold text-[#2d2d2d]">Share and earn more points</h3>
-                  <p className="text-sm text-slate-500 mt-1 leading-6">
-                    Each friend who completes the survey gives you{" "}
-                    <span className="font-semibold text-[#c9a84c]">+1 point</span>.
-                  </p>
-                </div>
+                <h3 className="text-base font-semibold text-[#2d2d2d]">Share and earn more points</h3>
+                <p className="text-sm text-slate-500 leading-6">
+                  Each friend who completes the survey gives you{" "}
+                  <span className="font-semibold text-[#c9a84c]">+1 point</span>.
+                </p>
 
                 {/* Referral link */}
                 <div className="w-full flex items-center gap-2 border border-[#5A9AAA] rounded-lg p-3 bg-[#EEF5F6]">
-                  <span className="flex-1 font-mono text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">{referralLink}</span>
+                  <span className="flex-1 text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">{referralLink}</span>
 
                   <button
                     onClick={() => copyLink(referralLink)}
@@ -252,32 +246,21 @@ export default function DashboardPage({ slug }: Props) {
           {/* Footer bits */}
           <section className="flex flex-col items-center gap-3 pt-2">
             <div className="text-center">
-              <p
-                style={{
-                  fontFamily: "Georgia, serif",
-                  fontSize: "0.78rem",
-                  color: "#94a3b8",
-                  marginBottom: 6,
-                }}
+              <p className="text-xs text-[#94a3b8] mb-2"
               >
                 Bookmark your personal dashboard
               </p>
 
               <button
                 onClick={() => copyLink(dashboardUrl)}
-                className="text-[12px] text-teal-700 font-mono underline underline-offset-4"
+                className="text-xs text-teal-700 underline underline-offset-4"
               >
                 {dashboardUrl}
               </button>
             </div>
 
             <p
-              style={{
-                fontFamily: "Georgia, serif",
-                fontSize: "0.78rem",
-                color: "#cbd5e1",
-                textAlign: "center",
-              }}
+              className="text-xs text-[#94a3b8] text-center"
             >
               Score updates live every 10 seconds as friends complete the survey.
             </p>
