@@ -89,6 +89,7 @@ export default function DashboardPage({ slug }: Props) {
       <main className="mx-auto px-4 py-8 lg:px-12">
 
         <div className="flex flex-col gap-6">
+
           {/* Hero */}
           <section className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
             
@@ -96,18 +97,20 @@ export default function DashboardPage({ slug }: Props) {
             <div className="relative grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-6 p-6 sm:p-8">
               <div className="flex flex-col justify-between gap-6">
                 <div>
-
-                  <h1 className="lg:text-4xl text-2xl font-semibold text-[#0f172a] leading-tight"
+                  {/* Title */}
+                  <h1 className="lg:text-4xl text-2xl font-semibold text-[#06596d] leading-tight"
                   >
                     Your Social Impact Dashboard
                   </h1>
 
+                  {/* Email */}
                   <p className="lg:text-sm text-sm text-[#4a8798] mt-2"
                   >
                     {stats!.email}
                   </p>
 
-                  <p className="mt-4 max-w-2xl text-sm text-slate-500 leading-6">
+                  {/* Description */}
+                  <p className="mt-4 max-w-2xl text-sm text-[#06596d] leading-6">
                     Track your survey score, referral momentum, and campaign participation in one place.
                     Your dashboard refreshes automatically as new responses come in.
                   </p>
@@ -117,11 +120,11 @@ export default function DashboardPage({ slug }: Props) {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {/* Survey score */}
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#4a8798] font-bold">Survey score</p>
-                    <p className="mt-2 text-2xl font-semibold text-[#4a8798]">{stats!.surveyScore}</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#06596d] font-bold">Survey score</p>
+                    <p className="mt-2 text-2xl font-semibold text-[#06596d]">{stats!.surveyScore}</p>
                     <div className="mt-3 h-2 rounded-full bg-slate-200 overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[#4a8798] transition-all duration-700"
+                        className="h-full rounded-full bg-[#06596d] transition-all duration-700"
                         style={{ width: `${surveyPct}%` }}
                       />
                     </div>
@@ -131,16 +134,16 @@ export default function DashboardPage({ slug }: Props) {
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
                     <p className="text-xs uppercase tracking-[0.16em] text-[#c9a84c] font-bold">Referral bonus</p>
                     <p className="mt-2 text-2xl font-semibold text-[#c9a84c]">+{stats!.referralScore}</p>
-                    <p className="mt-2 text-xs text-[#64748b]">
+                    <p className="mt-2 text-xs text-[#06596d]">
                       {stats!.referralCount} referral{stats!.referralCount !== 1 ? "s" : ""}
                     </p>
                   </div>
 
                   {/* Campaign */}
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#64748b] font-bold">Campaign</p>
-                    <p className="mt-2 text-sm font-semibold text-[#2d2d2d]">{stats!.campaign}</p>
-                    <p className="mt-2 text-xs text-[#64748b]">Your selected cause</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#06596d] font-bold">Campaign</p>
+                    <p className="mt-2 text-2xl font-semibold text-[#06596d]">{stats!.campaign}</p>
+                    <p className="mt-2 text-xs text-[#06596d]">Your selected cause</p>
                   </div>
                 </div>
               </div>
@@ -197,8 +200,8 @@ export default function DashboardPage({ slug }: Props) {
             {/* Referral card */}
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-5">
-                <p className="text-base font-semibold text-[#2d2d2d]">Your referral score</p>
-                <p className="text-sm text-[#64748b] leading-6">
+                <p className="text-base font-semibold text-[#06596d]">Your referral score</p>
+                <p className="text-sm text-[#06596d] leading-6">
                   Each friend who completes the survey gives you{" "}
                   <span className="font-semibold text-[#c9a84c]">+1 point</span>.
                 </p>
@@ -220,8 +223,8 @@ export default function DashboardPage({ slug }: Props) {
             {/* Share and earn more points */}
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm">
               <div className="flex flex-col gap-5">
-                <h3 className="text-base font-semibold text-[#2d2d2d]">Share and earn more points</h3>
-                <p className="text-sm text-slate-500 leading-6">
+                <h3 className="text-base font-semibold text-[#06596d]">Share and earn more points</h3>
+                <p className="text-sm text-[#06596d] leading-6">
                   Each friend who completes the survey gives you{" "}
                   <span className="font-semibold text-[#c9a84c]">+1 point</span>.
                 </p>
@@ -253,7 +256,7 @@ export default function DashboardPage({ slug }: Props) {
 
               <button
                 onClick={() => copyLink(dashboardUrl)}
-                className="text-xs text-teal-700 underline underline-offset-4"
+                className="text-xs text-teal-700 underline underline-offset-4 cursor-pointer hover:font-semibold"
               >
                 {dashboardUrl}
               </button>
