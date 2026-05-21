@@ -37,8 +37,8 @@ function QuestionChart({ title, data, total }: { title: string; data: DataPoint[
 
   return (
     <div className="bg-white border border-slate-100 rounded-xl p-5 hover:border-slate-200 transition-colors duration-200">
-      <p className="text-[14px] font-medium text-slate-700 mb-0.5 leading-snug">{title}</p>
-      <p className="text-[12px] text-slate-400 mb-4">
+      <p className="text-[14px] font-medium text-[#000000] mb-0.5 leading-snug">{title}</p>
+      <p className="text-[12px] text-[#06596d] mb-4">
         {answered} of {total} answered
       </p>
 
@@ -49,7 +49,7 @@ function QuestionChart({ title, data, total }: { title: string; data: DataPoint[
           <BarChart data={sorted} barSize={38} barCategoryGap="30%">
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 11, fill: "#94a3b8" }}
+              tick={{ fontSize: 11, fill: "#06596d" }}
               axisLine={false}
               tickLine={false}
             />
@@ -61,7 +61,7 @@ function QuestionChart({ title, data, total }: { title: string; data: DataPoint[
               width={28}
             />
             <Tooltip
-              cursor={{ fill: "#f1f5f9" }}
+              cursor={{ fill: "transparent" }}
               content={<CustomTooltip total={total} />}
             />
             <Bar
@@ -75,7 +75,7 @@ function QuestionChart({ title, data, total }: { title: string; data: DataPoint[
               {sorted.map((_, i) => (
                 <Cell
                   key={i}
-                  fill={i === 0 ? "#6098AE" : i === 1 ? "#93B9C8" : "#D0E0E7"}
+                  fill={i === 0 ? "#06596d" : i === 1 ? "#6098AE" : "#E8F5F8"}
                 />
               ))}
             </Bar>
@@ -191,12 +191,12 @@ export default function SummaryTab() {
             onClick={() => setShowFilters(true)}
             className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-[13px] rounded-lg border transition-all cursor-pointer whitespace-nowrap ${
               hasFilters
-                ? "bg-[#c9a84c] text-[#ffffff] border-[#A18330] hover:bg-[#c9a84c]/90"
-                : "bg-white text-[#6098AE] border-[#6098AE] hover:border-[#4a8798] hover:bg-[#f0f8fa]"
+                ? "bg-[#06596D] text-[#ffffff] border-[#06596D ]"
+                : "bg-white text-[#06596d] border-[#6098AE] hover:border-[#8CC7D5] hover:bg-[#f0f8fa]"
             }`}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-              <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M4 6h16M7 12h10M10 18h4" stroke="#06596d" strokeWidth="2" strokeLinecap="round"/>
             </svg>
             Filters
             {hasFilters && (
@@ -247,6 +247,13 @@ export default function SummaryTab() {
         </div>
       </div>
 
+      {/* Response count */}
+      <div className="flex items-center gap-2 mt-4 mb-2">
+        <span className="font-normal text-sm text-[#000000]/70 whitespace-nowrap ml-auto">
+          {loading ? "" : `${total} response${total !== 1 ? "s" : ""}`}
+        </span>
+      </div>
+
       {/* Charts grid */}
       {loading ? (
         <div className="grid gap-5" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))" }}>
@@ -268,13 +275,6 @@ export default function SummaryTab() {
           onClose={() => setShowFilters(false)}
         />
       )}
-
-      {/* Response count */}
-      <div className="flex items-center gap-2 mt-4">
-        <span className="font-medium text-sm text-[#6098AE]/70 whitespace-nowrap ml-auto">
-          {loading ? "Loading…" : `${total} response${total !== 1 ? "s" : ""}`}
-        </span>
-      </div>
       
     </div>
   );

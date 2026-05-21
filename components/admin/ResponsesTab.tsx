@@ -142,7 +142,7 @@ export default function ResponsesTab() {
           <input
             type="text" placeholder="Search responses…" value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full p-3 pl-10 border border-[#e0e8ec] rounded-lg text-[12px] text-[#2d2d2d] bg-white outline-none"
+            className="w-full p-3 pl-10 border border-[#e0e8ec] rounded-lg text-[12px] text-[#000000] bg-white outline-none focus:outline-none focus:ring-0 focus:border-[#8CC7D5]"
           />
         </div>
 
@@ -155,20 +155,20 @@ export default function ResponsesTab() {
           style={{
             display: "flex", alignItems: "center", gap: 7,
             background: hasFilters ? "#5a9aaa" : "white",
-            color: hasFilters ? "white" : "#444",
+            color: hasFilters ? "white" : "#06596d",
             border: "1px solid #e0e8ec", borderRadius: 7, padding: "7px 14px",
             fontSize: "0.85rem", cursor: "pointer", whiteSpace: "nowrap",
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M4 6h16M7 12h10M10 18h4" stroke={hasFilters ? "white" : "#888"} strokeWidth="2" strokeLinecap="round"/>
+            <path d="M4 6h16M7 12h10M10 18h4" stroke={hasFilters ? "white" : "#06596d"} strokeWidth="2" strokeLinecap="round"/>
           </svg>
           Filters {hasFilters ? `(${activeFilters.length})` : ""}
         </button>
 
         {/* Export button */}
         <button
-          className="bg-[#6098AE] text-[#ffffff] hover:bg-[#4a8798] flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="bg-[#06596d] text-[#ffffff] hover:bg-[#4a8798] flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           onClick={() => { if (filtered.length > 0) setShowExportModal(true); }}
           disabled={filtered.length === 0}
         >
@@ -217,7 +217,7 @@ export default function ResponsesTab() {
         <div className="hidden md:block overflow-x-auto shadow-sm border-t border-slate-200">
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
-              <tr className="bg-slate-50/95 backdrop-blur text-slate-500">
+              <tr className="bg-slate-50/95 backdrop-blur text-[#000000]">
                 {[
                   "Email",
                   "Date",
@@ -234,7 +234,7 @@ export default function ResponsesTab() {
                 ].map((h) => (
                   <th
                     key={h}
-                    className="px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500 whitespace-nowrap border-b border-slate-200"
+                    className="px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#06596d] whitespace-nowrap border-b border-slate-200"
                   >
                     {h}
                   </th>
@@ -359,7 +359,7 @@ export default function ResponsesTab() {
                     </td>
 
                     <td className="px-4 py-3.5 text-center">
-                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#2d2d2d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
+                      <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#06596d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
                         {r.totalScore}
                       </span>
                     </td>

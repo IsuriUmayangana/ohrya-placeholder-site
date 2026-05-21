@@ -42,7 +42,7 @@ export default function DashboardNav({
     <header className="bg-white border-b border-[#e8f0f2] fixed top-0 left-0 right-0 z-20">
 
       {/* Desktop Header */}
-      <div className="hidden lg:flex items-center justify-between px-8 py-1">
+      <div className="max-w-[1440px] mx-auto hidden lg:flex items-center justify-between px-8 py-1">
         
         {/* Left */}
         <div className="flex items-center gap-6">
@@ -54,10 +54,10 @@ export default function DashboardNav({
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
-                className={`px-4 py-2 text-sm border-b-2 transition cursor-pointer ${
+                className={`px-4 py-2 text-sm border-b-2 transition transition-colors duration-200 cursor-pointer ${
                   activeTab === tab.id
-                    ? "border-[#5a9aaa] text-[#5a9aaa]"
-                    : "border-transparent text-[#888]"
+                    ? "border-[#5a9aaa] text-[#5a9aaa] font-bold"
+                    : "border-transparent text-[#000000]"
                 }`}
               >
                 {tab.label}
@@ -120,8 +120,8 @@ export default function DashboardNav({
 
       {/* Mobile breadcrumb */}
       <div className="lg:hidden flex items-center gap-2 px-4 py-1 border-b border-[#f4f4f4] text-xs">
-        <span className="text-[#bbb]">Dashboard</span>
-        <span className="text-[#ddd]">›</span>
+        <span className="text-[#06596d]">Dashboard</span>
+        <span className="text-[#06596d]">›</span>
         <span className="text-[#5a9aaa] font-medium">{activeLabel}</span>
       </div>
 
@@ -157,8 +157,8 @@ export default function DashboardNav({
                 }}
                 className={`w-full text-left px-6 py-4 cursor-pointer ${
                   activeTab === tab.id
-                    ? "text-[#5a9aaa] bg-[#5a9aaa]/10"
-                    : "text-[#444]"
+                    ? "text-[#5a9aaa] bg-[#5a9aaa]/10 font-bold"
+                    : "text-[#000000]"
                 }`}
               >
                 {tab.label}

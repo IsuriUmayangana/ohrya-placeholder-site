@@ -226,10 +226,10 @@ export default function FiltersModal({ initial, onApply, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <div className="flex items-center gap-10">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round"/></svg>
-            <span className="text-lg font-bold text-[#2d2d2d]">Filter responses</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M7 12h10M10 18h4" stroke="#000000" strokeWidth="2" strokeLinecap="round"/></svg>
+            <span className="text-lg font-medium text-[#000000]">Filter responses</span>
           </div>
-          <button onClick={onClose} className="bg-none border-none cursor-pointer text-lg text-[#aaa]">✕</button>
+          <button onClick={onClose} className="bg-none border-none cursor-pointer text-lg text-[#000000]">✕</button>
         </div>
 
         {/* Body */}
