@@ -68,30 +68,30 @@ const themes: Record<
   }
 > = {
     blue: {
-        bg: "from-[#5a9aaa]/50 to-[#4a8798]/50",
+        bg: "from-[#8CC7D5]/60 to-[#5a9aaa]/95",
         title: "text-[#3d6b76]",
-        value: "text-[#2d2d2d]",
-        badge: "bg-[#e8f4f7]",
-        badgeText: "text-[#3d6b76]",
-        subtitle: "text-[#7aabb8]",
+        value: "text-[#000000]",
+        badge: "bg-[#000000]",
+        badgeText: "text-[#000000]",
+        subtitle: "text-[#000000]",
         iconBtn: "bg-[#e8f4f7] text-[#5a9aaa] hover:bg-[#d0eaf0]",
     },
     teal: {
-        bg: "from-[#c9a84c]/50 to-[#a8892e]/50",
-        title: "text-[#7a6020]",
-        value: "text-[#2d2d2d]",
+        bg: "from-[#FFE59F] to-[#FFC62B]",
+        title: "text-[#000000]",
+        value: "text-[#000000]",
         badge: "bg-[#fdf6e3]",
-        badgeText: "text-[#7a6020]",
-        subtitle: "text-[#c9a84c]",
+        badgeText: "text-[#000000]",
+        subtitle: "text-[#000000]",
         iconBtn: "bg-[#fdf6e3] text-[#c9a84c] hover:bg-[#faedc4]",
     },
     combined: {
         bg: "from-[#5a9aaa]/50 via-[#a9d0da]/50 to-[#c9a84c]/50",
-        title: "text-[#3d6b76]",
-        value: "text-[#2d2d2d]",
+        title: "text-[#000000]",
+        value: "text-[#000000]",
         badge: "bg-[#e8f4f7]",
-        badgeText: "text-[#3d6b76]",
-        subtitle: "text-[#7aabb8]",
+        badgeText: "text-[#000000]",
+        subtitle: "text-[#000000]",
         iconBtn: "bg-[#e8f4f7] text-[#5a9aaa] hover:bg-[#d0eaf0]",
     },
 };
@@ -128,7 +128,7 @@ export default function CardWidget({
   if (variant === "solid") {
     return (
         <div
-        className={`relative overflow-hidden bg-gradient-to-b ${t.bg} p-5 rounded-2xl h-[150px] w-full flex flex-col justify-between`}
+        className={`relative overflow-hidden bg-gradient-to-r ${t.bg} p-5 rounded-2xl h-[150px] w-full flex flex-col justify-between`}
       >
         {/* Decorative background shapes */}
         <div className="absolute top-0 right-0 w-34 h-34 rounded-full -translate-y-8 translate-x-8 opacity-30"
@@ -139,7 +139,7 @@ export default function CardWidget({
         <div className="relative z-10 flex flex-col justify-between h-full">
             {/* Top */}
             <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-gray-600">{title}</p>
+                <p className="text-sm font-bold">{title}</p>
                 <div className="flex items-center gap-2">
                     {icons && icon[icons]}
                 </div>
@@ -148,7 +148,7 @@ export default function CardWidget({
             {/* Bottom */}
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                    <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium text-gray-900">
+                    <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium">
                         <AnimatedStat value={value} />
                     </span>
                     {badge && (
@@ -158,7 +158,7 @@ export default function CardWidget({
                     )}
                 </div>
                 {subtitle && (
-                    <p className="text-xs text-gray-500">{subtitle}</p>
+                    <p className="text-xs font-regular">{subtitle}</p>
                 )}
             </div>
         </div>
@@ -168,21 +168,21 @@ export default function CardWidget({
 
   // OUTLINE (white + gradient border)
   return (
-    <div className={`h-[150px] w-full p-[1.5px] rounded-2xl bg-gradient-to-b ${t.bg}`}>
+    <div className={`h-[150px] w-full p-[1.5px] rounded-2xl bg-gradient-to-r ${t.bg}`}>
       
       <div className="relative overflow-hidden bg-white rounded-2xl h-full w-full p-5 flex flex-col justify-between">
 
         {/* Decorative background shapes */}
         <div className="absolute top-0 right-0 w-34 h-34 rounded-full -translate-y-8 translate-x-8 opacity-60"
-            style={{ background: theme === "teal" ? "#fdf6e3" : "#e8f4f7" }} />
-        <div className="absolute top-0 right-0 w-36 h-36 rounded-full border opacity-20 -translate-y-9 translate-x-9"
-            style={{ borderColor: theme === "teal" ? "#c9a84c" : "#5a9aaa" }} />
+            style={{ background: theme === "teal" ? "#FFE59F" : "#e8f4f7" }} />
+        <div className="absolute top-0 right-0 w-36 h-36 rounded-full border  -translate-y-9 translate-x-9"
+            style={{ borderColor: theme === "teal" ? "#FFE59F" : "#5a9aaa" }} />
 
         <div className="relative z-10 flex flex-col justify-between h-full">
           
           {/* Top */}
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-gray-600">{title}</p>
+            <p className="text-sm font-medium ">{title}</p>
             <div className="flex items-center gap-2">
                 {icons && icon[icons]}
             </div>
@@ -191,7 +191,7 @@ export default function CardWidget({
           {/* Bottom */}
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium text-gray-900">
+              <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium">
                 <AnimatedStat value={value} />
               </span>
               {badge && (
@@ -201,7 +201,7 @@ export default function CardWidget({
               )}
             </div>
             {subtitle && (
-              <p className="text-xs text-gray-500">{subtitle}</p>
+              <p className="text-xs font-regular">{subtitle}</p>
             )}
           </div>
   
