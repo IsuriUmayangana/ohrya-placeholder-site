@@ -101,7 +101,7 @@ export default function InsightsTab() {
       <div className={`bg-white h-auto border border-slate-200 rounded-2xl p-6 shadow-sm transition-opacity ${loading ? "opacity-60" : "opacity-100"}`}>
 
         <div className="flex items-center justify-between mb-6">
-          <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">Big picture</p>
+          <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#000000]">Big Picture</p>
         </div>
 
         {/* Mobile slider Cards */}
@@ -158,7 +158,10 @@ export default function InsightsTab() {
 
       {/* Trends */}
       <div className="bg-white border border-slate-200 shadow-sm rounded-2xl p-6 mb-6">
-        <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">Trends</p>
+
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#000000]">Trends</p>
+        </div>
         {loading ? (
           <div className="h-52 flex items-center justify-center">
             <p className="text-[#ccc]">Loading…</p>
@@ -179,16 +182,17 @@ export default function InsightsTab() {
               <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f4" vertical={false} />
               <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#bbb" }} axisLine={false} tickLine={false} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#bbb" }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #e8f0f2", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }} />
+              <Tooltip contentStyle={{ fontSize: 12, color: "#000000", borderRadius: 8, border: "1px solid #e8f0f2", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }} />
               <Area
                 type="monotone"
                 dataKey="count"
                 name="Submissions"
-                stroke="#c9a84c"
-                strokeWidth={2}
+                color="#000000"
+                stroke="#FFC62B"
+                strokeWidth={1}
                 fill="url(#tealGrad)"
                 dot={false}
-                activeDot={{ r: 4, fill: "#c9a84c" }}
+                activeDot={{ r: 4, fill: "#FFC62B" }}
                 isAnimationActive
                 animationBegin={0}
                 animationDuration={900}
@@ -203,9 +207,9 @@ export default function InsightsTab() {
       <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
   
       {/* Question by question table header */}
-      <div className="p-6 border-b border-slate-200 bg-slate-50/95 backdrop-blur">
-        <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#2d2d2d]">
-          Question by question
+      <div className="p-6 lg:border-b lg:border-slate-200 backdrop-blur">
+        <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#000000]">
+          Question by Question
         </p>
       </div>
 
@@ -218,7 +222,7 @@ export default function InsightsTab() {
               {["Questions", "Views"].map((h) => (
                 <th
                   key={h}
-                  className="px-6 py-4 text-left font-medium text-[#4a8798] border-b border-slate-200"
+                  className="px-6 py-4 text-left font-medium text-[#000000] border-b border-slate-200"
                 >
                   {h}
                 </th>
@@ -239,7 +243,7 @@ export default function InsightsTab() {
                   key={i}
                   className="border-b border-[#f1f5f7] hover:bg-[#f9fcfd] transition"
                 >
-                  <td className="px-6 py-4 flex items-center gap-3 text-[#2d2d2d]">
+                  <td className="px-6 py-4 flex items-center gap-3 text-[#000000]">
                     
                     {/* Icon */}
                     <span
@@ -274,7 +278,7 @@ export default function InsightsTab() {
                     {row.question}
                   </td>
 
-                  <td className="px-10 py-4 text-[#4a8798] font-medium">
+                  <td className="px-10 py-4 text-[#000000] font-medium">
                     {row.views}
                   </td>
                 </tr>
@@ -285,7 +289,7 @@ export default function InsightsTab() {
       </div>
 
       {/* Question by question table - Mobile view */}
-      <div className="md:hidden p-3 space-y-3 bg-[#f7fbfc]">
+      <div className="md:hidden p-3 space-y-3 ">
         {(data?.dropOff ?? []).map((row, i) => {
           const isScore = /score|brilliant|almost|well done/i.test(
             row.question
@@ -327,14 +331,14 @@ export default function InsightsTab() {
                 </span>
 
                 <div className="flex-1">
-                  <p className="text-[#2d2d2d] text-sm leading-relaxed">
+                  <p className="text-[#000000] text-sm leading-relaxed">
                     {row.question}
                   </p>
 
                   <div className="mt-4 flex flex-col gap-2 w-full">
                     <div className="flex-1 rounded-xl bg-[#f4f9fb] border border-[#e6eef1] p-3 inline-block">
-                      <p className="text-[#4a8798] text-xs mb-1">Views</p>
-                      <p className="text-[#2d2d2d] font-medium">{row.views}</p>
+                      <p className="text-[#000000] text-xs mb-1">Views</p>
+                      <p className="text-[#000000] font-medium">{row.views}</p>
                     </div>
                   </div>
                 </div>
