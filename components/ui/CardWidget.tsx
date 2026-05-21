@@ -139,7 +139,7 @@ export default function CardWidget({
         <div className="relative z-10 flex flex-col justify-between h-full">
             {/* Top */}
             <div className="flex items-center justify-between">
-                <p className="text-sm font-bold">{title}</p>
+                <p className="text-sm font-medium">{title}</p>
                 <div className="flex items-center gap-2">
                     {icons && icon[icons]}
                 </div>
@@ -148,7 +148,7 @@ export default function CardWidget({
             {/* Bottom */}
             <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                    <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium">
+                    <span className="text-4xl md:text-3xl lg:text-5xl pl-2 font-medium">
                         <AnimatedStat value={value} />
                     </span>
                     {badge && (
@@ -191,7 +191,7 @@ export default function CardWidget({
           {/* Bottom */}
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-5xl md:text-4xl pl-5 md:pl-2 font-medium">
+              <span className="text-4xl md:text-5xl pl-2 font-medium">
                 <AnimatedStat value={value} />
               </span>
               {badge && (
