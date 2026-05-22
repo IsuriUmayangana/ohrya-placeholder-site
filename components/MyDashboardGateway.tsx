@@ -213,7 +213,7 @@ function MyDashboardGatewayInner() {
             <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-2 ">
               Haven't taken the survey?{" "}
               <a
-                href="/"
+                href="https://form.ohrya.org/"
                 className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80 flex items-center gap-2"
               >
                 Start Here
