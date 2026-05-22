@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, Suspense } from "react";
+import { useState, useCallback, useRef, Suspense, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import WelcomeStep from "./steps/WelcomeStep";
@@ -21,7 +21,6 @@ import Loading from "@/app/loading";
 import NavButton from "./ui/NavButton";
 import Image from "next/image";
 import ReferralBanner from "./ui/ReferralBanner";
-
 const STEPS = [
   "welcome",
   "campaign",
@@ -89,7 +88,7 @@ function SurveyInner() {
   const currentStep: Step = STEPS[stepIndex];
   const [maxStepReached, setMaxStepReached] = useState(0);
 
-  const [stepError, setStepError] = useState("");
+  const [stepError, setStepError] = useState<ReactNode>("");
 
   const goNext = useCallback(() => {
     if (currentStep === "welcome" && !startedAt) {
@@ -184,9 +183,21 @@ function SurveyInner() {
 
       try {
         // Duplicate check
+        // TODO: confirm if this is the correct linking to the dashboard
         const check = await fetch(`/api/user/by-email?email=${encodeURIComponent(trimmed)}`);
         if (check.ok) {
-          setStepError("This email has already completed the survey. Visit My Dashboard to view your results.");
+          setStepError(
+            <>
+              This email has already completed the survey.{" "}
+              <a
+                href="https://dashboard.ohrya.org/my-dashboard"
+                className="underline text-[#5a9aaa] hover:font-medium"
+              >
+                Visit My Dashboard
+              </a>{" "}
+              to view your results.
+            </>
+          );
           setSubmitting(false);
           return;
         }
