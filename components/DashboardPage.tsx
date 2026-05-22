@@ -238,7 +238,7 @@ export default function DashboardPage({ slug }: Props) {
               <div className="flex flex-col gap-5">
                 <h3 className="text-base font-semibold text-[#000000]">Share and earn more points</h3>
                 <p className="text-sm text-[#000000] leading-6">
-                  The more you share, the more you earn. Copy your referral link and share it to unlock more points. You can share your link on social media, email, or any other platform.
+                  The more you share, the more you earn. Copy your referral link and share on social media, email, or any other platform to unlock additional points.
                 </p>
 
                 {/* Referral link */}
