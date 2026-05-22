@@ -191,7 +191,7 @@ function SurveyInner() {
               This email has already completed the survey.{" "}
               <a
                 href="https://dashboard.ohrya.org/my-dashboard"
-                className="underline text-[#5a9aaa] hover:font-medium"
+                className="underline text-[#5a9aaa]"
               >
                 Visit My Dashboard
               </a>{" "}
