@@ -28,16 +28,45 @@ function tableName(): string {
   return t;
 }
 
+/**
+ * Referral bonus formula.
+ * clicks    = 0 (not tracked yet; keeping the variable for future use)
+ * donations = 0 (not tracked yet; keeping the variable for future use)
+ *
+ * ClickNew  = clicks + 50
+ * SCR       = (signUps + 1) / (ClickNew + 1)
+ * DCR       = (donations + 1) / (signUps + 1)
+ * BaseScore = (3 × SCR) + (30 × DCR)
+ * Efficiency= (signUps + donations) / ClickNew
+ * Multiplier= Efficiency ^ 0.5
+ * LogVolume = ln(1 + signUps + donations)
+ * MS        = BaseScore × LogVolume × Multiplier
+ * MSE       = MS × 100
+ */
+function calcReferralScore(referralCount: number, donations = 0, clicks = 0): number {
+  const signUps = referralCount;
+  const clickNew = clicks + 50;
+  const scr = (signUps + 1) / (clickNew + 1);
+  const dcr = (donations + 1) / (signUps + 1);
+  const baseScore = 3 * scr + 30 * dcr;
+  const efficiency = (signUps + donations) / clickNew;
+  const multiplier = Math.sqrt(efficiency);
+  const logVolume = Math.log(1 + signUps + donations);
+  const ms = baseScore * logVolume * multiplier;
+  return Math.round(ms * 100 * 100) / 100;
+}
+
 function toPublic(r: SurveyResponse): PublicUserStats {
+  const referralScore = calcReferralScore(r.referralCount, 0, r.referralClicks ?? 0);
   return {
     referralCode: r.referralCode,
     emailSlug: r.emailSlug,
     email: r.email,
     surveyScore: r.surveyScore,
-    referralScore: r.referralScore,
+    referralScore,
     referralCount: r.referralCount,
     campaign: r.campaign,
-    totalScore: r.surveyScore + r.referralScore,
+    totalScore: r.surveyScore + referralScore,
   };
 }
 
@@ -108,6 +137,7 @@ export async function dynamoSaveResponse(
     emailSlug,
     referralScore: 0,
     referralCount: 0,
+    referralClicks: 0,
     submittedAt: now.toISOString(),
     timeToCompleteSeconds,
     device: data.device ?? "Other",
@@ -195,6 +225,31 @@ export async function dynamoGetAllResponses(): Promise<SurveyResponse[]> {
   } while (cursor);
 
   return out;
+}
+
+export async function dynamoIncrementReferralClicks(code: string): Promise<void> {
+  const doc = getDoc();
+  const tbl = tableName();
+  const q = await doc.send(
+    new QueryCommand({
+      TableName: tbl,
+      IndexName: REFERRAL_CODE_GSI,
+      KeyConditionExpression: "referralCode = :c",
+      ExpressionAttributeValues: { ":c": code.toUpperCase() },
+      Limit: 1,
+    })
+  );
+  const ref = q.Items?.[0];
+  if (ref?.id) {
+    await doc.send(
+      new UpdateCommand({
+        TableName: tbl,
+        Key: { id: ref.id },
+        UpdateExpression: "ADD referralClicks :one",
+        ExpressionAttributeValues: { ":one": 1 },
+      })
+    );
+  }
 }
 
 export async function dynamoGetStats() {

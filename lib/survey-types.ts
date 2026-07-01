@@ -14,6 +14,7 @@ export interface SurveyResponse {
   surveyScore: number;
   referralScore: number;
   referralCount: number;
+  referralClicks: number;
   startedAt: string;
   submittedAt: string;
   timeToCompleteSeconds: number;

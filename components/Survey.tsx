@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useCallback, useRef, Suspense, type ReactNode } from "react";
+import { useState, useCallback, useRef, useEffect, Suspense, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import WelcomeStep from "./steps/WelcomeStep";
 import CampaignStep from "./steps/CampaignStep";
 import GiveStep from "./steps/GiveStep";
-import ScoreStep from "./steps/ScoreStep";
 import DonationStep from "./steps/DonationStep";
 import VoteStep from "./steps/VoteStep";
 import ShineStep from "./steps/ShineStep";
@@ -25,13 +24,10 @@ const STEPS = [
   "welcome",
   "campaign",
   "give",
-  "score-brilliant",
   "donation",
   "vote",
-  "score-almost",
   "shine",
   "recognition",
-  "score-welldone",
   "email",
   "referral-share",
 ] as const;
@@ -50,17 +46,20 @@ interface Answers {
   email: string;
 }
 
-function calcSurveyScore(a: Answers): number {
-  let s = 0;
-  if (a.willGive === "Yes") s += 2;
-  if (a.willVote === "Yes") s += 2;
-  if (a.willShine === "Yes") s += 2;
-  return s;
-}
 
 function SurveyInner() {
   const searchParams = useSearchParams();
   const referredBy = searchParams.get("ref") || "";
+
+  // Track referral link click once on page load
+  useEffect(() => {
+    if (!referredBy) return;
+    fetch("/api/referral/click", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: referredBy }),
+    }).catch(() => {});
+  }, [referredBy]);
 
   const [emailError, setEmailError] = useState("");
 
@@ -120,7 +119,7 @@ function SurveyInner() {
           sessionId: Math.random().toString(36).slice(2),
           referredBy,
           ...answers,
-          surveyScore: calcSurveyScore(answers),
+          surveyScore: 10,
           startedAt,
         }),
       });
@@ -329,7 +328,6 @@ function SurveyInner() {
     if (typeof window !== "undefined") window.history.replaceState({}, "", "/");
   }, []);
 
-  const surveyScore = calcSurveyScore(answers);
   const questionIdx = QUESTION_STEPS.indexOf(currentStep as string);
   const showProgress = questionIdx !== -1;
   const progressPct = showProgress ? ((questionIdx + 1) / QUESTION_STEPS.length) * 100 : 0;
@@ -387,23 +385,14 @@ function SurveyInner() {
                 {currentStep === "give" && (
                   <GiveStep value={answers.willGive} onChange={(v) => { setAnswers((a) => ({ ...a, willGive: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
-                {currentStep === "score-brilliant" && (
-                  <ScoreStep score={surveyScore} variant="brilliant"  />
-                )}
                 {currentStep === "donation" && (
                   <DonationStep value={answers.donationAmount} onChange={(v) => { setAnswers((a) => ({ ...a, donationAmount: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
                 {currentStep === "vote" && (
                   <VoteStep value={answers.willVote} onChange={(v) => { setAnswers((a) => ({ ...a, willVote: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
-                {currentStep === "score-almost" && (
-                  <ScoreStep score={surveyScore} variant="almost"  />
-                )}
                 {currentStep === "shine" && (
                   <ShineStep value={answers.willShine} onChange={(v) => { setAnswers((a) => ({ ...a, willShine: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
-                )}
-                {currentStep === "score-welldone" && (
-                  <ScoreStep score={surveyScore} variant="welldone"  />
                 )}
                 {currentStep === "recognition" && (
                   <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
@@ -445,18 +434,8 @@ function SurveyInner() {
             </div>
           )}
 
-          {/* Score Buttons */}
+          {/* Step Buttons */}
           <div className="flex flex-row items-center justify-center justify-center text-center gap-2 lg:px-6 lg:gap-5 w-full p-4">
-            {currentStep === "score-brilliant" && (
-              <StepButton onClick={handleStepNext}>Next</StepButton>
-            )}
-            {currentStep === "score-almost" && (
-              <StepButton onClick={handleStepNext}>Next</StepButton>
-            )}
-            {currentStep === "score-welldone" && (
-              <StepButton onClick={handleStepNext}>Next</StepButton>
-            )}
-
             {/* Get Started Button */}
             {currentStep === "welcome" && (
               <StepButton onClick={handleStepNext}>
