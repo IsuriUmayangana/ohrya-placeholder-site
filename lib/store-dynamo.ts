@@ -82,6 +82,7 @@ export async function dynamoSaveResponse(
     | "emailSlug"
     | "referralScore"
     | "referralCount"
+    | "referralClicks"
     | "submittedAt"
     | "timeToCompleteSeconds"
     | "device"
