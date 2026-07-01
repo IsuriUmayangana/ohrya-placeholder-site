@@ -197,6 +197,21 @@ export async function getAllResponses(): Promise<SurveyResponse[]> {
   return readDB();
 }
 
+export async function getLeaderboard(): Promise<(PublicUserStats & { name: string })[]> {
+  const responses = useDynamo
+    ? await (await loadDynamo()).dynamoGetAllResponses()
+    : readDB();
+
+  return responses
+    .map((r) => {
+      const pub = toPublic(r);
+      const local = r.email.split("@")[0];
+      const name = local.charAt(0).toUpperCase() + local.slice(1).replace(/[._-]/g, " ");
+      return { ...pub, name };
+    })
+    .sort((a, b) => b.totalScore - a.totalScore);
+}
+
 export async function incrementReferralClicks(code: string): Promise<void> {
   if (useDynamo) {
     const d = await loadDynamo();

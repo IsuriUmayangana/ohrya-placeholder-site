@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.gravatar.com",
+      },
     ],
   },
   // Embed these server-side env vars into the build so they are available

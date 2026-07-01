@@ -22,6 +22,14 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
+  // ── leaderboard.ohrya.org ─────────────────────────────────────────────────
+  if (sub === "leaderboard") {
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/leaderboard", req.url));
+    }
+    return NextResponse.next();
+  }
+
   // ── admin.ohrya.org ───────────────────────────────────────────────────────
   if (sub === "admin") {
     // Redirect bare root to /admin
