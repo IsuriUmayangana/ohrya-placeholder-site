@@ -1,3 +1,5 @@
+export const SURVEY_SCORE = 10;
+
 export interface SurveyResponse {
   id: string;
   sessionId: string;

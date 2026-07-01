@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
-import type { SurveyResponse } from "@/lib/survey-types";
+import type { SurveyResponse, SURVEY_SCORE } from "@/lib/survey-types";
 
 function detectDevice(ua: string): SurveyResponse["device"] {
   const s = ua.toLowerCase();
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       willShine: body.willShine || "",
       prefersEarning: body.prefersEarning || "",
       email: body.email || "",
-      surveyScore: body.surveyScore || 0,
+      surveyScore: SURVEY_SCORE,
       startedAt: body.startedAt || new Date().toISOString(),
       device: detectDevice(ua),
     });

@@ -66,7 +66,7 @@ export default function DashboardPage({ slug }: Props) {
   const progressPct = Math.min((totalScore / maxBar) * 100, 100);
 
   // Calculate survey and referral percentages
-  const surveyPct = (stats!.surveyScore / 6) * 100;
+  const surveyPct = (stats!.surveyScore / 10) * 100;
   const referralPct = Math.min((stats!.referralScore / Math.max(totalScore || 1, 1)) * 100, 100);
 
   

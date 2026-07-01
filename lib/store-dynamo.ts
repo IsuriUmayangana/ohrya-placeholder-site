@@ -8,7 +8,7 @@ import {
   ScanCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
-import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
+import type { PublicUserStats, SurveyResponse, SURVEY_SCORE } from "@/lib/survey-types";
 
 function getDoc() {
   const region = process.env.AWS_REGION ?? "us-east-1";
@@ -62,11 +62,11 @@ function toPublic(r: SurveyResponse): PublicUserStats {
     referralCode: r.referralCode,
     emailSlug: r.emailSlug,
     email: r.email,
-    surveyScore: r.surveyScore,
+    surveyScore: SURVEY_SCORE,
     referralScore,
     referralCount: r.referralCount,
     campaign: r.campaign,
-    totalScore: r.surveyScore + referralScore,
+    totalScore: SURVEY_SCORE + referralScore,
   };
 }
 
@@ -133,6 +133,7 @@ export async function dynamoSaveResponse(
 
   const response: SurveyResponse = {
     ...data,
+    surveyScore: SURVEY_SCORE,
     id: Math.random().toString(36).slice(2, 10),
     referralCode,
     emailSlug,

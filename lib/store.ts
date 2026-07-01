@@ -2,7 +2,7 @@ import "server-only";
 
 import fs from "fs";
 import path from "path";
-import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
+import type { PublicUserStats, SurveyResponse, SURVEY_SCORE } from "@/lib/survey-types";
 
 export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 
@@ -88,11 +88,11 @@ function toPublic(r: SurveyResponse): PublicUserStats {
     referralCode: r.referralCode,
     emailSlug: r.emailSlug,
     email: r.email,
-    surveyScore: r.surveyScore,
+    surveyScore: SURVEY_SCORE,
     referralScore,
     referralCount: r.referralCount,
     campaign: r.campaign,
-    totalScore: r.surveyScore + referralScore,
+    totalScore: SURVEY_SCORE + referralScore,
   };
 }
 
@@ -132,6 +132,7 @@ async function fileSaveResponse(
 
   const response: SurveyResponse = {
     ...data,
+    surveyScore: SURVEY_SCORE,
     id: Math.random().toString(36).slice(2, 10),
     referralCode,
     emailSlug,
