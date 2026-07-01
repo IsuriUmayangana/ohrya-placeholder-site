@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
-import type { SurveyResponse, SURVEY_SCORE } from "@/lib/survey-types";
+import type { SurveyResponse } from "@/lib/survey-types";
+import { SURVEY_SCORE } from "@/lib/survey-types";
 
 function detectDevice(ua: string): SurveyResponse["device"] {
   const s = ua.toLowerCase();

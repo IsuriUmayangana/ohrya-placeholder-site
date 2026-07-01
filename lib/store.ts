@@ -2,7 +2,8 @@ import "server-only";
 
 import fs from "fs";
 import path from "path";
-import type { PublicUserStats, SurveyResponse, SURVEY_SCORE } from "@/lib/survey-types";
+import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
+import { SURVEY_SCORE } from "@/lib/survey-types";
 
 export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 

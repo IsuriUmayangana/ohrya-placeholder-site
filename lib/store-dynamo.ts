@@ -8,7 +8,8 @@ import {
   ScanCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
-import type { PublicUserStats, SurveyResponse, SURVEY_SCORE } from "@/lib/survey-types";
+import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
+import { SURVEY_SCORE } from "@/lib/survey-types";
 
 function getDoc() {
   const region = process.env.AWS_REGION ?? "us-east-1";
