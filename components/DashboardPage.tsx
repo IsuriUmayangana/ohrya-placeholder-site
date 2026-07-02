@@ -153,7 +153,6 @@ export default function DashboardPage({ slug }: Props) {
               </div>
 
               {/* Score panel */}
-              {/* 8 */}
               <div className="w-full sm:w-[500px] relative rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-5 sm:p-7 shadow-md flex flex-col gap-4 sm:gap-6 min-h-[160px] sm:min-h-[160px]">
                 {/* Floating medallion badge */}
                 <div
@@ -170,9 +169,9 @@ export default function DashboardPage({ slug }: Props) {
                       background: "linear-gradient(145deg, #06596D, #0A3A47)",
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" className="sm:w-[19px] sm:h-[19px]" viewBox="0 0 24 24" fill="none" stroke="#FFC62B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></svg>
-                    <span className="text-[12px] sm:text-[19px] font-bold text-white leading-none">{leaderboardRank ?? "—"}</span>
-                    <p className="text-[5.5px] sm:text-[8.5px] text-center leading-tight text-white/85 max-w-[52px] sm:max-w-[74px] mt-0.5">
+                    
+                    <span className="text-2xl font-bold text-white leading-none">{leaderboardRank ?? "—"}</span>
+                    <p className="text-[8.5px] text-center leading-tight text-white/85 max-w-[52px] sm:max-w-[74px] mt-0.5">
                       Your position on the leaderboard
                     </p>
                   </div>
@@ -190,13 +189,13 @@ export default function DashboardPage({ slug }: Props) {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-white/20 pt-3 sm:pt-4">
+                <div className="flex flex-col sm:flex-col justify-start gap-3 border-t border-white/20 pt-3 sm:pt-4">
                   <p className="text-xs sm:text-sm text-white flex-1">
                     Keep sharing your referral link to continue increasing your score.
                   </p>
                   <Link
-                    href="/leaderboard"
-                    className="bg-[#FFC62B] text-[#4A3600] text-xs font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
+                    href="https://leaderboard.ohrya.org/"
+                    className="bg-[#FFC62B] text-[#4A3600] max-w-[150px] text-xs font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
                   >
                     View leaderboard
                   </Link>

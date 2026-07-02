@@ -10,36 +10,26 @@ const DEFAULT_BADGE_SECOND_COLOR = "#3990f1";
 export function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
   const rankStyle = RANK_STYLE[entry.rank];
 
-  const getMobileBg = (rank: number) => {
-    if (rank === 1) return `max-sm:bg-[${RANK_STYLE[rank].mobileBg}]`;
-    return "";
-  };
-
-  const getMobileGradient = (rank: number) => {
-    const style = RANK_STYLE[rank];
-    return style ? `max-sm:${style.mobileGradient}` : "";
-  };
+  const rowBg = rankStyle?.mobileBg || "bg-[#122A3E]";
+  const rowGradient = rankStyle?.mobileGradient || "bg-gradient-to-b from-[#6098AE] to-[#0A1B29]";
 
   return (
-    <div className={`p-[2px] rounded-[20px] bg-gradient-to-b from-[#6098AE] to-[#0A1B29] ${getMobileGradient(entry.rank)}`}>
-      <div className={`flex items-center gap-3.5 rounded-[20px] bg-[#122A3E] ${getMobileBg(entry.rank)} px-5 py-4`}>
+    <div className={`p-[2px] rounded-[20px] ${rowGradient}`}>
+      <div className={`flex items-center gap-3.5 rounded-[20px] ${rowBg} px-5 py-4`}>
         <RankBadge
           rank={entry.rank}
           color={rankStyle?.starColor ?? DEFAULT_BADGE_COLOR}
           firstColor={rankStyle?.borderStart ?? DEFAULT_BADGE_FIRST_COLOR}
           secondColor={rankStyle?.borderEnd ?? DEFAULT_BADGE_SECOND_COLOR}
-          size={30}
+          size={40}
         />
         <Avatar name={entry.name} avatarUrl={entry.avatarUrl} size={40} />
         <div className="min-w-0 flex-1">
           <div className="truncate text-[15px] font-bold text-white">
             {entry.name}
           </div>
-          <div className="mt-px text-xs text-white/40">
-            {entry.email}
-          </div>
         </div>
-        <div className="shrink-0 text-lg font-bold text-white">
+        <div className="shrink-0 text-lg font-medium text-[#6098AE]">
           {Math.round(entry.totalScore)} pts
         </div>
       </div>

@@ -21,9 +21,6 @@ export async function GET() {
       referralCount: e.referralCount,
       campaign: e.campaign,
       avatarUrl: gravatarUrl(e.email),
-
-      // Add email to the entry -> to confirm
-      email: e.email,
     }));
     return NextResponse.json(ranked);
   } catch (err) {

@@ -52,10 +52,6 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
             >
               {entry.name}
             </div>
-
-            <div className="mt-1 text-xs text-white/45">
-              {entry.email}
-            </div>
           </div>
 
           {/* Push score toward bottom */}

@@ -58,7 +58,7 @@ export default function LeaderboardPage() {
           <div className="text-center mb-11">
             <div className="mb-6 flex justify-center">
               <Image
-                src="/logo.png"
+                src="/logo-white.png"
                 alt="Ohrya"
                 width={120}
                 height={120}
