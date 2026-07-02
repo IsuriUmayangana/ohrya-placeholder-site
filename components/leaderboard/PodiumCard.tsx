@@ -14,7 +14,7 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
   const style = RANK_STYLE[entry.rank];
 
   const avatarSize = isFirst ? 72 : 58;
-  const badgeSize = 60;
+  const badgeSize = 70;
 
 
   return (
@@ -22,7 +22,7 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
       className={`relative`}
     >
       {/* Rank Badge */}
-      <div className="absolute -top-8 left-0 right-0 z-10 flex justify-center">
+      <div className="absolute -top-10 left-0 right-0 z-10 flex justify-center">
         <RankBadge
           rank={entry.rank}
           color={style.starColor}
@@ -46,7 +46,7 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
           </div>
 
           {/* Name */}
-          <div className="mb-4 text-center">
+          <div className="mb-8 text-center">
             <div
               className={`font-semibold leading-[1.25] text-white ${isFirst ? "text-xl" : "text-[17px]"}`}
             >
@@ -54,19 +54,16 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
             </div>
           </div>
 
-          {/* Push score toward bottom */}
-          <div className="flex-1" />
-
           {/* Score */}
           <div className="text-center">
             <div
-              className={`font-extrabold leading-none text-[#FFC933] ${isFirst ? "text-[22px]" : "text-lg"}`}
+              className={`font-extrabold leading-none text-[#FFC933] text-[30px]`}
             >
               {Math.round(entry.totalScore)} pts
             </div>
 
             {isFirst && entry.referralScore > 0 && (
-              <div className="mt-3 text-base font-bold text-[#F57BA6]">
+              <div className="mt-3 text-[22px] font-medium text-[#F57BA6]">
                 +{Math.round(entry.referralScore)}
               </div>
             )}

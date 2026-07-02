@@ -195,7 +195,7 @@ export default function DashboardPage({ slug }: Props) {
                   </p>
                   <Link
                     href="https://leaderboard.ohrya.org/"
-                    className="bg-[#FFC62B] text-[#4A3600] max-w-[150px] text-xs font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
+                    className="bg-[#FFC62B] text-[#4A3600] max-w-[150px] text-xs text-center font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
                   >
                     View leaderboard
                   </Link>

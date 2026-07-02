@@ -12,6 +12,7 @@ export function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
 
   const rowBg = rankStyle?.mobileBg || "bg-[#122A3E]";
   const rowGradient = rankStyle?.mobileGradient || "bg-gradient-to-b from-[#6098AE] to-[#0A1B29]";
+  const rowScoreTextColor = rankStyle?.mobileScoreTextColor || "text-[#6098AE]";
 
   return (
     <div className={`p-[2px] rounded-[20px] ${rowGradient}`}>
@@ -29,7 +30,7 @@ export function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
             {entry.name}
           </div>
         </div>
-        <div className="shrink-0 text-lg font-medium text-[#6098AE]">
+        <div className={`shrink-0 text-lg font-medium ${rowScoreTextColor}`}>
           {Math.round(entry.totalScore)} pts
         </div>
       </div>

@@ -11,11 +11,11 @@ export const AVATAR_COLORS = [
   
   export const RANK_STYLE: Record<
     number,
-    { bgColor: string; glow: string; borderStart: string; borderEnd: string; starColor: string; mobileBg: string; mobileGradient: string }
+    { bgColor: string; glow: string; borderStart: string; borderEnd: string; starColor: string; mobileBg: string; mobileGradient: string; mobileScoreTextColor: string }
   > = {
-    1: { bgColor: "#FFD700", glow: "rgba(255,215,0,0.35)", borderStart: "#fee28e", borderEnd: "#c79300", starColor: "#bd8901", mobileBg: "bg-[#4E3F06]", mobileGradient: "bg-gradient-to-r from-[#FFE397] to-[#C89200]" },
-    2: { bgColor: "#c0392b", glow: "rgba(192,57,43,0.3)",  borderStart: "#ff9192", borderEnd: "#ff2627",  starColor: "#ff412b", mobileBg: "bg-[#122A3E]", mobileGradient: "bg-gradient-to-r from-[#3a1512] to-[#122A3E]" },
-    3: { bgColor: "#7d3c98", glow: "rgba(125,60,152,0.3)", borderStart: "#c99cff", borderEnd: "#8e3af0", starColor: "#8a38f6", mobileBg: "bg-[#122A3E]", mobileGradient: "bg-gradient-to-r from-[#251530] to-[#122A3E]" },
+    1: { bgColor: "#FFD700", glow: "rgba(255,215,0,0.35)", borderStart: "#fee28e", borderEnd: "#c79300", starColor: "#bd8901", mobileBg: "bg-[#4E3F06]", mobileGradient: "bg-gradient-to-b from-[#FFE397] to-[#C89200]", mobileScoreTextColor: "text-[#FFC62B]" },
+    2: { bgColor: "#c0392b", glow: "rgba(192,57,43,0.3)",  borderStart: "#ff9192", borderEnd: "#ff2627",  starColor: "#ff412b", mobileBg: "bg-[#122A3E]", mobileGradient: "bg-gradient-to-b from-[#6098AE] to-[#0A1B29]", mobileScoreTextColor: "text-[#FFC62B]" },
+    3: { bgColor: "#7d3c98", glow: "rgba(125,60,152,0.3)", borderStart: "#c99cff", borderEnd: "#8e3af0", starColor: "#8a38f6", mobileBg: "bg-[#122A3E]", mobileGradient: "bg-gradient-to-b from-[#6098AE] to-[#0A1B29]", mobileScoreTextColor: "text-[#FFC62B]" },
   };
 
   export const RANK_BADGE_COLOR = "#3b82e0";

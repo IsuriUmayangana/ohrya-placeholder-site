@@ -29,7 +29,7 @@ export function RankBadge({
 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
-      {/* BORDER STAR (gradient stroke, exact star outline) */}
+      {/* STROKE STAR */}
       <svg
         width={size}
         height={size}
@@ -43,8 +43,7 @@ export function RankBadge({
           </linearGradient>
         </defs>
 
-        {/* scaled slightly inward around center so the 2px stroke
-            doesn't get clipped by the viewBox edges */}
+        {/* STROKE STAR */}
         <path
           d={STAR_PATH}
           transform="translate(12 12) scale(0.92) translate(-12 -12)"
