@@ -69,7 +69,7 @@ function emailToSlug(email: string): string {
  * MS        = BaseScore × LogVolume × Multiplier
  * MSE       = MS × 100
  */
-function calcReferralScore(referralCount: number, donations = 0, clicks = 0): number {
+export function calcReferralScore(referralCount: number, donations = 0, clicks = 0): number {
   // clicks: actual referral link clicks tracked; falls back to 0 if not yet recorded
   const signUps = referralCount;
   const clickNew = clicks + 50;

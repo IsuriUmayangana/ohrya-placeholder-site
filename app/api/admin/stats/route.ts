@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllResponses } from "@/lib/store";
+import { getAllResponses, calcReferralScore } from "@/lib/store";
+import { SURVEY_SCORE } from "@/lib/survey-types";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,9 @@ export async function GET(req: NextRequest) {
   if (device && device !== "All") {
     responses = responses.filter((r) => (r.device ?? "Other") === device);
   }
+
+  // Most recent submissions first
+  responses.sort((a, b) => b.submittedAt.localeCompare(a.submittedAt));
 
   const total = responses.length;
 
@@ -56,7 +60,14 @@ export async function GET(req: NextRequest) {
     return Object.entries(tally).map(([name, value]) => ({ name, value }));
   }
 
-  const avgScore = responses.reduce((s, r) => s + r.surveyScore + r.referralScore, 0) / total;
+  const avgScore =
+    responses.reduce(
+      (s, r) =>
+        s +
+        SURVEY_SCORE +
+        calcReferralScore(r.referralCount, 0, r.referralClicks ?? 0),
+      0
+    ) / total;
   const avgTimeSeconds = Math.round(
     responses.reduce((s, r) => s + (r.timeToCompleteSeconds || 0), 0) / total
   );
@@ -89,14 +100,17 @@ export async function GET(req: NextRequest) {
     recognitionAnswers: count("prefersEarning"),
     dropOff,
     deviceBreakdown,
-    responses: responses.map((r) => ({
+    responses: responses.map((r) => {
+      const referralScore = calcReferralScore(r.referralCount, 0, r.referralClicks ?? 0);
+      return {
       id: r.id, email: r.email, campaign: r.campaign, willGive: r.willGive,
       donationAmount: r.donationAmount, willVote: r.willVote, willShine: r.willShine,
-      prefersEarning: r.prefersEarning, surveyScore: r.surveyScore,
-      referralScore: r.referralScore, referralCount: r.referralCount,
-      totalScore: r.surveyScore + r.referralScore,
+      prefersEarning: r.prefersEarning, surveyScore: SURVEY_SCORE,
+      referralScore, referralCount: r.referralCount,
+      totalScore: SURVEY_SCORE + referralScore,
       submittedAt: r.submittedAt, device: r.device ?? "Other",
       dashboardUrl: `/dashboard/${r.emailSlug}`,
-    })),
+    };
+    }),
   });
 }
