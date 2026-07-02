@@ -48,7 +48,7 @@ export default function LeaderboardPage() {
       : top3;
 
   return (
-    <div className="relative flex h-dvh flex-col overflow-hidden bg-radial-[ellipse_at_50%_32%] from-[#257291] via-[#1B5F72] to-[#0A394B]">
+    <div className="relative flex h-dvh flex-col overflow-hidden bg-cover bg-center bg-no-repeat bg-[url('/leaderboard-bg-mobile.svg'),radial-gradient(ellipse_at_50%_32%,#257291,#1B5F72,#0A394B)] sm:bg-[url('/leaderboard-bg.svg'),radial-gradient(ellipse_at_50%_32%,#257291,#1B5F72,#0A394B)]">
 
       <div className="relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain">
 

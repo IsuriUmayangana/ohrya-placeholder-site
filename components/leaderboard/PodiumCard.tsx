@@ -16,9 +16,6 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
   const avatarSize = isFirst ? 72 : 58;
   const badgeSize = 60;
 
-  const starBorderColor = RANK_BADGE_BORDER_COLOR;
-  const starGradientColor = RANK_BADGE_GRADIENT_COLOR;
-
 
   return (
     <div
@@ -29,8 +26,8 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
         <RankBadge
           rank={entry.rank}
           color={style.starColor}
-          borderColor={starBorderColor}
-          gradientColor={starGradientColor}
+          firstColor={style.borderStart}
+          secondColor={style.borderEnd}
           size={badgeSize}
         />
       </div>
