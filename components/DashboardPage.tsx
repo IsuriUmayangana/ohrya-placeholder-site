@@ -71,8 +71,7 @@ export default function DashboardPage({ slug }: Props) {
   const referralPct = Math.min((stats!.referralScore / Math.max(totalScore || 1, 1)) * 100, 100);
 
 
-  // TODO: leaderboard rank logic
-  const leaderboardRank = 1;
+  const leaderboardRank = stats!.leaderboardRank ?? null;
 
   
   return (
@@ -172,7 +171,7 @@ export default function DashboardPage({ slug }: Props) {
                     }}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" className="sm:w-[19px] sm:h-[19px]" viewBox="0 0 24 24" fill="none" stroke="#FFC62B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></svg>
-                    <span className="text-[12px] sm:text-[19px] font-bold text-white leading-none">#{leaderboardRank}</span>
+                    <span className="text-[12px] sm:text-[19px] font-bold text-white leading-none">{leaderboardRank != null ? `#${leaderboardRank}` : "—"}</span>
                     <p className="text-[5.5px] sm:text-[8.5px] text-center leading-tight text-white/85 max-w-[52px] sm:max-w-[74px] mt-0.5">
                       Your position on the leaderboard
                     </p>

@@ -26,4 +26,4 @@ export interface SurveyResponse {
 export type PublicUserStats = Pick<
   SurveyResponse,
   "referralCode" | "emailSlug" | "email" | "surveyScore" | "referralScore" | "referralCount" | "campaign"
-> & { totalScore: number };
+> & { totalScore: number; leaderboardRank?: number | null };

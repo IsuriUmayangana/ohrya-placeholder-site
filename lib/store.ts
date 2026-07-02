@@ -212,6 +212,12 @@ export async function getLeaderboard(): Promise<(PublicUserStats & { name: strin
     .sort((a, b) => b.totalScore - a.totalScore);
 }
 
+export async function getLeaderboardRankBySlug(slug: string): Promise<number | null> {
+  const entries = await getLeaderboard();
+  const index = entries.findIndex((e) => e.emailSlug === slug.toLowerCase());
+  return index === -1 ? null : index + 1;
+}
+
 export async function incrementReferralClicks(code: string): Promise<void> {
   if (useDynamo) {
     const d = await loadDynamo();

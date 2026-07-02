@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserByCode, getUserBySlug } from "@/lib/store";
+import { getUserByCode, getUserBySlug, getLeaderboardRankBySlug } from "@/lib/store";
 
 export async function GET(
   _req: NextRequest,
@@ -13,5 +13,8 @@ export async function GET(
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
-  return NextResponse.json(user);
+
+  const leaderboardRank = await getLeaderboardRankBySlug(user.emailSlug);
+
+  return NextResponse.json({ ...user, leaderboardRank });
 }
