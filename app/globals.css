@@ -60,13 +60,14 @@ body {
   cursor: pointer !important;
 }
 
+/* Scrollbar Thumb Hover 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(90, 154, 170, 0.9);
   cursor: pointer !important;
 }
-
+*/
 ::-webkit-scrollbar-track {
-  background: var(--background-color);
+  background: transparent;
   cursor: pointer !important;
 }
 

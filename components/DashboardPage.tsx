@@ -6,6 +6,7 @@ import type { PublicUserStats } from "@/lib/survey-types";
 import Loading from "@/app/loading";
 import NotFound from "./ui/NotFond";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Props {
   slug: string;
@@ -69,6 +70,10 @@ export default function DashboardPage({ slug }: Props) {
   const surveyPct = (stats!.surveyScore / 10) * 100;
   const referralPct = Math.min((stats!.referralScore / Math.max(totalScore || 1, 1)) * 100, 100);
 
+
+  // TODO: leaderboard rank logic
+  const leaderboardRank = 1;
+
   
   return (
     <div className="min-h-screen bg-[#f6f8f9]">
@@ -91,7 +96,7 @@ export default function DashboardPage({ slug }: Props) {
         <div className="flex flex-col gap-6">
 
           {/* Hero */}
-          <section className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
+          <section className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm pt-6">
             
             {/* Content */}
             <div className="relative grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-6 p-6 sm:p-8">
@@ -130,9 +135,9 @@ export default function DashboardPage({ slug }: Props) {
                     </div>
                   </div>
 
-                  {/* Referral bonus */}
+                  {/* Referral Score */}
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Referral bonus</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Referral Score</p>
                     <p className="mt-2 text-2xl font-semibold text-[#FFBB00]">+{stats!.referralScore}</p>
                     <p className="mt-2 text-xs text-[#000000]/50">
                       {stats!.referralCount} referral{stats!.referralCount !== 1 ? "s" : ""}
@@ -149,60 +154,53 @@ export default function DashboardPage({ slug }: Props) {
               </div>
 
               {/* Score panel */}
-              <div className="relative rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-6 sm:p-7 shadow-md flex flex-col gap-6 min-h-[280px]">
-                <div>
-                  <p className="text-xs uppercase font-bold tracking-[0.18em] text-[#ffffff]">
-                    Total impact score
-                  </p>
-
-                  <div className="flex items-center justify-between w-full">
-                    <div className="mt-4 flex items-end gap-3 flex-1">
-                      <h2 className="text-6xl font-semibold leading-none">{totalScore}</h2>
-                      <span className="text-sm text-[#ffffff] pb-2">pts</span>
-                    </div>
-                  
-                    {/* Top right legend */}
-                    <div className="flex flex-col items-end gap-2">
-                      <div className="w-full flex items-center gap-1.5 px-2.5 py-1 text-[12px] lg:tracking-[0.05em] font-medium text-white backdrop-blur-sm bg-[#06596D]/20 border border-white/30 rounded-lg">
-                        <span className="w-3 h-3 rounded-full bg-teal-400 flex-shrink-0" />
-                        Survey
-                      </div>
-                      <div className="w-full flex items-center gap-1.5 px-2.5 py-1 text-[12px] lg:tracking-[0.05em] font-medium text-white backdrop-blur-sm bg-[#06596D]/20 border border-white/30 rounded-lg">
-                        <span className="w-3 h-3 rounded-full bg-[#FFC62B] flex-shrink-0" />
-                        Referral
-                      </div>
-                    </div>
+              {/* 8 */}
+              <div className="w-full sm:w-[500px] relative rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-5 sm:p-7 shadow-md flex flex-col gap-4 sm:gap-6 min-h-[160px] sm:min-h-[160px]">
+                {/* Floating medallion badge */}
+                <div
+                  className="absolute -top-2 right-8 sm:-top-11 sm:right-10 w-[76px] h-[76px] sm:w-[116px] sm:h-[116px] flex items-center justify-center shadow-lg"
+                  style={{
+                    clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+                    background: "linear-gradient(145deg, #FFE9A8, #FFC62B 45%, #B8860B 100%)",
+                  }}
+                >
+                  <div
+                    className="w-[66px] h-[66px] sm:w-[102px] sm:h-[102px] flex flex-col items-center justify-center gap-0.5 p-1.5 sm:p-2"
+                    style={{
+                      clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+                      background: "linear-gradient(145deg, #06596D, #0A3A47)",
+                    }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" className="sm:w-[19px] sm:h-[19px]" viewBox="0 0 24 24" fill="none" stroke="#FFC62B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" /></svg>
+                    <span className="text-[12px] sm:text-[19px] font-bold text-white leading-none">#{leaderboardRank}</span>
+                    <p className="text-[5.5px] sm:text-[8.5px] text-center leading-tight text-white/85 max-w-[52px] sm:max-w-[74px] mt-0.5">
+                      Your position on the leaderboard
+                    </p>
                   </div>
-
                 </div>
 
-                {/* Progress */}
-                <div className="mt-2">
-                  <div className="flex items-center justify-between text-[12px] text-[#ffffff] mb-2">
-                    <span>Progress</span>
-                    <span className="font-medium tracking-[0.10em]">{Math.round(progressPct)}%</span>
-                  </div>
-
-                  <div className="h-3 rounded-full bg-white/10 overflow-hidden">
-                    <div className="h-full flex rounded-full overflow-hidden" style={{ width: `${progressPct}%` }}>
-                      <div
-                        className="h-full bg-teal-400 transition-all duration-700"
-                        style={{
-                          width: totalScore > 0 ? `${(stats!.surveyScore / totalScore) * 100}%` : "0%",
-                        }}
-                      />
-                      <div
-                        className="h-full bg-[#FFC62B] transition-all duration-700"
-                        style={{
-                          width: totalScore > 0 ? `${(stats!.referralScore / totalScore) * 100}%` : "0%",
-                        }}
-                      />
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-[10px] sm:text-xs uppercase font-bold tracking-[0.16em] sm:tracking-[0.18em] text-white">
+                      Total impact score
+                    </p>
+                    <div className="mt-3 sm:mt-4 flex items-end gap-2 sm:gap-3">
+                      <h2 className="text-4xl sm:text-6xl font-semibold leading-none">{totalScore}</h2>
+                      <span className="text-xs sm:text-sm text-white pb-1.5 sm:pb-2">pts</span>
                     </div>
                   </div>
+                </div>
 
-                  <p className="mt-4 text-sm text-[#ffffff]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-white/20 pt-3 sm:pt-4">
+                  <p className="text-xs sm:text-sm text-white flex-1">
                     Keep sharing your referral link to continue increasing your score.
                   </p>
+                  <Link
+                    href="/leaderboard"
+                    className="bg-[#FFC62B] text-[#4A3600] text-xs font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
+                  >
+                    View leaderboard
+                  </Link>
                 </div>
               </div>
             </div>
@@ -215,18 +213,19 @@ export default function DashboardPage({ slug }: Props) {
               <div className="flex flex-col gap-5">
                 <p className="text-base font-semibold text-[#000000]">Your referral score</p>
                 <p className="text-sm text-[#000000] leading-6">
-                  Each friend who completes the survey gives you{" "}
-                  <span className="font-bold text-[#FFBB00]">+1 point</span>.
+                  Every referral who completes the survey helps boost your score.
                 </p>
                 {/* Referrals */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Referrals</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">REFERRAL COUNT</p>
                     <p className="mt-2 text-2xl font-semibold text-[#2d2d2d]">{stats!.referralCount}</p>
                   </div>
 
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Referral share</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">CONVERSION RATE</p>
+
+                    {/* TODO: conversion rate need to add */}
                     <p className="mt-2 text-2xl font-semibold text-[#FFBB00]">{Math.round(referralPct)}%</p>
                   </div>
                 </div>
