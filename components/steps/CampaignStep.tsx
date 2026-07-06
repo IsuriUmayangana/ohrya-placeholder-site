@@ -25,7 +25,7 @@ const campaigns = [
   {
     id: "Veterans",
     label: "Veterans",
-    image: "https://images.unsplash.com/photo-1541802645635-11f2286a7482?w=400&h=260&fit=crop&auto=format",
+    image: "/veterans-campaign.png",
     alt: "Veterans in military uniform",
   },
 ];
