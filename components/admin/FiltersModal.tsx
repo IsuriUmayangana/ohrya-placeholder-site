@@ -42,7 +42,16 @@ interface Props {
   initial: ActiveFilter[];
   onApply: (filters: ActiveFilter[]) => void;
   onClose: () => void;
+  hideRemovedQuestions?: boolean;
 }
+
+const REMOVED_QUESTION_FIELDS = new Set([
+  "willGive",
+  "donationAmount",
+  "willVote",
+  "willShine",
+  "prefersEarning",
+]);
 
 // ---------- Operator dropdown ----------
 function OperatorDropdown({ value, onChange }: { value: FilterOperator; onChange: (v: FilterOperator) => void }) {
@@ -137,7 +146,15 @@ function ValuesDropdown({ options, selected, onChange }: { options: string[]; se
 }
 
 // ---------- Question selector dropdown ----------
-function QuestionDropdown({ value, onChange }: { value: string; onChange: (fieldId: string) => void }) {
+function QuestionDropdown({
+  value,
+  onChange,
+  questions,
+}: {
+  value: string;
+  onChange: (fieldId: string) => void;
+  questions: Question[];
+}) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -147,8 +164,8 @@ function QuestionDropdown({ value, onChange }: { value: string; onChange: (field
     return () => document.removeEventListener("mousedown", fn);
   }, []);
 
-  const question = QUESTIONS.find((q) => q.fieldId === value);
-  const filtered = QUESTIONS.filter((q) => !search || q.label.toLowerCase().includes(search.toLowerCase()));
+  const question = questions.find((q) => q.fieldId === value);
+  const filtered = questions.filter((q) => !search || q.label.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <div ref={ref} className="relative">
@@ -190,7 +207,11 @@ function QuestionDropdown({ value, onChange }: { value: string; onChange: (field
 }
 
 // ---------- Main modal ----------
-export default function FiltersModal({ initial, onApply, onClose }: Props) {
+export default function FiltersModal({ initial, onApply, onClose, hideRemovedQuestions = false }: Props) {
+  const availableQuestions = hideRemovedQuestions
+    ? QUESTIONS.filter((q) => !REMOVED_QUESTION_FIELDS.has(q.fieldId))
+    : QUESTIONS;
+
   const [pending, setPending] = useState<PendingFilter[]>(
     initial.length > 0
       ? initial.map((f) => ({ fieldId: f.fieldId, operator: f.operator, values: f.values }))
@@ -209,7 +230,7 @@ export default function FiltersModal({ initial, onApply, onClose }: Props) {
       .filter((f) => f.fieldId && (["is_empty", "is_not_empty"].includes(f.operator) || f.values.length > 0))
       .map((f) => ({
         fieldId: f.fieldId,
-        label: QUESTIONS.find((q) => q.fieldId === f.fieldId)?.label ?? f.fieldId,
+        label: availableQuestions.find((q) => q.fieldId === f.fieldId)?.label ?? f.fieldId,
         operator: f.operator,
         values: f.values,
       }));
@@ -235,14 +256,18 @@ export default function FiltersModal({ initial, onApply, onClose }: Props) {
         {/* Body */}
         <div className="flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-6">
           {pending.map((filter, i) => {
-            const question = QUESTIONS.find((q) => q.fieldId === filter.fieldId);
+            const question = availableQuestions.find((q) => q.fieldId === filter.fieldId);
             const showValues = needsValues(filter.operator);
             return (
               <div key={i} className="bg-[#fafcfd] border border-slate-200 rounded-lg p-4">
                 {/* Row 1: Question + delete */}
                 <div className="flex gap-4 items-center">
                   <div className="flex-1">
-                    <QuestionDropdown value={filter.fieldId} onChange={(id) => update(i, { fieldId: id, values: [] })} />
+                    <QuestionDropdown
+                      value={filter.fieldId}
+                      onChange={(id) => update(i, { fieldId: id, values: [] })}
+                      questions={availableQuestions}
+                    />
                   </div>
                   {/* Trash */}
                   <button onClick={() => removeFilter(i)}

@@ -12,6 +12,7 @@ export interface SurveyResponse {
   willVote: string;
   willShine: string;
   prefersEarning: string;
+  name: string;
   email: string;
   surveyScore: number;
   referralScore: number;
@@ -25,5 +26,5 @@ export interface SurveyResponse {
 
 export type PublicUserStats = Pick<
   SurveyResponse,
-  "referralCode" | "emailSlug" | "email" | "surveyScore" | "referralScore" | "referralCount" | "campaign"
+  "referralCode" | "emailSlug" | "name" | "email" | "surveyScore" | "referralScore" | "referralCount" | "campaign"
 > & { totalScore: number; leaderboardRank?: number | null };

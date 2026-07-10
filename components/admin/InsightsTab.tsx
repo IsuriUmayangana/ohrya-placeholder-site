@@ -7,13 +7,11 @@ import DeviceFilter from "./DeviceFilter";
 import useCountUp from "@/hooks/useCountUp";
 import CardWidget from "../ui/CardWidget";
 
-interface DropOffRow { question: string; views: number; answered: number; }
 interface StatsData {
   total: number;
   avgScore: number;
   avgTimeToComplete: string;
   trends: { date: string; count: number }[];
-  dropOff: DropOffRow[];
 }
 
 const ALL_TIME: DateRange = { from: "", to: "", label: "All time" };
@@ -202,152 +200,6 @@ export default function InsightsTab() {
           </ResponsiveContainer>
         )}
       </div>
-
-      {/* Question by question table */}
-      <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
-  
-      {/* Question by question table header */}
-      <div className="p-6 lg:border-b lg:border-slate-200 backdrop-blur">
-        <p className="text-[18px] font-medium leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] text-balance text-[#000000]">
-          Question by Question
-        </p>
-      </div>
-
-      {/* Question by question table - Desktop view */}
-      <div className="hidden md:block shadow-sm border-t border-slate-200 overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
-          
-          <thead className="bg-[#f4f9fb]">
-            <tr>
-              {["Questions", "Views"].map((h) => (
-                <th
-                  key={h}
-                  className="px-6 py-4 text-left font-medium text-[#000000] border-b border-slate-200"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            
-            {(data?.dropOff ?? []).map((row, i) => { 
-                
-              const isScore = /score|brilliant|almost|well done/i.test(
-                row.question
-              );
-
-              return (
-                <tr
-                  key={i}
-                  className="border-b border-[#f1f5f7] hover:bg-[#f9fcfd] transition"
-                >
-                  <td className="px-6 py-4 flex items-center gap-3 text-[#000000]">
-                    
-                    {/* Icon */}
-                    <span
-                      className={`w-5 h-5 flex items-center justify-center rounded-md ${
-                        isScore
-                          ? "bg-[#fff6db]"
-                          : "bg-[#eaf4f7]"
-                      }`}
-                    >
-                      {isScore ? (
-                        <span className="text-sm">🏅</span>
-                      ) : (
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
-                          <path
-                            d="M9 11l3 3L22 4"
-                            stroke="#5a9aaa"
-                            strokeWidth="2.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                          <path
-                            d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
-                            stroke="#5a9aaa"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
-                    </span>
-
-                    {row.question}
-                  </td>
-
-                  <td className="px-10 py-4 text-[#000000] font-medium">
-                    {row.views}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Question by question table - Mobile view */}
-      <div className="md:hidden p-3 space-y-3 ">
-        {(data?.dropOff ?? []).map((row, i) => {
-          const isScore = /score|brilliant|almost|well done/i.test(
-            row.question
-          );
-
-          return (
-            <div
-              key={i}
-              className="rounded-2xl bg-white border border-[#e6eef1] p-4"
-            >
-              <div className="flex items-start gap-3">
-                
-                {/* Icon */}
-                <span
-                  className={`w-8 h-8 flex items-center justify-center rounded-lg ${
-                    isScore ? "bg-[#fff6db]" : "bg-[#eaf4f7]"
-                  }`}
-                >
-                  {isScore ? (
-                    <span>🏅</span>
-                  ) : (
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M9 11l3 3L22 4"
-                        stroke="#5a9aaa"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"
-                        stroke="#5a9aaa"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </span>
-
-                <div className="flex-1">
-                  <p className="text-[#000000] text-sm leading-relaxed">
-                    {row.question}
-                  </p>
-
-                  <div className="mt-4 flex flex-col gap-2 w-full">
-                    <div className="flex-1 rounded-xl bg-[#f4f9fb] border border-[#e6eef1] p-3 inline-block">
-                      <p className="text-[#000000] text-xs mb-1">Views</p>
-                      <p className="text-[#000000] font-medium">{row.views}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
 
     </div>
   );

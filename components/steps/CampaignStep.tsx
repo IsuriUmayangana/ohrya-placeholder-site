@@ -26,7 +26,7 @@ const campaigns = [
     id: "Veterans",
     label: "Veterans",
     image: "/veterans-campaign.png",
-    alt: "Veterans in military uniform",
+    alt: "Smiling US Army veteran shaking hands outdoors",
   },
 ];
 

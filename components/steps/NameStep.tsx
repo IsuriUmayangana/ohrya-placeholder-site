@@ -9,26 +9,26 @@ interface Props {
 const inputClassName =
   "w-full border-b-[1.5px] border-[#b0b0b0] focus:border-[#5a9aaa] outline-none text-[16px] lg:text-[18px] leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px] text-[#2d2d2d] p-[10px] 4px bg-transparent";
 
-export default function EmailStep({ value, onChange, error }: Props) {
+export default function NameStep({ value, onChange, error }: Props) {
   return (
-    <div className="flex flex-col items-center gap-8 px-6 w-full max-w-xl mx-auto">
+    <div className="flex flex-col items-center gap-8 px-4 sm:px-6 w-full max-w-2xl mx-auto">
       <div className="flex flex-col items-center gap-2 text-center">
         <h2 className="text-[20px] lg:text-[28px] font-normal leading-[26px] lg:leading-[36px] tracking-[-0.25px] lg:tracking-[-0.5px] lg:whitespace-nowrap">
-          Want to hear when the first campaigns go live?*
+          Tell us who you are.
         </h2>
         <p className="text-[16px] lg:text-[18px] leading-[22px] lg:leading-[24px] text-thin-text tracking-[0px] lg:tracking-[0.5px] text-[#777]">
-          Register with your email now*
+          Enter your name below.
         </p>
       </div>
 
-      <div className="w-full flex flex-col gap-1">
+      <div className="w-full min-w-[280px] sm:min-w-[360px] md:min-w-[480px] flex flex-col gap-1">
         <input
-          type="email"
-          placeholder="name@example.com"
+          type="text"
+          placeholder="Name"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           autoFocus
-          autoComplete="email"
+          autoComplete="name"
           className={inputClassName}
         />
         {error && (

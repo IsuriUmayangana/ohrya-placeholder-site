@@ -57,11 +57,20 @@ function calcReferralScore(referralCount: number, donations = 0, clicks = 0): nu
   return Math.round(ms * 100 * 100) / 100;
 }
 
+function displayName(r: SurveyResponse): string {
+  const trimmed = r.name?.trim();
+  if (trimmed) return trimmed;
+
+  const local = r.email.split("@")[0] || "User";
+  return local.charAt(0).toUpperCase() + local.slice(1).replace(/[._-]/g, " ");
+}
+
 function toPublic(r: SurveyResponse): PublicUserStats {
   const referralScore = calcReferralScore(r.referralCount, 0, r.referralClicks ?? 0);
   return {
     referralCode: r.referralCode,
     emailSlug: r.emailSlug,
+    name: displayName(r),
     email: r.email,
     surveyScore: SURVEY_SCORE,
     referralScore,

@@ -54,6 +54,14 @@ function emailToSlug(email: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+function leaderboardDisplayName(r: SurveyResponse): string {
+  const trimmed = r.name?.trim();
+  if (trimmed) return trimmed;
+
+  const local = r.email.split("@")[0] || "User";
+  return local.charAt(0).toUpperCase() + local.slice(1).replace(/[._-]/g, " ");
+}
+
 /**
  * Referral bonus formula.
  * clicks    = 0 (not tracked yet; keeping the variable for future use)
@@ -88,6 +96,7 @@ function toPublic(r: SurveyResponse): PublicUserStats {
   return {
     referralCode: r.referralCode,
     emailSlug: r.emailSlug,
+    name: leaderboardDisplayName(r),
     email: r.email,
     surveyScore: SURVEY_SCORE,
     referralScore,
@@ -205,9 +214,7 @@ export async function getLeaderboard(): Promise<(PublicUserStats & { name: strin
   return responses
     .map((r) => {
       const pub = toPublic(r);
-      const local = r.email.split("@")[0];
-      const name = local.charAt(0).toUpperCase() + local.slice(1).replace(/[._-]/g, " ");
-      return { ...pub, name };
+      return { ...pub, name: leaderboardDisplayName(r) };
     })
     .sort((a, b) => b.totalScore - a.totalScore);
 }

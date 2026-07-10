@@ -3,12 +3,11 @@
 import { useEffect, useState, useRef } from "react";
 import OhryaLogo from "../OhryaLogo";
 import InsightsTab from "./InsightsTab";
-import SummaryTab from "./SummaryTab";
 import ResponsesTab from "./ResponsesTab";
 import Loading from "@/app/loading";
 import AdminDashboardNav from "./AdminDashboardNav";
 
-type TabId = "insights" | "summary" | "responses";
+type TabId = "insights" | "responses";
 
 interface StatsData {
   total: number;
@@ -23,7 +22,7 @@ interface StatsData {
   recognitionAnswers: { name: string; value: number }[];
   dropOff: { question: string; views: number; answered: number }[];
   responses: {
-    id: string; email: string; campaign: string; willGive: string;
+    id: string; name: string; email: string; campaign: string; willGive: string;
     donationAmount: string; willVote: string; willShine: string;
     prefersEarning: string; surveyScore: number; referralScore: number;
     referralCount: number; totalScore: number; submittedAt: string; dashboardUrl: string;
@@ -32,7 +31,6 @@ interface StatsData {
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "insights", label: "Insights" },
-  { id: "summary", label: "Summary" },
   { id: "responses", label: "Responses" },
 ];
 
@@ -110,7 +108,6 @@ export default function AdminDashboard() {
         ) : (
           <>
             {activeTab === "insights" && <InsightsTab />}
-            {activeTab === "summary" && <SummaryTab />}
             {activeTab === "responses" && <ResponsesTab />}
           </>
         )}

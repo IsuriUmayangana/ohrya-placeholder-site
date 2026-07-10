@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAdminSessionSecret } from "@/lib/admin-auth";
 
 const SESSION_COOKIE = "admin_session";
 const LOGIN_PATH = "/admin/login";
@@ -39,7 +40,7 @@ export function middleware(req: NextRequest) {
     // Guard all /admin/* except the login page itself
     if (pathname.startsWith("/admin") && !pathname.startsWith(LOGIN_PATH)) {
       const session = req.cookies.get(SESSION_COOKIE)?.value;
-      const secret = process.env.ADMIN_SESSION_SECRET;
+      const secret = getAdminSessionSecret();
       if (!secret || session !== secret) {
         const loginUrl = req.nextUrl.clone();
         loginUrl.pathname = LOGIN_PATH;
@@ -57,7 +58,7 @@ export function middleware(req: NextRequest) {
   }
 
   const session = req.cookies.get(SESSION_COOKIE)?.value;
-  const secret = process.env.ADMIN_SESSION_SECRET;
+  const secret = getAdminSessionSecret();
 
   if (!secret || session !== secret) {
     const loginUrl = req.nextUrl.clone();

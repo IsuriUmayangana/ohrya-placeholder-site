@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, Suspense, type ReactNode } from "react";
+import { useState, useCallback, useRef, useEffect, useSyncExternalStore, Suspense, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import WelcomeStep from "./steps/WelcomeStep";
@@ -11,6 +11,7 @@ import VoteStep from "./steps/VoteStep";
 import ShineStep from "./steps/ShineStep";
 import RecognitionStep from "./steps/RecognitionStep";
 import EmailStep from "./steps/EmailStep";
+import NameStep from "./steps/NameStep";
 import EmailVerifyStep from "./steps/EmailVerifyStep";
 import ReferralStep from "./steps/ReferralStep";
 import StepButton from "./ui/StepButton";
@@ -20,7 +21,7 @@ import Loading from "@/app/loading";
 import NavButton from "./ui/NavButton";
 import Image from "next/image";
 import ReferralBanner from "./ui/ReferralBanner";
-const STEPS = [
+const FULL_STEPS = [
   "welcome",
   "campaign",
   "give",
@@ -28,13 +29,33 @@ const STEPS = [
   "vote",
   "shine",
   "recognition",
+  "name",
   "email",
   "referral-share",
 ] as const;
 
-type Step = (typeof STEPS)[number];
+// Localhost-only: skip welcome + middle question screens for faster testing
+const LOCALHOST_STEPS = ["campaign", "name", "email", "referral-share"] as const;
 
-const QUESTION_STEPS = ["campaign", "give", "donation", "vote", "shine", "recognition", "email"];
+type Step = (typeof FULL_STEPS)[number];
+
+const FULL_QUESTION_STEPS = ["campaign", "give", "donation", "vote", "shine", "recognition", "name", "email"];
+const LOCALHOST_QUESTION_STEPS = ["campaign", "name", "email"];
+
+function isLocalhostHost(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+  );
+}
+
+function useIsLocalhost(): boolean {
+  return useSyncExternalStore(
+    () => () => {},
+    () => isLocalhostHost(),
+    () => false
+  );
+}
 
 interface Answers {
   campaign: string;
@@ -43,9 +64,20 @@ interface Answers {
   willVote: string;
   willShine: string;
   prefersEarning: string;
+  name: string;
   email: string;
 }
 
+const LOCALHOST_DEFAULT_ANSWERS: Pick<
+  Answers,
+  "willGive" | "donationAmount" | "willVote" | "willShine" | "prefersEarning"
+> = {
+  willGive: "Yes",
+  donationAmount: "$25",
+  willVote: "Yes",
+  willShine: "Yes",
+  prefersEarning: "Yes",
+};
 
 function SurveyInner() {
   const searchParams = useSearchParams();
@@ -76,7 +108,8 @@ function SurveyInner() {
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Answers>({
     campaign: "", willGive: "", donationAmount: "",
-    willVote: "", willShine: "", prefersEarning: "", email: "",
+    willVote: "", willShine: "", prefersEarning: "",
+    name: "", email: "",
   });
   const [referralCode, setReferralCode] = useState("");
   const [emailSlug, setEmailSlug] = useState("");
@@ -84,22 +117,34 @@ function SurveyInner() {
   const [startedAt, setStartedAt] = useState<string>("");
   const showRefBanner = !!referredBy ;
 
-  const currentStep: Step = STEPS[stepIndex];
+  const isLocalDev = useIsLocalhost();
+  const [clientReady, setClientReady] = useState(false);
+  useEffect(() => {
+    setClientReady(true);
+    if (isLocalDev) {
+      setStartedAt((prev) => prev || new Date().toISOString());
+    }
+  }, [isLocalDev]);
+
+  const steps = isLocalDev ? LOCALHOST_STEPS : FULL_STEPS;
+  const questionSteps = isLocalDev ? LOCALHOST_QUESTION_STEPS : FULL_QUESTION_STEPS;
+
+  const currentStep: Step = steps[stepIndex] as Step;
   const [maxStepReached, setMaxStepReached] = useState(0);
 
   const [stepError, setStepError] = useState<ReactNode>("");
 
   const goNext = useCallback(() => {
-    if (currentStep === "welcome" && !startedAt) {
+    if ((currentStep === "welcome" || (isLocalDev && currentStep === "campaign")) && !startedAt) {
       setStartedAt(new Date().toISOString());
     }
     setDirection(1);
     setStepIndex((i) => {
-      const next = Math.min(i + 1, STEPS.length - 1);
+      const next = Math.min(i + 1, steps.length - 1);
       setMaxStepReached((max) => Math.max(max, next));
       return next;
     });
-  }, [currentStep, startedAt]);
+  }, [currentStep, startedAt, isLocalDev, steps.length]);
 
   const goPrev = useCallback(() => {
     setDirection(-1);
@@ -112,15 +157,16 @@ function SurveyInner() {
     setSubmitting(true);
     setSubmitError("");
     try {
+      const payloadAnswers = isLocalDev ? { ...answers, ...LOCALHOST_DEFAULT_ANSWERS } : answers;
       const res = await fetch("/api/responses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           sessionId: Math.random().toString(36).slice(2),
           referredBy,
-          ...answers,
+          ...payloadAnswers,
           surveyScore: 10,
-          startedAt,
+          startedAt: startedAt || new Date().toISOString(),
         }),
       });
       const data = await res.json();
@@ -134,7 +180,7 @@ function SurveyInner() {
     } finally {
       setSubmitting(false);
     }
-  }, [answers, referredBy, startedAt, goNext]);
+  }, [answers, referredBy, startedAt, goNext, isLocalDev]);
 
   // Handle step next
   async function handleStepNext(currentValue?: string) {
@@ -161,6 +207,17 @@ function SurveyInner() {
     }
     if (currentStep === "recognition" && !currentValue && !answers.prefersEarning) {
       setStepError("Please make a selection to continue.");
+      return;
+    }
+    if (currentStep === "name") {
+      const trimmedName = answers.name.trim();
+      if (!trimmedName) {
+        setStepError("Please enter your name.");
+        return;
+      }
+      setAnswers((a) => ({ ...a, name: trimmedName }));
+      setStepError("");
+      goNext();
       return;
     }
     if (currentStep === "email") {
@@ -321,17 +378,25 @@ function SurveyInner() {
   }
 
   const restart = useCallback(() => {
-    setAnswers({ campaign: "", willGive: "", donationAmount: "", willVote: "", willShine: "", prefersEarning: "", email: "" });
+    setAnswers({
+      campaign: "", willGive: "", donationAmount: "", willVote: "", willShine: "",
+      prefersEarning: "", name: "", email: "",
+    });
     setReferralCode("");
     setEmailSlug("");
     setStepIndex(0);
     if (typeof window !== "undefined") window.history.replaceState({}, "", "/");
   }, []);
 
-  const questionIdx = QUESTION_STEPS.indexOf(currentStep as string);
+  const questionIdx = questionSteps.indexOf(currentStep as string);
   const showProgress = questionIdx !== -1;
-  const progressPct = showProgress ? ((questionIdx + 1) / QUESTION_STEPS.length) * 100 : 0;
+  const progressPct = showProgress ? ((questionIdx + 1) / questionSteps.length) * 100 : 0;
   const showNav = currentStep !== "welcome" && currentStep !== "referral-share";
+
+  // Avoid a flash of the welcome screen on localhost before steps switch
+  if (isLocalDev && !clientReady) {
+    return <Loading />;
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col gap-10">
@@ -397,6 +462,15 @@ function SurveyInner() {
                 {currentStep === "recognition" && (
                   <RecognitionStep value={answers.prefersEarning} onChange={(v) => { setAnswers((a) => ({ ...a, prefersEarning: v })); setStepError(""); }} onNext={(v) => handleStepNext(v)} />
                 )}
+                {currentStep === "name" && (
+                  <NameStep
+                    value={answers.name}
+                    onChange={(v) => {
+                      setAnswers((a) => ({ ...a, name: v }));
+                      setStepError("");
+                    }}
+                  />
+                )}
                 {currentStep === "email" && (
                   <EmailStep
                     value={answers.email}
@@ -446,12 +520,24 @@ function SurveyInner() {
               </StepButton>
             )}
 
+            {currentStep === "name" && (
+              <MobileNavButton action={goPrev}>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                </svg>
+              </MobileNavButton>
+            )}
+
             {currentStep === "email" &&(
               <MobileNavButton action={goPrev}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
               </MobileNavButton>
+            )}
+
+            {currentStep === "name" && (
+              <StepButton onClick={() => handleStepNext()}>Continue</StepButton>
             )}
 
             {/* Submit Button */}
@@ -465,7 +551,7 @@ function SurveyInner() {
           <div className="fixed bottom-30 left-0 right-0 flex flex-row items-center justify-center gap-4 px-4">
 
             {/* Previous Button */}
-            {currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "email" && (
+            {currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "name" && currentStep !== "email" && (
               <MobileNavButton
                 action={goPrev}
                 disabled={currentStep === "campaign"}
@@ -477,7 +563,7 @@ function SurveyInner() {
             )}
 
             {/* Next Button */}
-            {currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "email" && (
+            {currentStep !== "welcome" && currentStep !== "referral-share" && currentStep !== "name" && currentStep !== "email" && (
               <MobileNavButton action={() => handleStepNext()}>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />

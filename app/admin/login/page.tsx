@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
@@ -12,6 +12,14 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showDevHint, setShowDevHint] = useState(false);
+
+  useEffect(() => {
+    setShowDevHint(
+      window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1"
+    );
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -64,6 +72,11 @@ function LoginForm() {
             <p className="text-[0.85rem] text-slate-400 text-center mt-1">
               Enter your password to continue
             </p>
+            {showDevHint && (
+                <p className="text-[0.75rem] text-[#5a9aaa] text-center mt-2">
+                  Local dev password: <strong>admin</strong>
+                </p>
+              )}
           </div>
 
           {/* Form */}

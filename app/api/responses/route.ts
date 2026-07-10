@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
       willVote: body.willVote || "",
       willShine: body.willShine || "",
       prefersEarning: body.prefersEarning || "",
+      name: body.name || "",
       email: body.email || "",
       surveyScore: SURVEY_SCORE,
       startedAt: body.startedAt || new Date().toISOString(),

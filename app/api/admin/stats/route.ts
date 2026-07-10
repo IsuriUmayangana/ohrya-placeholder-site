@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
     responses: responses.map((r) => {
       const referralScore = calcReferralScore(r.referralCount, 0, r.referralClicks ?? 0);
       return {
-      id: r.id, email: r.email, campaign: r.campaign, willGive: r.willGive,
+      id: r.id, name: r.name || "", email: r.email, campaign: r.campaign, willGive: r.willGive,
       donationAmount: r.donationAmount, willVote: r.willVote, willShine: r.willShine,
       prefersEarning: r.prefersEarning, surveyScore: SURVEY_SCORE,
       referralScore, referralCount: r.referralCount,

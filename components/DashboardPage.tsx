@@ -107,9 +107,11 @@ export default function DashboardPage({ slug }: Props) {
                     Your Social Impact Dashboard
                   </h1>
 
-                  {/* Email */}
-                  <p className="lg:text-sm text-sm text-[#4a8798] mt-2"
-                  >
+                  {/* Name & email */}
+                  <p className="lg:text-lg text-base font-bold text-[#4a8798] mt-3">
+                    {stats!.name}
+                  </p>
+                  <p className="lg:text-sm text-sm text-[#4a8798] mt-1">
                     {stats!.email}
                   </p>
 

@@ -4,11 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import OhryaLogo from "../OhryaLogo";
 import Image from "next/image";
 
-type TabId = "insights" | "summary" | "responses";
+type TabId = "insights" | "responses";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "insights", label: "Insights" },
-  { id: "summary", label: "Summary" },
   { id: "responses", label: "Responses" },
 ];
 
