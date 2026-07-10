@@ -59,11 +59,11 @@ export default function LeaderboardPage() {
             <div className="mb-6 flex justify-center">
               <a href="https://ohrya.org" target="_blank">
                 <Image
-                  src="/logo-white.png"
+                  src="/logo-white.svg"
                   alt="Ohrya"
                   width={120}
                   height={120}
-                  className="h-14 w-auto z-20"
+                  className="h-10 w-auto z-20"
                 />
               </a>
             </div>
