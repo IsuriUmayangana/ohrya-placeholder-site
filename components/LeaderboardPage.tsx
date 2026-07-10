@@ -57,13 +57,15 @@ export default function LeaderboardPage() {
           {/* HEADER */}
           <div className="text-center mb-11">
             <div className="mb-6 flex justify-center">
-              <Image
-                src="/logo-white.png"
-                alt="Ohrya"
-                width={120}
-                height={120}
-                className="h-14 w-auto"
-              />
+              <a href="https://ohrya.org" target="_blank">
+                <Image
+                  src="/logo-white.png"
+                  alt="Ohrya"
+                  width={120}
+                  height={120}
+                  className="h-14 w-auto z-20"
+                />
+              </a>
             </div>
 
             <div className="text-[#FFD700] text-[clamp(30px,7vw,46px)] font-extrabold tracking-[0.14em] uppercase leading-[1.05]">

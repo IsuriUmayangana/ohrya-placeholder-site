@@ -45,7 +45,9 @@ export default function DashboardNav({
         
         {/* Left */}
         <div className="flex items-center gap-6">
-          <OhryaLogo />
+          <a href="https://ohrya.org" target="_blank">
+            <OhryaLogo />
+          </a>
 
           {/* Tabs */}
           <nav className="flex gap-2">

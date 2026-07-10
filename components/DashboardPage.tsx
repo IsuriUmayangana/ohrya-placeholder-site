@@ -79,13 +79,15 @@ export default function DashboardPage({ slug }: Props) {
       {/* Header */}
       <header className="sticky top-0 z-20 backdrop-blur bg-white/80 border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-0 flex justify-center">
-          <Image
-            src="/logo.png"
-            alt="Ohrya"
-            width={160}
-            height={160}
-            className="w-auto h-auto dashboard-logo"
-          />
+          <a href="https://ohrya.org" target="_blank">
+            <Image
+              src="/logo.png"
+              alt="Ohrya"
+              width={160}
+              height={160}
+              className="w-auto h-auto dashboard-logo"
+            />
+          </a>
         </div>
       </header>
 
