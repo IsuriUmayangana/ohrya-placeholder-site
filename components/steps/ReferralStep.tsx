@@ -50,7 +50,7 @@ export default function ReferralStep({ referralCode, emailSlug, email }: Props) 
         </h2>
         <p className="text-sm text-[#000000] tracking-[0.02em]">
           Share it with friends. Every time someone completes the survey using your link,
-          you earn <strong className="text-[#FFBB00] font-bold tracking-[0.02em]">+1 point</strong> on your Social Impact Score.
+          you earn Social Impact Score points &amp; climb up the leaderboard.
         </p>
       </div>
 
