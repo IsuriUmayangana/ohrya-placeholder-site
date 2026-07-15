@@ -32,7 +32,7 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
           {/* Name */}
           <div className="mt-5 mb-5 w-full text-center md:mt-6 md:mb-6 lg:mt-8 lg:mb-8">
             <div
-              className="truncate font-semibold leading-[1.25] text-white text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
+              className="line-clamp-2 break-words font-semibold leading-[1.25] text-white text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
             >
               {entry.name}
             </div>
