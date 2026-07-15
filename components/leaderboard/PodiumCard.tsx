@@ -29,17 +29,17 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
           background: `linear-gradient(${style.bgColor}, ${style.bgColor}) padding-box, linear-gradient(to bottom, ${style.rankBoarder}, #0A1B29) border-box`,
         }}
       >
-          {/* Name */}
-          <div className="mt-5 mb-5 w-full text-center md:mt-6 md:mb-6 lg:mt-8 lg:mb-8">
+          {/* Name — fixed 2-line height so score stays aligned */}
+          <div className="mt-5 w-full shrink-0 text-center md:mt-6 lg:mt-8">
             <div
-              className="line-clamp-2 break-words font-semibold leading-[1.25] text-white text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
+              className="line-clamp-2 h-[2.5em] break-words font-semibold leading-[1.25] text-white text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
             >
               {entry.name}
             </div>
           </div>
 
-          {/* Score */}
-          <div className="text-center">
+          {/* Score — pinned to bottom */}
+          <div className="mt-auto text-center">
             <div
               className="font-semibold leading-[1.25] text-[#FFC62B] text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
             >
