@@ -95,7 +95,7 @@ export default function LeaderboardPage() {
             {/* ===================== */}
             <div className="hidden sm:block">
               {/* Podium */}
-              <div className="relative mx-auto mb-14 w-full max-w-[920px]">
+              <div className="relative mx-auto mb-5 w-full max-w-[920px]">
                 <div className="relative z-[1] flex items-end justify-center gap-2 md:gap-2.5 lg:gap-3">
                   {podium.map((entry) => (
                     <PodiumCard key={entry.rank} entry={entry} />
