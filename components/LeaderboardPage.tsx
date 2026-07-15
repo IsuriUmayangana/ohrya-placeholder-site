@@ -11,13 +11,6 @@ export default function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  useEffect(() => {
     fetch("/api/leaderboard")
       .then((r) => r.json())
       .then((data) => {
@@ -48,75 +41,98 @@ export default function LeaderboardPage() {
       : top3;
 
   return (
-    <div className="relative flex h-dvh flex-col overflow-hidden bg-cover bg-center bg-no-repeat bg-[url('/leaderboard-bg-mobile.svg'),radial-gradient(ellipse_at_50%_32%,#257291,#1B5F72,#0A394B)] sm:bg-[url('/leaderboard-bg.svg'),radial-gradient(ellipse_at_50%_32%,#257291,#1B5F72,#0A394B)]">
+    <div className="relative min-h-dvh">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <div
+          className="absolute left-1/2 top-0 h-[max(100dvh,1100px)] w-[max(100vw,1100px)] -translate-x-1/2 bg-no-repeat sm:h-[max(100dvh,1400px)] sm:w-[max(100vw,1440px)]"
+          style={{
+            backgroundImage: `
+              url('/leaderboard-bg.svg'),
+              radial-gradient(ellipse 85% 75% at 50% 45%, #2F95BE 0%, #1D637E 42%, #04374B 78%)
+            `,
+            backgroundSize: "cover, cover",
+            backgroundPosition: "center center, center center",
+          }}
+        />
+      </div>
 
-      <div className="relative z-[1] min-h-0 flex-1 overflow-y-auto overscroll-contain">
-
-        <div className="mx-auto flex min-h-full w-full max-w-4xl flex-col justify-center px-4 py-8">
-
-          {/* HEADER */}
-          <div className="text-center mb-11">
-            <div className="mb-6 flex justify-center">
-              <a href="https://ohrya.org" target="_blank">
-                <Image
-                  src="/logo-white.svg"
-                  alt="Ohrya"
-                  width={120}
-                  height={120}
-                  className="h-10 w-auto z-20"
-                />
-              </a>
-            </div>
-
-            <div className="text-[#FFD700] text-[clamp(30px,7vw,46px)] font-extrabold tracking-[0.14em] uppercase leading-[1.05]">
-              Leaderboard
-            </div>
+      <div className="relative z-[1] mx-auto flex min-h-dvh w-full max-w-[950px] flex-col justify-center px-4 py-8">
+        {/* HEADER */}
+        <div className="mb-11 text-center">
+          <div className="mt-5 mb-8 flex justify-center">
+            <a href="https://ohrya.org" target="_blank">
+              <Image
+                src="/logo-white.svg"
+                alt="Ohrya"
+                width={120}
+                height={120}
+                className="z-20 h-10 w-auto"
+              />
+            </a>
           </div>
 
-          {/* LOADING */}
-          {loading ? (
-            <div className="mt-20 text-center text-base text-white/40">
-              Loading…
-            </div>
-          ) : entries.length === 0 ? (
-            <div className="mt-20 text-center text-base text-white/40">
-              No entries yet. Be the first!
-            </div>
-          ) : (
-            <>
-              {/* ===================== */}
-              {/* DESKTOP VIEW (SM+) */}
-              {/* ===================== */}
-              <div className="hidden sm:block">
+          <div className="text-[clamp(30px,7vw,46px)] mt-5 mb-6 font-extrabold uppercase leading-[1.05] tracking-[0.14em] text-[#FFFFFF]">
+            Leaderboard
+          </div>
+        </div>
 
-                {/* Podium */}
-                <div className="mb-5 flex items-end justify-center gap-3">
+        {/* LOADING */}
+        {loading ? (
+          <div className="mt-20 text-center text-base text-white/40">
+            Loading…
+          </div>
+        ) : entries.length === 0 ? (
+          <div className="mt-20 text-center text-base text-white/40">
+            No entries yet. Be the first!
+          </div>
+        ) : (
+          <>
+            {/* ===================== */}
+            {/* DESKTOP VIEW (SM+) */}
+            {/* ===================== */}
+            <div className="hidden sm:block">
+              {/* Podium */}
+              <div className="relative mx-auto mb-14 w-full max-w-[920px]">
+                <div className="relative z-[1] flex items-end justify-center gap-2 md:gap-2.5 lg:gap-3">
                   {podium.map((entry) => (
                     <PodiumCard key={entry.rank} entry={entry} />
                   ))}
                 </div>
-
-                {/* Rest */}
-                {rest.length > 0 && (
-                  <div className="flex flex-col gap-2.5">
-                    {rest.map((entry) => (
-                      <LeaderboardRow key={entry.rank} entry={entry} />
-                    ))}
-                  </div>
-                )}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute left-0 right-0 top-full z-0 h-8"
+                  style={{
+                    background: "rgba(0, 6, 12, 0.75)",
+                    borderRadius: "100%",
+                    filter: "blur(22px)",
+                    transform: "translateY(-4px) scaleY(1.8)",
+                  }}
+                />
               </div>
 
-              {/* ===================== */}
-              {/* MOBILE VIEW */}
-              {/* ===================== */}
-              <div className="sm:hidden flex flex-col gap-2.5">
-                {entries.map((entry) => (
-                  <LeaderboardRow key={entry.rank} entry={entry} />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
+              {/* Rest */}
+              {rest.length > 0 && (
+                <div className="flex flex-col gap-5">
+                  {rest.map((entry) => (
+                    <LeaderboardRow key={entry.rank} entry={entry} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* ===================== */}
+            {/* MOBILE VIEW */}
+            {/* ===================== */}
+            <div className="flex flex-col gap-5 sm:hidden">
+              {entries.map((entry) => (
+                <LeaderboardRow key={entry.rank} entry={entry} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
