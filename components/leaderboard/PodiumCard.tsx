@@ -24,33 +24,28 @@ export function PodiumCard({ entry }: { entry: LeaderboardEntry }) {
 
       {/* Card */}
       <div
-        className={`relative z-[1] flex w-full flex-col items-center rounded-t-[14px] border-2 border-transparent px-3 pt-5 pb-4 md:rounded-t-[16px] md:px-4 md:pt-6 md:pb-5 lg:rounded-t-[18px] lg:px-[18px] lg:pt-7 lg:pb-[22px] ${isFirst ? "h-[195px] md:h-[230px] lg:h-[270px]" : "h-[165px] md:h-[195px] lg:h-[225px]"}`}
+        className={`relative z-[1] flex w-full flex-col items-center justify-center rounded-t-[14px] border-2 border-transparent px-3 pb-4 md:rounded-t-[16px] md:px-4 md:pb-5 lg:rounded-t-[18px] lg:px-[18px] lg:pb-[22px] ${isFirst ? "h-[195px] pt-5 md:h-[230px] md:pt-6 lg:h-[270px] lg:pt-7" : "h-[165px] pt-9 md:h-[195px] md:pt-11 lg:h-[225px] lg:pt-12"}`}
         style={{
           background: `linear-gradient(${style.bgColor}, ${style.bgColor}) padding-box, linear-gradient(to bottom, ${style.rankBoarder}, #0A1B29) border-box`,
         }}
       >
-          {/* Name — fixed 2-line height so score stays aligned */}
-          <div className="mt-5 w-full shrink-0 text-center md:mt-6 lg:mt-8">
-            <div
-              className="line-clamp-2 h-[2.5em] break-words font-semibold leading-[1.25] text-white text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
-            >
+        {/* Name + scores vertically centered as one block */}
+        <div className="flex w-full flex-col items-center gap-3 md:gap-4 lg:gap-5">
+          <div className="w-full text-center">
+            <div className="line-clamp-2 h-[2.5em] break-words font-semibold leading-[1.25] text-white text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]">
               {entry.name}
             </div>
           </div>
 
-          {/* Score — pinned to bottom */}
-          <div className="mt-auto text-center">
-            <div
-              className="font-semibold leading-[1.25] text-[#FFC62B] text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]"
-            >
+          <div className="flex flex-col items-center gap-1.5 md:gap-2">
+            <div className="font-semibold leading-[1.25] text-[#FFC62B] text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]">
               {Math.round(entry.totalScore)} pts
             </div>
-
-            {/* Referral Score */}
-            <div className="mt-2 text-[14px] font-medium text-[#FF7676] md:mt-2.5 md:text-[16px] lg:mt-3 lg:text-[20px]">
+            <div className="font-medium leading-[1.25] text-[#FF7676] text-[16px] sm:text-[18px] md:text-[22px] lg:text-[26px]">
               +{Math.round(entry.referralScore)}
             </div>
           </div>
+        </div>
       </div>
     </div>
   );
