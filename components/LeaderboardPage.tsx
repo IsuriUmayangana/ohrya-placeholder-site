@@ -41,20 +41,20 @@ export default function LeaderboardPage() {
       : top3;
 
   return (
-    <div className="relative min-h-dvh">
+    <div className="relative min-h-dvh bg-[#04374B]">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
         <div
-          className="absolute left-1/2 top-0 h-[max(100dvh,1100px)] w-[max(100vw,1100px)] -translate-x-1/2 bg-no-repeat sm:h-[max(100dvh,1400px)] sm:w-[max(100vw,1440px)]"
+          className="absolute inset-0 bg-no-repeat"
           style={{
             backgroundImage: `
               url('/leaderboard-bg.svg'),
               radial-gradient(ellipse 85% 75% at 50% 45%, #2F95BE 0%, #1D637E 42%, #04374B 78%)
             `,
             backgroundSize: "cover, cover",
-            backgroundPosition: "center center, center center",
+            backgroundPosition: "center top, center top",
           }}
         />
       </div>
