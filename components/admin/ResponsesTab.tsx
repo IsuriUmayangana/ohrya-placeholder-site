@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import * as XLSX from "xlsx";
 import DateFilter, { type DateRange } from "./DateFilter";
 import FiltersModal, { type ActiveFilter } from "./FiltersModal";
-import { useIsLocalhost } from "@/lib/is-localhost";
 
 interface Response {
   id: string; name: string; email: string; campaign: string; willGive: string;
@@ -21,10 +20,9 @@ const CAMPAIGN_COLORS: Record<string, string> = {
   Children: "#f0e6ff", Animals: "#e6f7ff", Veterans: "#fff3e6",
 };
 
-const REMOVED_QUESTION_HEADERS = ["Give?", "Donation", "Vote?", "Shine?", "Recognition"] as const;
+const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Survey", "Referral", "Total"] as const;
 
 export default function ResponsesTab() {
-  const isLocalDev = useIsLocalhost();
   const [allResponses, setAllResponses] = useState<Response[]>([]);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState<DateRange>(ALL_TIME);
@@ -78,10 +76,7 @@ export default function ResponsesTab() {
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
-  const tableHeaders = isLocalDev
-    ? ["Name", "Email", "Date", "Campaign", "Device", "Survey", "Referral", "Total"]
-    : ["Name", "Email", "Date", "Campaign", ...REMOVED_QUESTION_HEADERS, "Device", "Survey", "Referral", "Total"];
-  const columnCount = tableHeaders.length;
+  const columnCount = TABLE_HEADERS.length;
 
   function buildRows() {
     return filtered.map((r, i) => {
@@ -92,13 +87,6 @@ export default function ResponsesTab() {
         Date: new Date(r.submittedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
         Campaign: r.campaign,
       };
-      if (!isLocalDev) {
-        row["Will Give?"] = r.willGive;
-        row["Donation Amount"] = r.donationAmount || "—";
-        row["Will Vote?"] = r.willVote;
-        row["Will Shine?"] = r.willShine;
-        row["Prefers Earning"] = r.prefersEarning;
-      }
       row.Device = r.device;
       row["Survey Score"] = r.surveyScore;
       row["Referral Bonus"] = r.referralScore;
@@ -234,7 +222,7 @@ export default function ResponsesTab() {
           <table className="w-full text-sm">
             <thead className="sticky top-0 z-10">
               <tr className="bg-slate-50/95 backdrop-blur text-[#000000]">
-                {tableHeaders.map((h) => (
+                {TABLE_HEADERS.map((h) => (
                   <th
                     key={h}
                     className="px-4 py-3.5 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-[#06596d] whitespace-nowrap border-b border-slate-200"
@@ -266,14 +254,18 @@ export default function ResponsesTab() {
                       idx % 2 === 0 ? "bg-white" : "bg-slate-50/30"
                     }`}
                   >
+
+                    {/* Name */}
                     <td className="px-4 py-3.5 text-slate-700 max-w-[160px] truncate text-[13px] font-medium">
                       {r.name || <span className="text-slate-300 font-normal">—</span>}
                     </td>
 
+                    {/* Email */}
                     <td className="px-4 py-3.5 text-slate-700 max-w-[220px] truncate text-[13px]">
                       {r.email}
                     </td>
 
+                    {/* Date */}
                     <td className="px-4 py-3.5 text-slate-400 whitespace-nowrap text-[13px]">
                       {new Date(r.submittedAt).toLocaleDateString("en-GB", {
                         day: "2-digit",
@@ -282,6 +274,7 @@ export default function ResponsesTab() {
                       })}
                     </td>
 
+                    {/* Campaign */}
                     <td className="px-4 py-3.5">
                       <span
                         className="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium ring-1 ring-inset"
@@ -295,68 +288,19 @@ export default function ResponsesTab() {
                       </span>
                     </td>
 
-                    {!isLocalDev && (
-                      <>
-                        <td className="px-4 py-3.5 text-[13px]">
-                          <span
-                            className={`inline-flex min-w-[44px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                              r.willGive === "Yes"
-                                ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                                : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
-                            }`}
-                          >
-                            {r.willGive}
-                          </span>
-                        </td>
-
-                        <td className="px-4 py-3.5 text-slate-500 text-[13px]">
-                          {r.donationAmount ? (
-                            <span className="font-medium text-slate-600">{r.donationAmount}</span>
-                          ) : (
-                            <span className="text-slate-300">—</span>
-                          )}
-                        </td>
-
-                        <td className="px-4 py-3.5 text-[13px]">
-                          <span
-                            className={`inline-flex min-w-[44px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                              r.willVote === "Yes"
-                                ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                                : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
-                            }`}
-                          >
-                            {r.willVote}
-                          </span>
-                        </td>
-
-                        <td className="px-4 py-3.5 text-[13px]">
-                          <span
-                            className={`inline-flex min-w-[44px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                              r.willShine === "Yes"
-                                ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                                : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
-                            }`}
-                          >
-                            {r.willShine}
-                          </span>
-                        </td>
-
-                        <td className="px-4 py-3.5 text-slate-500 text-[12px] max-w-[160px] truncate">
-                          {r.prefersEarning || <span className="text-slate-300">—</span>}
-                        </td>
-                      </>
-                    )}
-
+                    {/* Device */}
                     <td className="px-4 py-3.5 text-slate-500 text-[12px] whitespace-nowrap">
                       {r.device || <span className="text-slate-300">—</span>}
                     </td>
 
+                    {/* Survey Score */}
                     <td className="px-4 py-3.5 text-center">
                       <span className="inline-flex min-w-[36px] justify-center rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-100 px-2.5 py-1 text-[11px] font-semibold">
                         {r.surveyScore}
                       </span>
                     </td>
 
+                    {/* Referral Score */}
                     <td className="px-4 py-3.5 text-center">
                       <span
                         className={`inline-flex min-w-[36px] justify-center rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ${
@@ -369,6 +313,7 @@ export default function ResponsesTab() {
                       </span>
                     </td>
 
+                    {/* Total Score */}
                     <td className="px-4 py-3.5 text-center">
                       <span className="inline-flex min-w-[40px] justify-center rounded-full bg-[#06596d] text-white px-3 py-1 text-[11px] font-semibold shadow-sm">
                         {r.totalScore}
@@ -399,12 +344,17 @@ export default function ResponsesTab() {
                   {/* Top */}
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="min-w-0">
+                      {/* Name */}
                       <p className="text-[13px] font-semibold text-slate-800 truncate">
                         {r.name || "—"}
                       </p>
+
+                      {/* Email */}
                       <p className="text-[12px] text-slate-500 truncate mt-0.5">
                         {r.email}
                       </p>
+
+                      {/* Date */}
                       <p className="text-[11px] text-slate-400 mt-1">
                         {new Date(r.submittedAt).toLocaleDateString("en-GB", {
                           day: "2-digit",
@@ -414,6 +364,7 @@ export default function ResponsesTab() {
                       </p>
                     </div>
 
+                    {/* Campaign */}
                     <span
                       className="inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[10px] font-medium ring-1 ring-inset"
                       style={{
@@ -425,58 +376,6 @@ export default function ResponsesTab() {
                       {r.campaign}
                     </span>
                   </div>
-
-                  {!isLocalDev && (
-                    <>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                            r.willGive === "Yes"
-                              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                              : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
-                          }`}
-                        >
-                          Give: {r.willGive}
-                        </span>
-
-                        <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                            r.willVote === "Yes"
-                              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                              : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
-                          }`}
-                        >
-                          Vote: {r.willVote}
-                        </span>
-
-                        <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                            r.willShine === "Yes"
-                              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                              : "bg-slate-100 text-slate-400 ring-1 ring-slate-200"
-                          }`}
-                        >
-                          Shine: {r.willShine}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-3 text-[12px] mb-3">
-                        <div>
-                          <p className="text-slate-400 mb-1">Donation</p>
-                          <p className="text-slate-700 font-medium">
-                            {r.donationAmount || <span className="text-slate-300">—</span>}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p className="text-slate-400 mb-1">Recognition</p>
-                          <p className="text-slate-700 truncate">
-                            {r.prefersEarning || <span className="text-slate-300">—</span>}
-                          </p>
-                        </div>
-                      </div>
-                    </>
-                  )}
 
                   {/* Detail grid */}
                   <div className="grid grid-cols-2 gap-x-3 gap-y-3 text-[12px]">
@@ -573,7 +472,6 @@ export default function ResponsesTab() {
           initial={activeFilters}
           onApply={(f) => { setActiveFilters(f); setPage(1); }}
           onClose={() => setShowFiltersModal(false)}
-          hideRemovedQuestions={isLocalDev}
         />
       )}
 
