@@ -41,7 +41,7 @@ export default function DashboardNav({
     <header className="bg-white border-b border-[#e8f0f2] fixed top-0 left-0 right-0 z-20">
 
       {/* Desktop Header */}
-      <div className="max-w-[1440px] mx-auto hidden lg:flex items-center justify-between px-8 py-1">
+      <div className="max-w-[1440px] mx-auto hidden lg:flex items-center justify-between px-6 py-1">
         
         {/* Left */}
         <div className="flex items-center gap-6">
