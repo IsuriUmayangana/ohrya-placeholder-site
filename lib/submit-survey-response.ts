@@ -1,3 +1,5 @@
+import { formReferralUrl } from "@/lib/site-urls";
+
 export const SKIPPED_DEFAULT_ANSWERS = {
   willGive: "Yes",
   donationAmount: "$25",
@@ -58,5 +60,5 @@ export function referralSuccessUrl(result: SubmitSurveyResult, email: string): s
     email,
     slug: result.emailSlug,
   });
-  return `/referral?${params.toString()}`;
+  return formReferralUrl(params);
 }

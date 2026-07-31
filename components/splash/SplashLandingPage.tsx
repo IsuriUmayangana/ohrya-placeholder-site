@@ -1,12 +1,13 @@
 "use client";
 
-import { FormEvent, useState, type ReactNode } from "react";
+import { FormEvent, useState, useEffect, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   checkEmailAlreadyRegistered,
   referralSuccessUrl,
   submitSurveyResponse,
 } from "@/lib/submit-survey-response";
+import { navigateAfterSignup } from "@/lib/navigate-after-signup";
 import { getSurveyCampaignValue, type CampaignId } from "./JoinCampaignSurface";
 import CharityNavigator from "./sections/CharityNavigator";
 import Faq from "./sections/Faq";
@@ -24,6 +25,16 @@ export default function SplashLandingPage() {
   const searchParams = useSearchParams();
   const referredBy = searchParams.get("ref") || "";
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignId>("Pets");
+
+  useEffect(() => {
+    if (!referredBy) return;
+    fetch("/api/referral/click", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: referredBy }),
+    }).catch(() => {});
+  }, [referredBy]);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [formError, setFormError] = useState<ReactNode>("");
@@ -70,7 +81,7 @@ export default function SplashLandingPage() {
         startedAt: new Date().toISOString(),
       });
 
-      router.replace(referralSuccessUrl(result, trimmedEmail));
+      navigateAfterSignup(referralSuccessUrl(result, trimmedEmail), router);
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setSubmitting(false);

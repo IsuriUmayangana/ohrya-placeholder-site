@@ -18,6 +18,7 @@ import {
   referralSuccessUrl,
   submitSurveyResponse,
 } from "@/lib/submit-survey-response";
+import { navigateAfterSignup } from "@/lib/navigate-after-signup";
 
 const SURVEY_STEPS = ["campaign", "name", "email", "referral-share"] as const;
 type Step = (typeof SURVEY_STEPS)[number];
@@ -141,7 +142,7 @@ function SurveyInner() {
             referredBy,
             startedAt: new Date().toISOString(),
           });
-          router.replace(referralSuccessUrl(result, email));
+          navigateAfterSignup(referralSuccessUrl(result, email), router);
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
           setSubmitError(msg);
@@ -195,7 +196,7 @@ function SurveyInner() {
         referredBy,
         startedAt: startedAt || new Date().toISOString(),
       });
-      router.replace(referralSuccessUrl(result, answers.email));
+      navigateAfterSignup(referralSuccessUrl(result, answers.email), router);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setSubmitError(msg);

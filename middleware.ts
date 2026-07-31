@@ -51,7 +51,23 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // ── form.ohrya.org (and any other domain) ────────────────────────────────
+  // ── form.ohrya.org ────────────────────────────────────────────────────────
+  if (sub === "form") {
+    if (pathname === "/") {
+      const ref = req.nextUrl.searchParams.get("ref");
+      if (ref) {
+        const mainSite =
+          process.env.NEXT_PUBLIC_MAIN_SITE_ORIGIN ?? "https://www.ohrya.org";
+        const landing = new URL("/", mainSite);
+        landing.searchParams.set("ref", ref);
+        return NextResponse.redirect(landing);
+      }
+      return NextResponse.rewrite(new URL("/form-blank", req.url));
+    }
+    return NextResponse.next();
+  }
+
+  // ── All other domains ─────────────────────────────────────────────────────
   // Keep existing admin protection for non-subdomain access
   if (!pathname.startsWith("/admin") || pathname.startsWith(LOGIN_PATH)) {
     return NextResponse.next();
