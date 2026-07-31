@@ -16,6 +16,10 @@ function dashboardBaseUrl(): string {
   return process.env.DASHBOARD_BASE_URL?.trim() || "https://dashboard.ohrya.org";
 }
 
+function dashboardAccessUrl(email: string): string {
+  return `${dashboardBaseUrl()}/my-dashboard?email=${encodeURIComponent(email)}`;
+}
+
 export async function POST(req: Request) {
   const session = (await cookies()).get("admin_session")?.value;
   const secret = getAdminSessionSecret();
@@ -49,15 +53,12 @@ export async function POST(req: Request) {
 
     try {
       const user = await getUserByEmail(email);
-      const dashboardUrl = user
-        ? `${dashboardBaseUrl()}/dashboard/${user.emailSlug}`
-        : `${dashboardBaseUrl()}/my-dashboard`;
 
       await sendImportUserEmail({
         email,
         name: recipients[i].name || user?.name || "",
         campaign: recipients[i].campaign || user?.campaign || "",
-        dashboardUrl,
+        dashboardUrl: dashboardAccessUrl(email),
       });
       sent++;
     } catch (err) {
