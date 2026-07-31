@@ -3,6 +3,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Load AWS SDK from node_modules at runtime (avoids Turbopack bundle resolution issues).
   serverExternalPackages: ["@aws-sdk/client-dynamodb", "@aws-sdk/lib-dynamodb"],
+  async redirects() {
+    return [
+      {
+        source: "/splash/privacy-policy.html",
+        destination: "/privacy-policy",
+        permanent: true,
+      },
+      {
+        source: "/splash/terms-of-service.html",
+        destination: "/terms-of-service",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

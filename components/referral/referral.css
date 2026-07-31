@@ -1,0 +1,155 @@
+.referral-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px 64px;
+}
+
+.referral-page__logo {
+  width: 168px;
+  height: auto;
+  margin-bottom: 40px;
+}
+
+.referral-page__content {
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.referral-page__share-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffc62b 0%, #ffe59f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  flex-shrink: 0;
+}
+
+.referral-page__share-icon svg {
+  display: block;
+}
+
+.referral-page__title {
+  margin: 0 0 12px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #2d2d2d;
+  letter-spacing: -0.01em;
+}
+
+.referral-page__description {
+  margin: 0 0 32px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #2d2d2d;
+  max-width: 460px;
+}
+
+.referral-page__link-box {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 16px;
+  border: 1px solid #5a9aaa;
+  border-radius: 8px;
+  background: #eef5f6;
+  margin-bottom: 24px;
+}
+
+.referral-page__link-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #64748b;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referral-page__copy-btn {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 6px;
+  background: #5a9aaa;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.referral-page__copy-btn:hover {
+  background: #477d8a;
+}
+
+.referral-page__dashboard-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  border-radius: 9999px;
+  background: #5a9aaa;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  padding: 14px 32px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.referral-page__dashboard-btn:hover {
+  background: #477d8a;
+  transform: translateY(-1px);
+}
+
+.referral-page__dashboard-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .referral-page__logo {
+    width: 140px;
+    margin-bottom: 32px;
+  }
+
+  .referral-page__title {
+    font-size: 22px;
+  }
+
+  .referral-page__description {
+    font-size: 13px;
+  }
+
+  .referral-page__link-box {
+    padding: 10px 10px 10px 12px;
+  }
+
+  .referral-page__link-text {
+    font-size: 12px;
+  }
+
+  .referral-page__copy-btn {
+    padding: 9px 12px;
+    font-size: 13px;
+  }
+}

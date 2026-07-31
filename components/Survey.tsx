@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, Suspense, type ReactNode } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import CampaignStep from "./steps/CampaignStep";
 import EmailStep from "./steps/EmailStep";
@@ -14,6 +14,10 @@ import Loading from "@/app/loading";
 import NavButton from "./ui/NavButton";
 import Image from "next/image";
 import ReferralBanner from "./ui/ReferralBanner";
+import {
+  referralSuccessUrl,
+  submitSurveyResponse,
+} from "@/lib/submit-survey-response";
 
 const SURVEY_STEPS = ["campaign", "name", "email", "referral-share"] as const;
 type Step = (typeof SURVEY_STEPS)[number];
@@ -31,20 +35,15 @@ interface Answers {
   email: string;
 }
 
-const SKIPPED_DEFAULT_ANSWERS: Pick<
-  Answers,
-  "willGive" | "donationAmount" | "willVote" | "willShine" | "prefersEarning"
-> = {
-  willGive: "Yes",
-  donationAmount: "$25",
-  willVote: "Yes",
-  willShine: "Yes",
-  prefersEarning: "Yes",
-};
-
 function SurveyInner() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const referredBy = searchParams.get("ref") || "";
+  const fromLanding = searchParams.get("from") === "landing";
+  const prefilledCampaign = searchParams.get("campaign") || "";
+  const prefilledName = searchParams.get("name") || "";
+  const prefilledEmail = searchParams.get("email") || "";
+  const landingProcessedRef = useRef(false);
 
   // Track referral link click once on page load
   useEffect(() => {
@@ -87,6 +86,86 @@ function SurveyInner() {
   const [maxStepReached, setMaxStepReached] = useState(0);
 
   const [stepError, setStepError] = useState<ReactNode>("");
+  const [submitError, setSubmitError] = useState("");
+  const [landingProcessing, setLandingProcessing] = useState(fromLanding);
+
+  useEffect(() => {
+    const campaign = prefilledCampaign.trim();
+    const name = prefilledName.trim();
+    const email = prefilledEmail.trim();
+    if (!campaign && !name && !email) return;
+
+    setAnswers((prev) => ({
+      ...prev,
+      ...(campaign ? { campaign } : {}),
+      ...(name ? { name } : {}),
+      ...(email ? { email } : {}),
+    }));
+
+    if (fromLanding && campaign && name && email) {
+      if (landingProcessedRef.current) return;
+      landingProcessedRef.current = true;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      if (!emailRegex.test(email)) {
+        setLandingProcessing(false);
+        setStepIndex(2);
+        setStepError("Please enter a valid email address.");
+        return;
+      }
+
+      setStartedAt(new Date().toISOString());
+      setLandingProcessing(true);
+
+      (async () => {
+        try {
+          const check = await fetch(`/api/user/by-email?email=${encodeURIComponent(email)}`);
+          if (check.ok) {
+            setStepError(
+              <>
+                This email has already completed the survey.{" "}
+                <a href="https://dashboard.ohrya.org/my-dashboard" className="underline text-[#5a9aaa]">
+                  Visit My Dashboard
+                </a>{" "}
+                to view your results.
+              </>
+            );
+            setLandingProcessing(false);
+            return;
+          }
+
+          const result = await submitSurveyResponse({
+            campaign,
+            name,
+            email,
+            referredBy,
+            startedAt: new Date().toISOString(),
+          });
+          router.replace(referralSuccessUrl(result, email));
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+          setSubmitError(msg);
+        } finally {
+          setLandingProcessing(false);
+        }
+      })();
+      return;
+    }
+
+    if (campaign) {
+      setStartedAt(new Date().toISOString());
+      if (name && email) {
+        setStepIndex(2);
+        setMaxStepReached(2);
+      } else if (name) {
+        setStepIndex(2);
+        setMaxStepReached(2);
+      } else {
+        setStepIndex(1);
+        setMaxStepReached(1);
+      }
+    }
+  }, [fromLanding, prefilledCampaign, prefilledEmail, prefilledName, referredBy, router]);
 
   const goNext = useCallback(() => {
     if (currentStep === "campaign" && !startedAt) {
@@ -105,36 +184,25 @@ function SurveyInner() {
     setStepIndex((i) => Math.max(i - 1, 0));
   }, []);
 
-  const [submitError, setSubmitError] = useState("");
-
   const submitAndShowReferral = useCallback(async () => {
     setSubmitting(true);
     setSubmitError("");
     try {
-      const payloadAnswers = { ...answers, ...SKIPPED_DEFAULT_ANSWERS };
-      const res = await fetch("/api/responses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sessionId: Math.random().toString(36).slice(2),
-          referredBy,
-          ...payloadAnswers,
-          surveyScore: 10,
-          startedAt: startedAt || new Date().toISOString(),
-        }),
+      const result = await submitSurveyResponse({
+        campaign: answers.campaign,
+        name: answers.name,
+        email: answers.email,
+        referredBy,
+        startedAt: startedAt || new Date().toISOString(),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to save response");
-      if (data.response?.referralCode) setReferralCode(data.response.referralCode);
-      if (data.response?.emailSlug) setEmailSlug(data.response.emailSlug);
-      goNext();
+      router.replace(referralSuccessUrl(result, answers.email));
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setSubmitError(msg);
     } finally {
       setSubmitting(false);
     }
-  }, [answers, referredBy, startedAt, goNext]);
+  }, [answers.campaign, answers.email, answers.name, referredBy, router, startedAt]);
 
   // Handle step next
   async function handleStepNext(currentValue?: string) {
@@ -172,8 +240,6 @@ function SurveyInner() {
       setSubmitting(true);
 
       try {
-        // Duplicate check
-        // TODO: confirm if this is the correct linking to the dashboard
         const check = await fetch(`/api/user/by-email?email=${encodeURIComponent(trimmed)}`);
         if (check.ok) {
           setStepError(
@@ -357,7 +423,9 @@ function SurveyInner() {
 
       {/* Main */}
       <div className="flex-1 flex items-center justify-center px-4 py-4">
-
+        {landingProcessing ? (
+          <Loading />
+        ) : (
         <div className="relative center-content-y flex flex-col items-center justify-center gap-8">
           {/* Step Container */}
           <div className="flex flex-col items-center justify-center text-center lg:px-6 lg:gap-8">
@@ -477,6 +545,7 @@ function SurveyInner() {
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );

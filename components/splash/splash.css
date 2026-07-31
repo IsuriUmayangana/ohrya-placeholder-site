@@ -1,0 +1,1600 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
+
+/* Design: OHRYA Placeholder - Desktop - New */
+
+/* ==========================================
+   CSS VARIABLES (From Figma Design Tokens)
+   ========================================== */
+:root {
+  /* Colors */
+  --color-white: #ffffff;
+  --color-bg-dark: #123a4a;
+  --color-bg-mid: #1a5166;
+  --color-teal: #6098ae;
+  --color-yellow: #ffc62b;
+  --color-cream: #f8f6f2;
+  --color-step-figma: #686b6c;
+  --step-radius: 54px;
+  --liquid-glass-filter: blur(0.5rem) brightness(150%);
+  --step-surface-bg: hsl(0 0% 100% / 15%);
+  --color-divider: #416f81;
+
+  /* Typography */
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Border Radius */
+  --radius-button: 20px;
+  --radius-video: 16px;
+}
+
+/* ==========================================
+   RESET & BASE STYLES
+   ========================================== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  line-height: 1.21;
+  overflow-x: hidden;
+}
+
+
+/* ==========================================
+   LANDING PAGE CONTAINER
+   ========================================== */
+.landing-page {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--color-bg-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* ==========================================
+   HERO BACKGROUND - Slowly Spinning Sunburst
+   ========================================== */
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-dark);
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1819px;
+  height: 1796px;
+  margin-left: -909.5px;
+  background-image: url("/splash/assets/background-sunburst.svg");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 1819px 1796px;
+  transform-origin: center center;
+  animation: hero-spin 240s linear infinite;
+  will-change: transform;
+}
+
+@keyframes hero-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-background::before {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-background::before {
+    width: 1245px;
+    height: 1245px;
+    margin-left: -622.5px;
+    background-image: url("/splash/assets/background-sunburst-mobile.svg");
+    background-size: 1245px 1245px;
+  }
+}
+
+/* ==========================================
+   HEADER & LOGO
+   ========================================== */
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+  padding-bottom: 0;
+}
+
+.logo {
+  width: 250px;
+  height: 213px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ==========================================
+   GLASS PANEL (shared gradient-bordered surface)
+   ========================================== */
+.glass-panel {
+  position: relative;
+  background: rgba(26, 81, 102, 0.75);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(135, 217, 250, 1) 0%,
+    rgba(65, 111, 129, 1) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ==========================================
+   HERO SECTION
+   ========================================== */
+.hero-section {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 80px 20px 0;
+  width: 100%;
+}
+
+.hero-title {
+  font-family: var(--font-family);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 48px;
+  text-transform: uppercase;
+  color: var(--color-yellow);
+  margin: 0;
+  letter-spacing: 0;
+  max-width: 100%;
+}
+
+.hero-subtitle {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: var(--color-white);
+  margin: 30px 0 0;
+  max-width: 780px;
+}
+
+/* Reward Cards */
+.reward-cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 44px;
+  margin-top: 45px;
+  max-width: 100%;
+}
+
+.reward-card {
+  width: 260px;
+  height: 178px;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.reward-amount {
+  font-family: var(--font-family);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-yellow);
+}
+
+.reward-label {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 20px;
+  text-transform: uppercase;
+  color: var(--color-white);
+  text-align: center;
+}
+
+.reward-plus {
+  font-family: var(--font-family);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--color-yellow);
+}
+
+.hero-tagline {
+  font-family: var(--font-family);
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--color-white);
+  margin: 50px 0 0;
+  max-width: 100%;
+}
+
+/* Join a Campaign Button */
+.join-campaign-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 350px;
+  max-width: 100%;
+  height: 40px;
+  margin-top: 30px;
+  padding: 8px 15px;
+  background-color: var(--color-yellow);
+  color: #000000;
+  border-radius: var(--radius-button);
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.join-campaign-btn svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.join-campaign-btn:hover {
+  transform: translateY(-2px);
+  background-color: #ffd45e;
+}
+
+.join-campaign-btn:active {
+  transform: translateY(0);
+}
+
+.hero-advocate {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: var(--color-white);
+  max-width: 1000px;
+  margin: 50px 0 0;
+}
+
+/* ==========================================
+   STEPS SECTION
+   ========================================== */
+.steps-section {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 600px;
+  padding: 90px 20px 0;
+}
+
+.steps-heading {
+  font-family: var(--font-family);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 48px;
+  text-align: center;
+  color: var(--color-yellow);
+  margin: 0 0 25px;
+  max-width: 100%;
+}
+
+.step-card {
+  width: 100%;
+  min-height: 135px;
+  border-radius: 68px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 20px 32px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+}
+
+.step-number {
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  width: 50px;
+  height: 50px;
+  border: 1px solid var(--color-yellow);
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  color: var(--color-yellow);
+}
+
+.step-content {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.step-title {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  color: var(--color-yellow);
+  margin: 0;
+}
+
+.step-description {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--color-white);
+  margin: 4px 0 0;
+}
+
+/* ==========================================
+   JOIN A CAMPAIGN FORM SECTION
+   ========================================== */
+.join-section {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 100px 20px 80px;
+  scroll-margin-top: 40px;
+}
+
+.join-card {
+  width: 700px;
+  max-width: 100%;
+  border-radius: 24px;
+  padding: 50px;
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.join-title {
+  font-family: var(--font-family);
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--color-yellow);
+  margin: 0;
+  max-width: 100%;
+}
+
+.join-subtitle {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  color: var(--color-white);
+  margin: 20px 0 0;
+}
+
+.campaign-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.campaign-option {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.campaign-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 4px solid rgba(65, 111, 129, 1);
+  box-sizing: border-box;
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease;
+  background: var(--color-bg-dark);
+}
+
+.campaign-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.campaign-option.is-selected .campaign-thumb,
+.campaign-option:hover .campaign-thumb,
+.campaign-option:focus-visible .campaign-thumb {
+  border-color: var(--color-yellow);
+}
+
+.campaign-option:hover .campaign-thumb {
+  transform: translateY(-3px);
+}
+
+.campaign-option:focus-visible {
+  outline: none;
+}
+
+.campaign-name {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  color: var(--color-white);
+  transition: color 0.25s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.campaign-option.is-selected .campaign-name,
+.campaign-option:hover .campaign-name,
+.campaign-option:focus-visible .campaign-name {
+  color: var(--color-yellow);
+}
+
+.join-form {
+  margin-top: 40px;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.join-surface {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.join-form-error {
+  margin-top: 16px;
+  font-size: 16px;
+  line-height: 24px;
+  color: #e8a0a0;
+  text-align: center;
+}
+
+.join-form-error a {
+  color: #5a9aaa;
+  text-decoration: underline;
+}
+
+.join-form-error a:hover {
+  color: #7eb8c4;
+}
+
+.form-field + .form-field {
+  margin-top: 30px;
+}
+
+.form-label {
+  display: block;
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 30px;
+  color: var(--color-white);
+  margin-bottom: 12px;
+}
+
+.form-input {
+  width: 100%;
+  height: 70px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  background-color: var(--color-bg-dark);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--color-white);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-input:focus {
+  border-color: var(--color-yellow);
+}
+
+.join-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 70px;
+  margin-top: 30px;
+  padding: 0 20px;
+  background-color: var(--color-yellow);
+  color: #000000;
+  border: none;
+  border-radius: 93px;
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.join-submit-btn svg {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.join-submit-btn:hover {
+  transform: translateY(-2px);
+  background-color: #ffd45e;
+}
+
+.join-submit-btn:active {
+  transform: translateY(0);
+}
+
+.join-disclaimer {
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--color-white);
+  margin: 30px 0 0;
+  text-align: center;
+}
+
+.disclaimer {
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--color-white);
+  opacity: 0.3;
+  max-width: 727px;
+  text-align: center;
+}
+
+.footer-disclaimer {
+  position: relative;
+  z-index: 10;
+  margin: 50px auto 0;
+  padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .mobile-display-br {
+    display: none;
+  }
+}
+
+/* ==========================================
+   CHARITY NAVIGATOR SECTION
+   ========================================== */
+.charity-navigator-section {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 100px;
+  width: 100%;
+  max-width: 1110px;
+  padding: 50px 122px 0;
+}
+
+.charity-navigator-logo {
+  flex-shrink: 0;
+  display: inline-flex;
+  transition: opacity 0.2s ease;
+}
+
+.charity-navigator-logo:hover,
+.charity-navigator-logo:focus-visible {
+  opacity: 0.85;
+  outline: none;
+}
+
+.charity-navigator-logo img {
+  display: block;
+  width: 192px;
+  height: auto;
+}
+
+.charity-navigator-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 192px;
+  padding: 18px 24px;
+  border: 2px solid var(--color-yellow);
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.charity-navigator-text {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: var(--color-white);
+  margin: 0;
+  max-width: 560px;
+}
+
+.charity-navigator-text a {
+  color: inherit;
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.charity-navigator-text a:hover,
+.charity-navigator-text a:focus-visible {
+  opacity: 0.85;
+  outline: none;
+}
+
+/* ==========================================
+   VIDEO SECTION
+   ========================================== */
+.video-section {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 50px 20px 0;
+}
+
+/* ==========================================
+   IMPACT SECTION
+   ========================================== */
+.impact-section {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 100px 20px 0;
+  text-align: center;
+}
+
+.impact-title {
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 54px;
+  text-transform: uppercase;
+  color: var(--color-yellow);
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+/* ==========================================
+   ABOUT SECTION
+   ========================================== */
+.about-section {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 50px 20px 0;
+  text-align: center;
+}
+
+.about-text {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  color: var(--color-white);
+  max-width: 838px;
+  margin: 0 auto;
+}
+
+.about-text + .about-text {
+  margin-top: 30px;
+}
+
+/* ==========================================
+   FAQ SECTION
+   ========================================== */
+.faq-section {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 100px 20px 0;
+}
+
+.faq-list {
+  width: 100%;
+  max-width: 954px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border-bottom: 2px solid var(--color-divider);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 0;
+  border: 0;
+  background: transparent;
+  color: #ffc62b;
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 30px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq-question span {
+  flex: 1;
+}
+
+.faq-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: var(--color-white);
+  transform: rotate(180deg);
+  transition:
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item.is-open .faq-icon {
+  color: var(--color-yellow);
+  transform: rotate(0deg);
+}
+
+.faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-answer-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.faq-item.is-open .faq-answer {
+  grid-template-rows: 1fr;
+}
+
+.faq-answer p,
+.faq-answer-inner p {
+  min-height: 0;
+  overflow: hidden;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--color-white);
+  margin: 0;
+  padding-bottom: 18px;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.faq-item.is-open .faq-answer p,
+.faq-item.is-open .faq-answer-inner p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-icon,
+  .faq-answer,
+  .faq-answer p,
+  .faq-answer-inner p {
+    transition: none;
+  }
+
+  .faq-answer p,
+  .faq-answer-inner p {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.video-container {
+  width: 980px;
+  max-width: 100%;
+  aspect-ratio: 980 / 551;
+}
+
+.video-wrapper {
+  width: 100%;
+  height: 100%;
+  background: #0f0e0e;
+  border-radius: var(--radius-video);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.video-embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+.video-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ==========================================
+   SHINE THE LIGHT BRANDING
+   ========================================== */
+.social-icons {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  padding: 100px 20px 0;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  color: var(--color-yellow);
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.social-icon:hover,
+.social-icon:focus-visible {
+  transform: translateY(-2px) scale(1.08);
+  opacity: 0.85;
+  outline: none;
+}
+
+.social-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  display: block;
+}
+
+/* ==========================================
+   SITE FOOTER
+   ========================================== */
+.site-footer {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1440px;
+  margin-top: 100px;
+  padding: 0 122px 85px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+.contact-info {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--color-white);
+  margin: 0;
+  text-align: left;
+}
+
+.contact-info .contact-label {
+  color: var(--color-white);
+}
+
+.contact-info .contact-links {
+  white-space: nowrap;
+}
+
+.contact-info .divider {
+  color: var(--color-white);
+  margin: 0 4px;
+}
+
+.contact-info a {
+  color: var(--color-yellow);
+  text-decoration: underline;
+  font-weight: 400;
+  transition: opacity 0.2s ease;
+}
+
+.contact-info a:hover {
+  opacity: 0.85;
+}
+
+.footer-links {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  margin: 0;
+}
+
+.footer-links a {
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--color-cream);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.footer-links a:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+/* ==========================================
+   RESPONSIVE - LARGE SCREENS
+   ========================================== */
+@media (min-width: 1441px) {
+  .site-footer {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - TABLET / SMALL DESKTOP
+   ========================================== */
+@media (max-width: 1200px) {
+  .site-footer {
+    padding: 0 60px 60px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .header {
+    padding-top: 80px;
+  }
+
+  .hero-section {
+    padding-top: 60px;
+  }
+
+  .steps-section {
+    padding-top: 70px;
+  }
+
+  .join-section {
+    padding-top: 70px;
+  }
+
+  .charity-navigator-section {
+    padding: 50px 40px 0;
+    gap: 32px;
+  }
+
+  .impact-section {
+    padding-top: 80px;
+  }
+
+  .faq-section {
+    padding-top: 80px;
+  }
+
+  .video-section {
+    padding-top: 40px;
+  }
+
+  .social-icons {
+    padding-top: 80px;
+  }
+
+  .site-footer {
+    margin-top: 60px;
+    padding: 0 40px 60px;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - MOBILE
+   ========================================== */
+@media (max-width: 768px) {
+  .header {
+    padding-top: 100px;
+  }
+
+  .logo {
+    width: 152px;
+    height: 130px;
+  }
+
+  .hero-section {
+    padding: 50px 20px 0;
+  }
+
+  .hero-title {
+    font-size: 30px;
+    line-height: 38px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+    line-height: 24px;
+    margin-top: 24px;
+    max-width: 340px;
+  }
+
+  .hero-subtitle br {
+    display: none;
+  }
+
+  .reward-cards {
+    gap: 16px;
+    margin-top: 40px;
+    width: 100%;
+  }
+
+  .reward-card {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    max-width: 160px;
+    height: 150px;
+    gap: 12px;
+  }
+
+  .reward-amount {
+    font-size: 32px;
+  }
+
+  .reward-label {
+    font-size: 16px;
+    line-height: 18px;
+  }
+
+  .reward-plus {
+    font-size: 28px;
+  }
+
+  .hero-tagline {
+    font-size: 18px;
+    margin-top: 40px;
+    max-width: 320px;
+  }
+
+  .join-campaign-btn {
+    font-size: 18px;
+  }
+
+  .hero-advocate {
+    font-size: 16px;
+    line-height: 24px;
+    margin-top: 40px;
+    max-width: 340px;
+  }
+
+  .steps-section {
+    padding: 70px 20px 0;
+    max-width: 100%;
+  }
+
+  .steps-heading {
+    font-size: 28px;
+    line-height: 36px;
+    margin-bottom: 15px;
+  }
+
+  .step-card {
+    min-height: auto;
+    border-radius: 32px;
+    gap: 20px;
+    padding: 24px 20px;
+  }
+
+  .step-number {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+  }
+
+  .step-title {
+    font-size: 18px;
+    line-height: 26px;
+  }
+
+  .step-description {
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  .join-section {
+    padding: 70px 20px 0;
+  }
+
+  .join-card {
+    padding: 30px 20px;
+  }
+
+  .join-title {
+    font-size: 34px;
+  }
+
+  .join-subtitle {
+    font-size: 16px;
+    line-height: 24px;
+    margin-top: 16px;
+  }
+
+  .campaign-options {
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .campaign-option {
+    gap: 12px;
+  }
+
+  .campaign-name {
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .form-label {
+    font-size: 18px;
+  }
+
+  .form-input {
+    height: 60px;
+    font-size: 16px;
+    padding: 0 18px;
+  }
+
+  .join-submit-btn {
+    height: 60px;
+    font-size: 16px;
+  }
+
+  .join-disclaimer {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .charity-navigator-section {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+    padding: 50px 20px 0;
+  }
+
+  .charity-navigator-text {
+    max-width: 320px;
+  }
+
+  .footer-disclaimer {
+    margin-top: 40px;
+    max-width: 320px;
+  }
+
+  .video-section {
+    padding: 50px 23px 0;
+  }
+
+  .video-container {
+    width: 100%;
+    aspect-ratio: 355.72 / 200;
+  }
+
+  .impact-section {
+    padding: 80px 20px 0;
+  }
+
+  .impact-title {
+    font-size: 24px;
+    line-height: 36px;
+    max-width: 320px;
+  }
+
+  .about-section {
+    padding: 40px 20px 0;
+  }
+
+  .about-text {
+    font-size: 16px;
+    line-height: 24px;
+    max-width: 320px;
+  }
+
+  .faq-section {
+    padding: 80px 20px 0;
+  }
+
+  .faq-question {
+    font-size: 18px;
+    line-height: 26px;
+    padding: 16px 0;
+  }
+
+  .faq-answer p,
+  .faq-answer-inner p {
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  .social-icons {
+    padding: 100px 20px 0;
+    gap: 28px;
+  }
+
+  .site-footer {
+    flex-direction: column;
+    margin-top: 50px;
+    padding: 0 20px 60px;
+    gap: 30px;
+  }
+
+  .contact-info {
+    text-align: center;
+    line-height: 17px;
+  }
+
+  .contact-info .contact-label {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .footer-links a {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding-top: 80px;
+  }
+
+  .hero-title {
+    font-size: 26px;
+    line-height: 34px;
+  }
+
+  .reward-card {
+    max-width: 150px;
+    height: 140px;
+  }
+
+  .reward-amount {
+    font-size: 28px;
+  }
+
+  .hero-tagline {
+    font-size: 16px;
+  }
+
+  .join-title {
+    font-size: 28px;
+  }
+
+  .impact-title {
+    font-size: 22px;
+    line-height: 32px;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero-title {
+    font-size: 23px;
+    line-height: 30px;
+  }
+
+  .reward-cards {
+    gap: 14px;
+  }
+
+  .campaign-name {
+    font-size: 13px;
+  }
+
+  .impact-title {
+    font-size: 20px;
+    line-height: 30px;
+  }
+}
+
+@media (max-width: 340px) {
+  .hero-title {
+    font-size: 21px;
+    line-height: 28px;
+  }
+}
+
+/* ==========================================
+   PRIVACY & TERMS PAGE
+   ========================================== */
+.privacy-page {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 40px;
+  color: #06596d;
+}
+
+.policy-container {
+  max-width: 1080px;
+  width: 100%;
+}
+
+.page-title {
+  margin-bottom: 60px;
+  text-align: left;
+}
+
+.page-title h2 {
+  font-size: 52px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  color: #06596d;
+  margin: 0;
+}
+
+.policy-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.section {
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(96, 152, 174, 0.12);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section h2 {
+  font-size: 28px;
+  line-height: 38px;
+  margin-top: 48px;
+  margin-bottom: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #06596d;
+}
+
+.content-block {
+  margin-bottom: 32px;
+}
+
+.content-block:last-child {
+  margin-bottom: 0;
+}
+
+.content-block h3 {
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #06596d;
+}
+
+.content-block p,
+.section p {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 30px;
+  margin: 0 0 14px;
+  color: #06596d;
+  letter-spacing: 0;
+}
+
+.content-block ul,
+.content-block ol,
+.section ul {
+  margin: 18px 0 18px 8px;
+  padding-left: 24px;
+}
+
+.content-block li,
+.section li {
+  margin-bottom: 12px;
+  padding-left: 6px;
+  color: #06596d;
+}
+
+.content-block li::marker,
+.section li::marker {
+  color: #06596d;
+}
+
+.links {
+  color: #06596d;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.links:hover {
+  opacity: 0.75;
+}
+
+li.no-style-li {
+  list-style: none;
+}
+
+@media (max-width: 768px) {
+  .privacy-page {
+    padding: 60px 20px;
+  }
+
+  .page-title {
+    margin-bottom: 40px;
+  }
+
+  .page-title h2 {
+    font-size: 36px;
+    letter-spacing: -1px;
+  }
+
+  .section h2 {
+    font-size: 22px;
+    line-height: 32px;
+    margin-top: 40px;
+  }
+
+  .content-block h3 {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .content-block p,
+  .section p {
+    font-size: 15px;
+    line-height: 28px;
+  }
+}
