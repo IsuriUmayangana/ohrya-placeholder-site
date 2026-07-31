@@ -22,13 +22,12 @@ function displayName(params: ImportUserEmailParams): string {
 
 export function buildImportUserEmailText(params: ImportUserEmailParams): string {
   const name = displayName(params);
-  const campaignLine = params.campaign ? `Campaign: ${params.campaign}\n\n` : "";
 
   return `Hi ${name},
 
 Thank you for being part of OHRYA.
 
-${campaignLine}You can view your impact dashboard here:
+You can view your impact dashboard here:
 ${params.dashboardUrl}
 
 Share your referral link to grow your impact and climb the leaderboard.
@@ -38,9 +37,6 @@ Share your referral link to grow your impact and climb the leaderboard.
 
 export function buildImportUserEmailHtml(params: ImportUserEmailParams): string {
   const name = displayName(params);
-  const campaignHtml = params.campaign
-    ? `<p style="margin:0 0 16px;font-size:14px;color:#6b7280;line-height:1.6;">Campaign: <strong>${params.campaign}</strong></p>`
-    : "";
 
   return `<!DOCTYPE html>
 <html>
@@ -55,7 +51,6 @@ export function buildImportUserEmailHtml(params: ImportUserEmailParams): string 
           <p style="margin:0 0 16px;font-size:14px;color:#6b7280;line-height:1.6;">
             Thank you for being part of OHRYA.
           </p>
-          ${campaignHtml}
           <p style="margin:0 0 24px;font-size:14px;color:#6b7280;line-height:1.6;">
             View your impact dashboard and share your referral link to grow your score.
           </p>

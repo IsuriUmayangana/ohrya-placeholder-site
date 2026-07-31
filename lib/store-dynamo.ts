@@ -277,3 +277,94 @@ export async function dynamoGetStats() {
   }, {});
   return { total, avgScore: Math.round(avgScore * 10) / 10, campaigns };
 }
+
+export type DynamoImportRow = {
+  name?: string;
+  email: string;
+  campaign?: string;
+  willGive?: string;
+  donationAmount?: string;
+  willVote?: string;
+  willShine?: string;
+  prefersEarning?: string;
+  device?: SurveyResponse["device"];
+  referralCount?: number;
+};
+
+export type DynamoImportResult = {
+  imported: number;
+  skipped: number;
+  errors: string[];
+};
+
+export async function dynamoImportResponses(
+  rows: DynamoImportRow[],
+  helpers: {
+    generateCode: () => string;
+    emailToSlug: (email: string) => string;
+    calcReferralScore: (referralCount: number, donations?: number, clicks?: number) => number;
+  }
+): Promise<DynamoImportResult> {
+  const doc = getDoc();
+  const tbl = tableName();
+  const existing = await dynamoGetAllResponses();
+  const existingEmails = new Set(existing.map((r) => r.email.toLowerCase().trim()));
+
+  let imported = 0;
+  let skipped = 0;
+  const errors: string[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const email = rows[i].email?.trim();
+    if (!email) {
+      errors.push(`Row ${i + 1}: missing email`);
+      continue;
+    }
+    const emailLower = email.toLowerCase();
+    if (existingEmails.has(emailLower)) {
+      skipped++;
+      continue;
+    }
+
+    const now = new Date().toISOString();
+    const referralCode = helpers.generateCode();
+    const referralCount = Math.max(0, rows[i].referralCount ?? 0);
+    const referralScore = helpers.calcReferralScore(referralCount, 0, 0);
+
+    const response: SurveyResponse = {
+      id: Math.random().toString(36).slice(2, 10),
+      sessionId: `import-${Date.now()}-${i}`,
+      referralCode,
+      emailSlug: `${helpers.emailToSlug(email)}-${referralCode.toLowerCase()}`,
+      referredBy: "",
+      campaign: rows[i].campaign || "",
+      willGive: rows[i].willGive || "Yes",
+      donationAmount: rows[i].donationAmount || "$25",
+      willVote: rows[i].willVote || "Yes",
+      willShine: rows[i].willShine || "Yes",
+      prefersEarning: rows[i].prefersEarning || "Yes",
+      name: rows[i].name || "",
+      email,
+      surveyScore: SURVEY_SCORE,
+      referralScore,
+      referralCount,
+      referralClicks: 0,
+      startedAt: now,
+      submittedAt: now,
+      timeToCompleteSeconds: 0,
+      device: rows[i].device ?? "Other",
+    };
+
+    await doc.send(
+      new PutCommand({
+        TableName: tbl,
+        Item: { ...response, emailLower },
+      })
+    );
+
+    existingEmails.add(emailLower);
+    imported++;
+  }
+
+  return { imported, skipped, errors };
+}

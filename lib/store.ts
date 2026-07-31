@@ -159,6 +159,93 @@ async function fileSaveResponse(
   return response;
 }
 
+export type ImportResponseRow = {
+  name?: string;
+  email: string;
+  campaign?: string;
+  willGive?: string;
+  donationAmount?: string;
+  willVote?: string;
+  willShine?: string;
+  prefersEarning?: string;
+  device?: SurveyResponse["device"];
+  referralCount?: number;
+};
+
+export type ImportResult = {
+  imported: number;
+  skipped: number;
+  errors: string[];
+};
+
+function buildImportedResponse(row: ImportResponseRow): SurveyResponse {
+  const now = new Date().toISOString();
+  const referralCode = generateCode();
+  const email = row.email.trim();
+  const referralCount = Math.max(0, row.referralCount ?? 0);
+  const referralScore = calcReferralScore(referralCount, 0, 0);
+
+  return {
+    id: Math.random().toString(36).slice(2, 10),
+    sessionId: `import-${Date.now()}`,
+    referralCode,
+    emailSlug: `${emailToSlug(email)}-${referralCode.toLowerCase()}`,
+    referredBy: "",
+    campaign: row.campaign || "",
+    willGive: row.willGive || "Yes",
+    donationAmount: row.donationAmount || "$25",
+    willVote: row.willVote || "Yes",
+    willShine: row.willShine || "Yes",
+    prefersEarning: row.prefersEarning || "Yes",
+    name: row.name || "",
+    email,
+    surveyScore: SURVEY_SCORE,
+    referralScore,
+    referralCount,
+    referralClicks: 0,
+    startedAt: now,
+    submittedAt: now,
+    timeToCompleteSeconds: 0,
+    device: row.device ?? "Other",
+  };
+}
+
+async function fileImportResponses(rows: ImportResponseRow[]): Promise<ImportResult> {
+  const responses = readDB();
+  const existingEmails = new Set(responses.map((r) => r.email.toLowerCase().trim()));
+  let imported = 0;
+  let skipped = 0;
+  const errors: string[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const email = rows[i].email?.trim();
+    if (!email) {
+      errors.push(`Row ${i + 1}: missing email`);
+      continue;
+    }
+    const emailLower = email.toLowerCase();
+    if (existingEmails.has(emailLower)) {
+      skipped++;
+      continue;
+    }
+
+    responses.push(buildImportedResponse({ ...rows[i], email }));
+    existingEmails.add(emailLower);
+    imported++;
+  }
+
+  if (imported > 0) writeDB(responses);
+  return { imported, skipped, errors };
+}
+
+export async function importResponses(rows: ImportResponseRow[]): Promise<ImportResult> {
+  if (useDynamo) {
+    const d = await loadDynamo();
+    return d.dynamoImportResponses(rows, { generateCode, emailToSlug, calcReferralScore });
+  }
+  return fileImportResponses(rows);
+}
+
 export async function saveResponse(
   data: Omit<
     SurveyResponse,
