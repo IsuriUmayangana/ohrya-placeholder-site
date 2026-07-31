@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
 import DateFilter, { type DateRange } from "./DateFilter";
 import FiltersModal, { type ActiveFilter } from "./FiltersModal";
@@ -22,6 +22,90 @@ const CAMPAIGN_COLORS: Record<string, string> = {
 
 const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Survey", "Referral", "Total"] as const;
 
+type ImportRow = {
+  name?: string;
+  email: string;
+  campaign?: string;
+  willGive?: string;
+  donationAmount?: string;
+  willVote?: string;
+  willShine?: string;
+  prefersEarning?: string;
+  device?: string;
+  referralCount?: number;
+};
+
+type ImportResult = {
+  imported: number;
+  skipped: number;
+  errors: string[];
+};
+
+type SendEmailResult = {
+  sent: number;
+  failed: number;
+  errors: string[];
+};
+
+const VALID_DEVICES = new Set(["Desktop", "Mobile", "Tablet", "Other"]);
+
+function cellValue(raw: Record<string, unknown>, ...headers: string[]): string {
+  for (const header of headers) {
+    const match = Object.entries(raw).find(
+      ([key]) => key.trim().toLowerCase() === header.toLowerCase()
+    );
+    if (match && match[1] != null && String(match[1]).trim()) {
+      return String(match[1]).trim();
+    }
+  }
+  return "";
+}
+
+function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
+  const rows: ImportRow[] = [];
+  for (const raw of rawRows) {
+    const email = cellValue(raw, "Email");
+    if (!email) continue;
+
+    const friendsReferred = cellValue(raw, "Friends Referred", "Referral Count");
+    const deviceRaw = cellValue(raw, "Device");
+    const device = VALID_DEVICES.has(deviceRaw) ? deviceRaw : "Other";
+
+    rows.push({
+      name: cellValue(raw, "Name"),
+      email,
+      campaign: cellValue(raw, "Campaign"),
+      willGive: cellValue(raw, "Will Give?", "Give?"),
+      donationAmount: cellValue(raw, "Donation Amount", "Donation"),
+      willVote: cellValue(raw, "Will Vote?", "Vote?"),
+      willShine: cellValue(raw, "Will Shine?", "Shine?"),
+      prefersEarning: cellValue(raw, "Prefers Earning", "Recognition"),
+      device,
+      referralCount: friendsReferred ? Math.max(0, Number.parseInt(friendsReferred, 10) || 0) : 0,
+    });
+  }
+  return rows;
+}
+
+function parseImportFile(file: File): Promise<ImportRow[]> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: "array" });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rawRows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: "" });
+        resolve(parseImportRows(rawRows));
+      } catch {
+        reject(new Error("Could not read file. Please upload a valid CSV or Excel file."));
+      }
+    };
+    reader.onerror = () => reject(new Error("Failed to read file."));
+    reader.readAsArrayBuffer(file);
+  });
+}
+
 export default function ResponsesTab() {
   const [allResponses, setAllResponses] = useState<Response[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,6 +116,15 @@ export default function ResponsesTab() {
   const [page, setPage] = useState(1);
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportFormat, setExportFormat] = useState<"csv" | "xlsx">("csv");
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importRows, setImportRows] = useState<ImportRow[]>([]);
+  const [importFileName, setImportFileName] = useState("");
+  const [importError, setImportError] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
+  const [sendingEmails, setSendingEmails] = useState(false);
+  const [sendEmailResult, setSendEmailResult] = useState<SendEmailResult | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch responses (date-filtered at API level)
   const fetchData = useCallback(async () => {
@@ -125,6 +218,110 @@ export default function ResponsesTab() {
     setShowExportModal(false);
   }
 
+  function resetImportState() {
+    setImportRows([]);
+    setImportFileName("");
+    setImportError("");
+    setImportResult(null);
+    setImporting(false);
+    setSendEmailResult(null);
+    setSendingEmails(false);
+    if (importInputRef.current) importInputRef.current.value = "";
+  }
+
+  function openImportModal() {
+    resetImportState();
+    setShowImportModal(true);
+  }
+
+  function closeImportModal() {
+    setShowImportModal(false);
+    resetImportState();
+  }
+
+  async function handleImportFileSelected(file: File | undefined) {
+    if (!file) return;
+    setImportError("");
+    setImportResult(null);
+    setSendEmailResult(null);
+    setImportFileName(file.name);
+
+    try {
+      const rows = await parseImportFile(file);
+      if (rows.length === 0) {
+        setImportRows([]);
+        setImportError("No valid rows found. Each row needs at least an Email column.");
+        return;
+      }
+      setImportRows(rows);
+    } catch (err) {
+      setImportRows([]);
+      setImportError(err instanceof Error ? err.message : "Failed to parse file.");
+    }
+  }
+
+  async function runImport() {
+    if (importRows.length === 0 || importing) return;
+    setImporting(true);
+    setImportError("");
+
+    try {
+      const res = await fetch("/api/admin/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rows: importRows }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setImportError(data.error || "Import failed.");
+        return;
+      }
+      setImportResult(data as ImportResult);
+      await fetchData();
+    } catch {
+      setImportError("Import failed. Please try again.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  async function runSendEmails() {
+    if (importRows.length === 0 || sendingEmails) return;
+
+    const confirmed = window.confirm(
+      `Send email to ${importRows.length} user${importRows.length !== 1 ? "s" : ""} in this file?`
+    );
+    if (!confirmed) return;
+
+    setSendingEmails(true);
+    setImportError("");
+    setSendEmailResult(null);
+
+    try {
+      const res = await fetch("/api/admin/send-emails", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipients: importRows.map((row) => ({
+            email: row.email,
+            name: row.name,
+            campaign: row.campaign,
+          })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setImportError(data.error || "Failed to send emails.");
+        return;
+      }
+      setSendEmailResult(data as SendEmailResult);
+    } catch {
+      setImportError("Failed to send emails. Please try again.");
+    } finally {
+      setSendingEmails(false);
+    }
+  }
+
   const inputStyle: React.CSSProperties = {
     border: "1px solid #e0e8ec", borderRadius: 6, padding: "7px 12px",
     fontFamily: "Georgia, serif", fontSize: "0.85rem", color: "#2d2d2d",
@@ -168,6 +365,17 @@ export default function ResponsesTab() {
             <path d="M4 6h16M7 12h10M10 18h4" stroke={hasFilters ? "white" : "#06596d"} strokeWidth="2" strokeLinecap="round"/>
           </svg>
           Filters {hasFilters ? `(${activeFilters.length})` : ""}
+        </button>
+
+        {/* Import button */}
+        <button
+          className="bg-white text-[#06596d] hover:bg-[#f0f7f9] flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 border border-[#06596d] cursor-pointer"
+          onClick={openImportModal}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Import
         </button>
 
         {/* Export button */}
@@ -475,6 +683,109 @@ export default function ResponsesTab() {
           onApply={(f) => { setActiveFilters(f); setPage(1); }}
           onClose={() => setShowFiltersModal(false)}
         />
+      )}
+
+      {/* Import modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black/35 z-50 flex items-center justify-center"
+          onClick={(e) => { if (e.target === e.currentTarget) closeImportModal(); }}
+        >
+          <div className="bg-white rounded-xl shadow-lg w-140 max-w-95vw p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-[#2d2d2d] m-0">Import responses</h2>
+              <button onClick={closeImportModal}
+                className="bg-none border-none cursor-pointer text-xl text-[#aaa] p-2">✕</button>
+            </div>
+
+            <p className="text-sm text-[#555] mb-4">
+              Upload a CSV or Excel file exported from this dashboard. Rows with duplicate emails are skipped.
+            </p>
+
+            <label className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed border-slate-200 rounded-lg mb-4 cursor-pointer bg-[#fafcfd] hover:border-[#8CC7D5] transition-colors">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="text-sm text-[#06596d] font-semibold">
+                {importFileName || "Choose CSV or Excel file"}
+              </span>
+              <span className="text-xs text-[#999]">Supports .csv and .xlsx</span>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".csv,.xlsx,.xls"
+                className="hidden"
+                onChange={(e) => handleImportFileSelected(e.target.files?.[0])}
+              />
+            </label>
+
+            {importRows.length > 0 && !importResult && (
+              <p className="text-sm text-[#2d2d2d] mb-4">
+                Ready to import <strong>{importRows.length}</strong> response{importRows.length !== 1 ? "s" : ""}.
+              </p>
+            )}
+
+            {importResult && (
+              <div className="rounded-lg border border-slate-200 bg-[#f8fbfc] p-4 mb-4 text-sm text-[#2d2d2d]">
+                <p className="m-0 mb-1"><strong>{importResult.imported}</strong> imported</p>
+                <p className="m-0 mb-1"><strong>{importResult.skipped}</strong> skipped (duplicate emails)</p>
+                {importResult.errors.length > 0 && (
+                  <p className="m-0 mt-2 text-[#a04444]">
+                    {importResult.errors.slice(0, 3).join(" ")}
+                    {importResult.errors.length > 3 ? ` (+${importResult.errors.length - 3} more)` : ""}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {sendEmailResult && (
+              <div className="rounded-lg border border-slate-200 bg-[#f8fbfc] p-4 mb-4 text-sm text-[#2d2d2d]">
+                <p className="m-0 mb-1"><strong>{sendEmailResult.sent}</strong> emails sent</p>
+                <p className="m-0 mb-1"><strong>{sendEmailResult.failed}</strong> failed</p>
+                {sendEmailResult.errors.length > 0 && (
+                  <p className="m-0 mt-2 text-[#a04444]">
+                    {sendEmailResult.errors.slice(0, 3).join(" ")}
+                    {sendEmailResult.errors.length > 3 ? ` (+${sendEmailResult.errors.length - 3} more)` : ""}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {importRows.length > 0 && (
+              <p className="text-sm text-[#555] mb-4">
+                After import, use <strong>Send emails</strong> to message every user in this file ({importRows.length}).
+              </p>
+            )}
+
+            {importError && (
+              <p className="text-sm text-[#a04444] mb-4">{importError}</p>
+            )}
+
+            <div className="flex justify-end gap-4 mt-6 flex-wrap">
+              <button onClick={closeImportModal}
+                className="px-6 py-2 border border-slate-200 rounded-lg text-sm text-[#666] bg-white cursor-pointer">
+                {importResult || sendEmailResult ? "Close" : "Cancel"}
+              </button>
+              {importRows.length > 0 && (
+                <button
+                  onClick={runSendEmails}
+                  disabled={sendingEmails || importing}
+                  className="px-6 py-2 border border-[#06596d] rounded-lg text-sm text-[#06596d] bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {sendingEmails ? "Sending…" : `Send emails (${importRows.length})`}
+                </button>
+              )}
+              {!importResult && (
+                <button
+                  onClick={runImport}
+                  disabled={importRows.length === 0 || importing || sendingEmails}
+                  className="px-6 py-2 border-none rounded-lg bg-[#5a9aaa] text-sm text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {importing ? "Importing…" : "Import"}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Export modal */}

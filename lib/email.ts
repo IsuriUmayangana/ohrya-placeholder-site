@@ -1,12 +1,44 @@
 import "server-only";
 
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import {
+  IMPORT_USER_EMAIL_SUBJECT,
+  buildImportUserEmailHtml,
+  buildImportUserEmailText,
+  type ImportUserEmailParams,
+} from "@/lib/import-user-email";
 
 function getSesClient() {
   const accessKeyId = process.env.OHRYA_AWS_KEY_ID;
   const secretAccessKey = process.env.OHRYA_AWS_SECRET;
   const credentials = accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : undefined;
   return new SESClient({ region: process.env.AWS_REGION ?? "us-east-1", credentials });
+}
+
+export async function sendImportUserEmail(params: ImportUserEmailParams): Promise<void> {
+  const from = process.env.SES_FROM_EMAIL;
+  const to = params.email.trim();
+
+  if (!from) {
+    console.warn(`[Import email] SES_FROM_EMAIL not set — would send to ${to}`);
+    console.warn(buildImportUserEmailText(params));
+    return;
+  }
+
+  const client = getSesClient();
+  await client.send(
+    new SendEmailCommand({
+      Source: from,
+      Destination: { ToAddresses: [to] },
+      Message: {
+        Subject: { Data: IMPORT_USER_EMAIL_SUBJECT, Charset: "UTF-8" },
+        Body: {
+          Text: { Data: buildImportUserEmailText(params), Charset: "UTF-8" },
+          Html: { Data: buildImportUserEmailHtml(params), Charset: "UTF-8" },
+        },
+      },
+    })
+  );
 }
 
 export async function sendOtpEmail(to: string, code: string): Promise<void> {
