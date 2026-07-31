@@ -54,6 +54,7 @@ html {
 body {
   line-height: 1.21;
   overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 
