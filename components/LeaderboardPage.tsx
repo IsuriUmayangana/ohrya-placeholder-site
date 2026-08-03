@@ -58,23 +58,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="relative min-h-dvh bg-[#04374B]">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div
-          className="absolute inset-0 bg-no-repeat"
-          style={{
-            backgroundImage: `
-              url('/leaderboard-bg.svg'),
-              radial-gradient(ellipse 85% 75% at 50% 45%, #2F95BE 0%, #1D637E 42%, #04374B 78%)
-            `,
-            backgroundSize: "cover, cover",
-            backgroundPosition: "center top, center top",
-          }}
-        />
-      </div>
+    <div className="leaderboard-background min-h-dvh">
 
       <div className="relative z-[1] mx-auto flex min-h-dvh w-full max-w-[950px] flex-col justify-center px-4 py-8">
         {/* HEADER */}

@@ -416,3 +416,55 @@ body {
     max-height: 80px;
   }
 }
+
+
+/* ==================================================
+   LEADERBOARD BACKGROUND - Slowly Spinning Sunburst
+   ================================================== */
+   .leaderboard-background {
+    position: relative;
+    background-color: #123a4a;
+    overflow: hidden;
+  }
+  
+  .leaderboard-background::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1819px;
+    height: 1796px;
+    margin-left: -909.5px;
+    background-image: url("/splash/assets/background-sunburst.svg");
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 1819px 1796px;
+    transform-origin: center center;
+    animation: hero-spin 240s linear infinite;
+    will-change: transform;
+  }
+  
+  @keyframes hero-spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .leaderboard-background::before {
+      animation: none;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .leaderboard-background::before {
+      width: 1245px;
+      height: 1245px;
+      margin-left: -622.5px;
+      background-image: url("/splash/assets/background-sunburst-mobile.svg");
+      background-size: 1245px 1245px;
+    }
+  }
