@@ -11,6 +11,7 @@ import { navigateAfterSignup } from "@/lib/navigate-after-signup";
 import { getSurveyCampaignValue, type CampaignId } from "./JoinCampaignSurface";
 import CharityNavigator from "./sections/CharityNavigator";
 import Faq from "./sections/Faq";
+import InstagramFeed from "./sections/InstagramFeed";
 import Footer from "./sections/Footer";
 import Header from "./sections/Header";
 import Hero from "./sections/Hero";
@@ -115,6 +116,7 @@ export default function SplashLandingPage() {
       <VideoSection />
       <Impact />
       <Faq />
+      <InstagramFeed />
       <Footer />
     </div>
   );
