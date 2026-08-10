@@ -38,6 +38,8 @@ const nextConfig: NextConfig = {
     SES_FROM_EMAIL: process.env.SES_FROM_EMAIL ?? "",
     OHRYA_AWS_KEY_ID: process.env.OHRYA_AWS_KEY_ID ?? "",
     OHRYA_AWS_SECRET: process.env.OHRYA_AWS_SECRET ?? "",
+    IG_USER_ID: process.env.IG_USER_ID ?? "",
+    IG_ACCESS_TOKEN: process.env.IG_ACCESS_TOKEN ?? "",
   },
 };
 

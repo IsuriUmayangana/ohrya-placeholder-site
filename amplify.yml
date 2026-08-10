@@ -4,6 +4,7 @@ frontend:
     preBuild:
       commands:
         - npm ci
+        - npm run fetch:instagram || echo "Instagram fetch skipped (set IG_USER_ID and IG_ACCESS_TOKEN in Amplify env)"
     build:
       commands:
         - npm run build

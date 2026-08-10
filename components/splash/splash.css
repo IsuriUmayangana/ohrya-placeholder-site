@@ -1136,6 +1136,19 @@ body {
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.instagram-slide-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-yellow);
+  background: linear-gradient(145deg, var(--color-bg-mid), var(--color-bg-dark));
+}
+
 .instagram-slide:hover .instagram-slide-image,
 .instagram-slide:focus-visible .instagram-slide-image {
   transform: scale(1.04);

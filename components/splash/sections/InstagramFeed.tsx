@@ -359,6 +359,13 @@ export default function InstagramFeed() {
       img.decoding = "async";
       img.draggable = false;
       img.referrerPolicy = "no-referrer";
+      img.onerror = () => {
+        img.remove();
+        const placeholder = document.createElement("div");
+        placeholder.className = "instagram-slide-placeholder";
+        placeholder.textContent = "Instagram";
+        media.appendChild(placeholder);
+      };
       media.appendChild(img);
 
       if (isVideoOrReel(item)) {

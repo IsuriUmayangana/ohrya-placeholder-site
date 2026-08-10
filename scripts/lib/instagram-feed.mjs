@@ -1,3 +1,7 @@
+/**
+ * Shared Instagram Graph API feed helpers.
+ */
+
 export const API_VERSION = "v22.0";
 export const FEED_LIMIT = 10;
 
@@ -12,54 +16,37 @@ const FIELDS = [
   "timestamp",
 ].join(",");
 
-export type InstagramFeedItem = {
-  id: string;
-  caption: string;
-  mediaType: string;
-  mediaProductType: string | null;
-  mediaUrl: string | null;
-  thumbnailUrl: string | null;
-  permalink: string;
-  timestamp: string;
-};
-
-export type InstagramFeed = {
-  updatedAt: string;
-  items: InstagramFeedItem[];
-};
-
-function mapItem(item: Record<string, string | undefined>): InstagramFeedItem {
-  return {
-    id: item.id ?? "",
-    caption: item.caption || "",
-    mediaType: item.media_type ?? "",
-    mediaProductType: item.media_product_type || null,
-    mediaUrl: item.media_url || null,
-    thumbnailUrl: item.thumbnail_url || null,
-    permalink: item.permalink ?? "",
-    timestamp: item.timestamp ?? "",
-  };
-}
-
-function isDisplayable(item: InstagramFeedItem): boolean {
-  return Boolean(item.permalink && (item.thumbnailUrl || item.mediaUrl));
-}
-
-export function getInstagramConfig(env: NodeJS.ProcessEnv = process.env) {
-  const userId = env.IG_USER_ID?.trim();
-  const accessToken = env.IG_ACCESS_TOKEN?.trim();
+export function getInstagramConfig(env = process.env) {
+  const userId = env.IG_USER_ID;
+  const accessToken = env.IG_ACCESS_TOKEN;
 
   if (!userId || !accessToken) {
-    throw new Error("Missing IG_USER_ID or IG_ACCESS_TOKEN.");
+    throw new Error(
+      "Missing IG_USER_ID or IG_ACCESS_TOKEN. Copy .env.example to .env and fill in values.",
+    );
   }
 
   return { userId, accessToken };
 }
 
-export async function fetchInstagramFeed(
-  env: NodeJS.ProcessEnv = process.env,
-  { limit = FEED_LIMIT } = {},
-): Promise<InstagramFeed> {
+function mapItem(item) {
+  return {
+    id: item.id,
+    caption: item.caption || "",
+    mediaType: item.media_type,
+    mediaProductType: item.media_product_type || null,
+    mediaUrl: item.media_url || null,
+    thumbnailUrl: item.thumbnail_url || null,
+    permalink: item.permalink,
+    timestamp: item.timestamp,
+  };
+}
+
+function isDisplayable(item) {
+  return Boolean(item.permalink && (item.thumbnailUrl || item.mediaUrl));
+}
+
+export async function fetchInstagramFeed(env = process.env, { limit = FEED_LIMIT } = {}) {
   const { userId, accessToken } = getInstagramConfig(env);
   const isInstagramLogin = accessToken.startsWith("IGAA");
   const host = isInstagramLogin ? "graph.instagram.com" : "graph.facebook.com";
@@ -76,7 +63,7 @@ export async function fetchInstagramFeed(
     throw new Error(`Graph API error ${response.status}: ${body}`);
   }
 
-  const payload = (await response.json()) as { data?: Record<string, string | undefined>[] };
+  const payload = await response.json();
   const items = (payload.data || [])
     .map(mapItem)
     .filter(isDisplayable)

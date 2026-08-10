@@ -14,17 +14,22 @@ async function loadStaticFeed(): Promise<InstagramFeed> {
 export async function GET() {
   try {
     const feed = await fetchInstagramFeed();
-    return NextResponse.json(feed, {
+    return NextResponse.json({ ...feed, source: "live" }, {
       headers: { "Cache-Control": "no-store" },
     });
-  } catch {
+  } catch (liveError) {
     try {
       const feed = await loadStaticFeed();
-      return NextResponse.json(feed, {
+      return NextResponse.json({ ...feed, source: "static" }, {
         headers: { "Cache-Control": "no-store" },
       });
     } catch {
-      return NextResponse.json({ updatedAt: new Date().toISOString(), items: [] });
+      const message =
+        liveError instanceof Error ? liveError.message : "Instagram feed unavailable";
+      return NextResponse.json(
+        { updatedAt: new Date().toISOString(), items: [], source: "error", error: message },
+        { status: 503 },
+      );
     }
   }
 }

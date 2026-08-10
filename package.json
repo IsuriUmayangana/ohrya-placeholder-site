@@ -6,7 +6,8 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "fetch:instagram": "node scripts/fetch-instagram.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.787.0",
