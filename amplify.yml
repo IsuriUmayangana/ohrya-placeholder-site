@@ -4,6 +4,10 @@ frontend:
     preBuild:
       commands:
         - npm ci
+        - |
+          if [ -n "$IG_USER_ID" ] && [ -n "$IG_ACCESS_TOKEN" ]; then
+            printf "IG_USER_ID=%s\nIG_ACCESS_TOKEN=%s\n" "$IG_USER_ID" "$IG_ACCESS_TOKEN" >> .env.production
+          fi
         - npm run fetch:instagram || echo "Instagram fetch skipped (set IG_USER_ID and IG_ACCESS_TOKEN in Amplify env)"
     build:
       commands:

@@ -45,22 +45,16 @@ function isDisplayable(item: InstagramFeedItem): boolean {
   return Boolean(item.permalink && (item.thumbnailUrl || item.mediaUrl));
 }
 
-export function getInstagramConfig(env: NodeJS.ProcessEnv = process.env) {
-  const userId = env.IG_USER_ID?.trim();
-  const accessToken = env.IG_ACCESS_TOKEN?.trim();
+import { getInstagramCredentials } from "@/lib/instagram-credentials";
 
-  if (!userId || !accessToken) {
-    throw new Error("Missing IG_USER_ID or IG_ACCESS_TOKEN.");
-  }
-
-  return { userId, accessToken };
+export function getInstagramConfig() {
+  return getInstagramCredentials();
 }
 
 export async function fetchInstagramFeed(
-  env: NodeJS.ProcessEnv = process.env,
   { limit = FEED_LIMIT } = {},
 ): Promise<InstagramFeed> {
-  const { userId, accessToken } = getInstagramConfig(env);
+  const { userId, accessToken } = getInstagramCredentials();
   const isInstagramLogin = accessToken.startsWith("IGAA");
   const host = isInstagramLogin ? "graph.instagram.com" : "graph.facebook.com";
   const mediaPath = isInstagramLogin ? "me/media" : `${userId}/media`;
