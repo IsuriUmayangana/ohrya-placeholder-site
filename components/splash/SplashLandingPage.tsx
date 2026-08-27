@@ -36,6 +36,18 @@ export default function SplashLandingPage() {
     }).catch(() => {});
   }, [referredBy]);
 
+  useEffect(() => {
+    if (typeof window === "undefined" || window.location.hash !== "#join-form") return;
+
+    const scrollToJoinForm = () => {
+      document.getElementById("join-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    scrollToJoinForm();
+    const timeoutId = window.setTimeout(scrollToJoinForm, 400);
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [formError, setFormError] = useState<ReactNode>("");
