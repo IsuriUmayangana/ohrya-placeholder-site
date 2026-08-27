@@ -21,10 +21,10 @@ export type ImportUserEmailOptions = {
 const TEXT_COLOR = "#1A5166";
 const BUTTON_COLOR = "#699bb0";
 const FONT_FAMILY = "Inter, Arial, Helvetica, sans-serif";
-const BODY_FONT_SIZE = "32px";
-const BODY_LINE_HEIGHT = "48px";
-const EMAIL_WIDTH = 880;
-const CONTENT_PADDING = "16px 100px 48px";
+const BODY_FONT_SIZE = "16px";
+const BODY_LINE_HEIGHT = "24px";
+const EMAIL_WIDTH = 600;
+const CONTENT_PADDING = "24px 40px 40px";
 
 export function getEmailAssetBaseUrl(): string {
   return (
@@ -51,7 +51,7 @@ function escapeHtml(value: string): string {
 }
 
 function bodyTextStyle(): string {
-  return `margin:0 0 24px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};`;
+  return `margin:0 0 16px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};`;
 }
 
 export function buildImportUserEmailText(params: ImportUserEmailParams): string {
@@ -78,7 +78,6 @@ export function buildImportUserEmailHtml(
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
-  const sunburstUrl = `${assetBase}/email/sunburst-strip.png`;
   const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
   const textStyle = bodyTextStyle();
 
@@ -98,22 +97,12 @@ export function buildImportUserEmailHtml(
       <td align="center" style="padding:0;">
         <table width="${EMAIL_WIDTH}" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:${EMAIL_WIDTH}px;background:#ffffff;">
           <tr>
-            <td style="padding:0;line-height:0;font-size:0;">
-              <img
-                src="${sunburstUrl}"
-                alt=""
-                width="${EMAIL_WIDTH}"
-                style="display:block;width:100%;max-width:${EMAIL_WIDTH}px;height:auto;border:0;outline:none;text-decoration:none;"
-              />
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:0 0 40px;">
+            <td align="center" style="padding:32px 0 24px;">
               <img
                 src="${logoUrl}"
                 alt="OHRYA — Give • Vote • Shine"
-                width="220"
-                style="display:block;width:220px;max-width:220px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+                width="180"
+                style="display:block;width:180px;max-width:180px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
               />
             </td>
           </tr>
@@ -128,12 +117,12 @@ export function buildImportUserEmailHtml(
               <p style="${textStyle}">
                 Your personal referral link is ready inside your dashboard:
               </p>
-              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 32px;">
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;">
                 <tr>
-                  <td align="left" style="padding:16px 8px;border-radius:16px;">
+                  <td align="left">
                     <a
                       href="${dashboardUrl}"
-                      style="display:inline-block;background:${BUTTON_COLOR};color:#ffffff;text-decoration:none;padding:16px 8px;border-radius:16px;font-family:${FONT_FAMILY};font-size:18px;font-weight:500;line-height:1.2;min-width:344px;text-align:center;box-sizing:border-box;"
+                      style="display:inline-block;background:${BUTTON_COLOR};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:999px;font-family:${FONT_FAMILY};font-size:16px;font-weight:500;line-height:1.2;"
                     >
                       Go to Dashboard
                     </a>
