@@ -213,7 +213,7 @@ function MyDashboardGatewayInner() {
             <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-1 flex-wrap">
               Haven&apos;t join the campaign?{" "}
               <a
-                href="https://ohrya.org/"
+                href="https://ohrya.org/#join-form"
                 className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80"
               >
                 Sign Up
