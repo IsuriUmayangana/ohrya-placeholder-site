@@ -78,7 +78,7 @@ export function buildImportUserEmailHtml(
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
-  const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
+  const headerUrl = `${assetBase}/email/header-spiral-logo.png`;
   const textStyle = bodyTextStyle();
 
   return `<!DOCTYPE html>
@@ -97,12 +97,12 @@ export function buildImportUserEmailHtml(
       <td align="center" style="padding:0;">
         <table width="${EMAIL_WIDTH}" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:${EMAIL_WIDTH}px;background:#ffffff;">
           <tr>
-            <td align="center" style="padding:32px 0 24px;">
+            <td align="center" style="padding:0;line-height:0;font-size:0;">
               <img
-                src="${logoUrl}"
+                src="${headerUrl}"
                 alt="OHRYA — Give • Vote • Shine"
-                width="180"
-                style="display:block;width:180px;max-width:180px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+                width="${EMAIL_WIDTH}"
+                style="display:block;width:100%;max-width:${EMAIL_WIDTH}px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
               />
             </td>
           </tr>
