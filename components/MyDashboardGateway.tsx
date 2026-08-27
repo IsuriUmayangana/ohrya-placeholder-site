@@ -144,7 +144,7 @@ function MyDashboardGatewayInner() {
                 View Your Dashboard
               </h1>
               <p className="text-[0.85rem] text-slate-400 text-center mt-1">
-                Enter the email you used for the OHRYA survey. We&apos;ll send you a verification code.
+                Enter the email you used to sign-up for OHRYA. We&apos;ll send you a verification code.
               </p>
             </div>
 
@@ -209,18 +209,16 @@ function MyDashboardGatewayInner() {
               <div className="h-px bg-slate-100 mx-auto w-full" />
             </div>
 
-            {/* Haven't taken the survey? */}
-            <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-2 ">
-              Haven't taken the survey?{" "}
+            {/* Haven't joined the campaign? */}
+            <p className="text-center text-[0.85rem] text-gray-400 flex items-center justify-center gap-1 flex-wrap">
+              Haven&apos;t join the campaign?{" "}
               <a
-                href="https://form.ohrya.org/"
-                className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80 flex items-center gap-2"
+                href="https://ohrya.org/"
+                className="text-[#5a9aaa] border-b border-[#5a9aaa] hover:opacity-80"
               >
-                Start Here
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14M12 5l7 7-7 7" stroke="#5a9aaa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
+                Sign Up
+              </a>{" "}
+              here.
             </p>
           </>
         ) : (
