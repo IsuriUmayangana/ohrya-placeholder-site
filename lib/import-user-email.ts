@@ -24,7 +24,7 @@ const FONT_FAMILY = "Inter, Arial, Helvetica, sans-serif";
 const BODY_FONT_SIZE = "16px";
 const BODY_LINE_HEIGHT = "24px";
 const EMAIL_WIDTH = 600;
-const CONTENT_PADDING = "24px 40px 40px";
+const CONTENT_PADDING = "32px 48px 40px";
 
 export function getEmailAssetBaseUrl(): string {
   return (
@@ -66,9 +66,7 @@ ${params.dashboardUrl}
 
 Start sharing it with friends, family, and your community. Every eligible person who joins through your link counts toward your participation.
 
-Share your link and start making an impact.
-
-- The OHRYA Team`;
+Share your link and start making an impact.`;
 }
 
 export function buildImportUserEmailHtml(
@@ -78,7 +76,8 @@ export function buildImportUserEmailHtml(
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
-  const headerUrl = `${assetBase}/email/header-spiral-logo.png`;
+  const spiralUrl = `${assetBase}/email/spiral.png`;
+  const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
   const textStyle = bodyTextStyle();
 
   return `<!DOCTYPE html>
@@ -97,17 +96,35 @@ export function buildImportUserEmailHtml(
       <td align="center" style="padding:0;">
         <table width="${EMAIL_WIDTH}" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:${EMAIL_WIDTH}px;background:#ffffff;">
           <tr>
-            <td align="center" style="padding:0;line-height:0;font-size:0;">
-              <img
-                src="${headerUrl}"
-                alt="OHRYA — Give • Vote • Shine"
-                width="${EMAIL_WIDTH}"
-                style="display:block;width:100%;max-width:${EMAIL_WIDTH}px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
-              />
+            <td align="center" style="padding:0;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                <tr>
+                  <td
+                    align="center"
+                    valign="middle"
+                    width="${EMAIL_WIDTH}"
+                    background="${spiralUrl}"
+                    style="background-color:#ffffff;background-image:url('${spiralUrl}');background-repeat:no-repeat;background-position:center top;background-size:520px auto;padding:36px 0 28px;"
+                  >
+                    <!--[if gte mso 9]>
+                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:240px;">
+                      <v:fill type="frame" src="${spiralUrl}" color="#ffffff" />
+                      <v:textbox inset="0,0,0,0">
+                    <![endif]-->
+                    <img
+                      src="${logoUrl}"
+                      alt="OHRYA — Give • Vote • Shine"
+                      width="180"
+                      style="display:block;width:180px;max-width:180px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+                    />
+                    <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:${CONTENT_PADDING};text-align:left;">
+            <td align="left" style="padding:${CONTENT_PADDING};text-align:left;">
               <p style="${textStyle}">
                 Hi ${name},
               </p>
@@ -117,9 +134,9 @@ export function buildImportUserEmailHtml(
               <p style="${textStyle}">
                 Your personal referral link is ready inside your dashboard:
               </p>
-              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;">
                 <tr>
-                  <td align="left">
+                  <td align="left" style="text-align:left;">
                     <a
                       href="${dashboardUrl}"
                       style="display:inline-block;background:${BUTTON_COLOR};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:999px;font-family:${FONT_FAMILY};font-size:16px;font-weight:500;line-height:1.2;"
@@ -132,11 +149,8 @@ export function buildImportUserEmailHtml(
               <p style="${textStyle}">
                 Start sharing it with friends, family, and your community. Every eligible person who joins through your link counts toward your participation.
               </p>
-              <p style="${textStyle}">
-                Share your link and start making an impact.
-              </p>
               <p style="margin:0;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};">
-                - The OHRYA Team
+                Share your link and start making an impact.
               </p>
             </td>
           </tr>
