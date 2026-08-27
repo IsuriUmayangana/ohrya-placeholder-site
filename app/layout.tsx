@@ -49,6 +49,13 @@ export default function RootLayout({
             `,
           }}
         />
+        {/* Crazy Egg */}
+        <Script
+          id="crazy-egg"
+          src="https://script.crazyegg.com/pages/scripts/0133/6102.js"
+          strategy="afterInteractive"
+        />
+        {/* End Crazy Egg */}
       </head>
 
       <body className={`min-h-screen h-full bg-white ${poppins.className}`}>
