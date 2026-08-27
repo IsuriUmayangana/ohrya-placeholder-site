@@ -18,8 +18,13 @@ export type ImportUserEmailOptions = {
   assetBaseUrl?: string;
 };
 
-const TEXT_COLOR = "#2e5266";
+const TEXT_COLOR = "#1A5166";
 const BUTTON_COLOR = "#699bb0";
+const FONT_FAMILY = "Inter, Arial, Helvetica, sans-serif";
+const BODY_FONT_SIZE = "32px";
+const BODY_LINE_HEIGHT = "48px";
+const EMAIL_WIDTH = 880;
+const CONTENT_PADDING = "16px 100px 48px";
 
 export function getEmailAssetBaseUrl(): string {
   return (
@@ -43,6 +48,10 @@ function escapeHtml(value: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function bodyTextStyle(): string {
+  return `margin:0 0 24px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};`;
 }
 
 export function buildImportUserEmailText(params: ImportUserEmailParams): string {
@@ -69,7 +78,9 @@ export function buildImportUserEmailHtml(
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
-  const headerUrl = `${assetBase}/email/welcome-header.png`;
+  const sunburstUrl = `${assetBase}/email/sunburst-strip.png`;
+  const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
+  const textStyle = bodyTextStyle();
 
   return `<!DOCTYPE html>
 <html>
@@ -77,52 +88,65 @@ export function buildImportUserEmailHtml(
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to OHRYA</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap" rel="stylesheet" />
 </head>
-<body style="margin:0;padding:0;background:#ffffff;font-family:Arial,Helvetica,sans-serif;">
+<body style="margin:0;padding:0;background:#ffffff;font-family:${FONT_FAMILY};">
   <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;">
     <tr>
       <td align="center" style="padding:0;">
-        <table width="515" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:515px;background:#ffffff;">
+        <table width="${EMAIL_WIDTH}" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:${EMAIL_WIDTH}px;background:#ffffff;">
           <tr>
             <td style="padding:0;line-height:0;font-size:0;">
               <img
-                src="${headerUrl}"
-                alt="OHRYA — Give • Vote • Shine"
-                width="515"
-                style="display:block;width:100%;max-width:515px;height:auto;border:0;outline:none;text-decoration:none;"
+                src="${sunburstUrl}"
+                alt=""
+                width="${EMAIL_WIDTH}"
+                style="display:block;width:100%;max-width:${EMAIL_WIDTH}px;height:auto;border:0;outline:none;text-decoration:none;"
               />
             </td>
           </tr>
           <tr>
-            <td style="padding:32px 0 48px;text-align:left;">
-              <p style="margin:0 0 20px;font-size:16px;line-height:1.5;color:${TEXT_COLOR};">
+            <td align="center" style="padding:0 0 40px;">
+              <img
+                src="${logoUrl}"
+                alt="OHRYA — Give • Vote • Shine"
+                width="220"
+                style="display:block;width:220px;max-width:220px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:${CONTENT_PADDING};text-align:left;">
+              <p style="${textStyle}">
                 Hi ${name},
               </p>
-              <p style="margin:0 0 20px;font-size:16px;line-height:1.5;color:${TEXT_COLOR};">
+              <p style="${textStyle}">
                 Welcome to OHRYA!
               </p>
-              <p style="margin:0 0 24px;font-size:16px;line-height:1.5;color:${TEXT_COLOR};">
+              <p style="${textStyle}">
                 Your personal referral link is ready inside your dashboard:
               </p>
-              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 28px;">
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 32px;">
                 <tr>
-                  <td align="left">
+                  <td align="left" style="padding:16px 8px;border-radius:16px;">
                     <a
                       href="${dashboardUrl}"
-                      style="display:inline-block;background:${BUTTON_COLOR};color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:999px;font-size:16px;font-weight:700;line-height:1.2;"
+                      style="display:inline-block;background:${BUTTON_COLOR};color:#ffffff;text-decoration:none;padding:16px 8px;border-radius:16px;font-family:${FONT_FAMILY};font-size:18px;font-weight:500;line-height:1.2;min-width:344px;text-align:center;box-sizing:border-box;"
                     >
                       Go to Dashboard
                     </a>
                   </td>
                 </tr>
               </table>
-              <p style="margin:0 0 20px;font-size:16px;line-height:1.5;color:${TEXT_COLOR};">
+              <p style="${textStyle}">
                 Start sharing it with friends, family, and your community. Every eligible person who joins through your link counts toward your participation.
               </p>
-              <p style="margin:0 0 28px;font-size:16px;line-height:1.5;color:${TEXT_COLOR};">
+              <p style="${textStyle}">
                 Share your link and start making an impact.
               </p>
-              <p style="margin:0;font-size:16px;line-height:1.5;color:${TEXT_COLOR};">
+              <p style="margin:0;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};">
                 - The OHRYA Team
               </p>
             </td>
