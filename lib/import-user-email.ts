@@ -66,7 +66,9 @@ ${params.dashboardUrl}
 
 Start sharing it with friends, family, and your community. Every eligible person who joins through your link counts toward your participation.
 
-Share your link and start making an impact.`;
+Share your link and start making an impact.
+
+The OHRYA Team`;
 }
 
 export function buildImportUserEmailHtml(
@@ -150,8 +152,11 @@ export function buildImportUserEmailHtml(
               <p style="${textStyle}">
                 Start sharing it with friends, family, and your community. Every eligible person who joins through your link counts toward your participation.
               </p>
-              <p style="margin:0;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};">
+              <p style="${textStyle}">
                 Share your link and start making an impact.
+              </p>
+              <p style="margin:0;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};text-align:left;">
+                The OHRYA Team
               </p>
             </td>
           </tr>
