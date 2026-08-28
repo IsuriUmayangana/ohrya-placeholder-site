@@ -25,6 +25,10 @@ const BODY_FONT_SIZE = "16px";
 const BODY_LINE_HEIGHT = "24px";
 const EMAIL_WIDTH = 600;
 const CONTENT_PADDING = "32px 48px 40px";
+// Figma: 1033×1033 burst vector, #F1FBFF, top -304px behind logo
+const BURST_SIZE = 1033;
+const BURST_OFFSET_Y = -304;
+const HEADER_HEIGHT = 220;
 
 export function getEmailAssetBaseUrl(): string {
   return (
@@ -78,9 +82,13 @@ export function buildImportUserEmailHtml(
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
-  const spiralUrl = `${assetBase}/email/spiral.png`;
+  const burstUrl = `${assetBase}/email/burst.png`;
   const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
   const textStyle = bodyTextStyle();
+  const figmaFrameWidth = 1080;
+  const scale = EMAIL_WIDTH / figmaFrameWidth;
+  const burstDisplay = Math.round(BURST_SIZE * scale);
+  const burstOffsetY = Math.round(BURST_OFFSET_Y * scale);
 
   return `<!DOCTYPE html>
 <html>
@@ -105,27 +113,21 @@ export function buildImportUserEmailHtml(
                     align="center"
                     valign="middle"
                     width="${EMAIL_WIDTH}"
-                    height="240"
-                    background="${spiralUrl}"
-                    style="background-color:#ffffff;background-image:url('${spiralUrl}');background-repeat:no-repeat;background-position:center center;background-size:520px auto;padding:36px 0 22px;"
+                    height="${HEADER_HEIGHT}"
+                    background="${burstUrl}"
+                    style="background-color:#ffffff;background-image:url('${burstUrl}');background-repeat:no-repeat;background-position:center ${burstOffsetY}px;background-size:${burstDisplay}px auto;padding:40px 0 16px;"
                   >
                     <!--[if gte mso 9]>
-                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:240px;">
-                      <v:fill type="frame" src="${spiralUrl}" color="#ffffff" />
+                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:${HEADER_HEIGHT}px;">
+                      <v:fill type="frame" src="${burstUrl}" color="#ffffff" />
                       <v:textbox inset="0,0,0,0" style="mso-fit-shape-to-text:true;">
                     <![endif]-->
-                    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto;">
-                      <tr>
-                        <td align="center" bgcolor="#ffffff" style="background-color:#ffffff;padding:4px 8px;">
-                          <img
-                            src="${logoUrl}"
-                            alt="OHRYA — Give • Vote • Shine"
-                            width="170"
-                            style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
-                          />
-                        </td>
-                      </tr>
-                    </table>
+                    <img
+                      src="${logoUrl}"
+                      alt="OHRYA — Give • Vote • Shine"
+                      width="170"
+                      style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+                    />
                     <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
                   </td>
                 </tr>
