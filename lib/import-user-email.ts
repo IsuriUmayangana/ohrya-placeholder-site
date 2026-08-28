@@ -24,8 +24,8 @@ const FONT_FAMILY = "Inter, Arial, Helvetica, sans-serif";
 const BODY_FONT_SIZE = "16px";
 const BODY_LINE_HEIGHT = "24px";
 const EMAIL_WIDTH = 600;
-const CONTENT_PADDING = "32px 48px 40px";
-const BURST_SECTION_PADDING = "40px 48px 32px";
+const CONTENT_PADDING = "0 48px 40px";
+const BURST_SECTION_PADDING = "40px 48px 0";
 // Figma: 1033×1033 burst, #F1FBFF, top flush, center aligned to logo sun icon
 const BURST_SIZE = 1033;
 const BURST_NATIVE_HEIGHT = 728;
@@ -138,7 +138,7 @@ export function buildImportUserEmailHtml(
               <p style="${textStyle}">
                 Your personal referral link is ready inside your dashboard:
               </p>
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 8px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 16px;">
                 <tr>
                   <td align="left" style="text-align:left;">
                     <a
