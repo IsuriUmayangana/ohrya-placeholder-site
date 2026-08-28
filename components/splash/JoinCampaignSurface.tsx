@@ -18,7 +18,7 @@ export const JOIN_CAMPAIGNS: {
   },
   {
     id: "Pets",
-    label: "Pets",
+    label: "Animals",
     surveyValue: "Animals",
     image: "/splash/assets/campaign-pets.png",
   },

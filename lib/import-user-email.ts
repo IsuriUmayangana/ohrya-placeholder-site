@@ -32,6 +32,16 @@ const BURST_NATIVE_HEIGHT = 728;
 const BURST_RADIAL_CENTER_Y = 329;
 const FIGMA_FRAME_WIDTH = 1080;
 const LOGO_SUN_Y = 110;
+const FOOTER_LINK_COLOR = "#699bb0";
+const FOOTER_FONT_SIZE = "14px";
+const FOOTER_LINE_HEIGHT = "24px";
+
+const EMAIL_FOOTER_LINKS = [
+  { label: "Facebook", href: "https://facebook.com/ohryafoundation" },
+  { label: "Instagram", href: "https://www.instagram.com/ohryafoundation/" },
+  { label: "Terms & Conditions", href: "https://ohrya.org/terms-of-service" },
+  { label: "Privacy Policy", href: "https://ohrya.org/privacy-policy" },
+] as const;
 
 export function getEmailAssetBaseUrl(): string {
   return (
@@ -61,6 +71,24 @@ function bodyTextStyle(): string {
   return `margin:0 0 16px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};text-align:left;`;
 }
 
+function footerLinkStyle(): string {
+  return `color:${FOOTER_LINK_COLOR};text-decoration:none;`;
+}
+
+function footerTextStyle(margin = "0"): string {
+  return `margin:${margin};font-family:${FONT_FAMILY};font-size:${FOOTER_FONT_SIZE};font-weight:400;line-height:${FOOTER_LINE_HEIGHT};letter-spacing:0;color:${FOOTER_LINK_COLOR};text-align:center;`;
+}
+
+function buildEmailFooterLinksHtml(): string {
+  return EMAIL_FOOTER_LINKS.map((link, index) => {
+    const separator =
+      index === 0
+        ? ""
+        : `<span style="color:${FOOTER_LINK_COLOR};"> | </span>`;
+    return `${separator}<a href="${link.href}" style="${footerLinkStyle()}">${link.label}</a>`;
+  }).join("");
+}
+
 export function buildImportUserEmailText(params: ImportUserEmailParams): string {
   const name = displayName(params);
 
@@ -75,7 +103,14 @@ Start sharing it with friends, family, and your community. Every eligible person
 
 Share your link and start making an impact.
 
-The OHRYA Team`;
+The OHRYA Team
+
+Facebook: https://facebook.com/ohryafoundation
+Instagram: https://www.instagram.com/ohryafoundation/
+Terms & Conditions: https://ohrya.org/terms-of-service
+Privacy Policy: https://ohrya.org/privacy-policy
+
+© 2026 OHRYA Foundation. All rights reserved.`;
 }
 
 export function buildImportUserEmailHtml(
@@ -161,8 +196,18 @@ export function buildImportUserEmailHtml(
               <p style="${textStyle}">
                 Share your link and start making an impact.
               </p>
-              <p style="margin:0;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};text-align:left;">
+              <p style="margin:0 0 32px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};text-align:left;">
                 The OHRYA Team
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:0 48px 40px;text-align:center;">
+              <p style="${footerTextStyle("0 0 12px")}">
+                ${buildEmailFooterLinksHtml()}
+              </p>
+              <p style="${footerTextStyle()}">
+                © 2026 OHRYA Foundation. All rights reserved.
               </p>
             </td>
           </tr>
