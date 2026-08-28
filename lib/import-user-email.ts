@@ -58,7 +58,7 @@ function escapeHtml(value: string): string {
 }
 
 function bodyTextStyle(): string {
-  return `margin:0 0 16px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};`;
+  return `margin:0 0 16px;font-family:${FONT_FAMILY};font-size:${BODY_FONT_SIZE};font-weight:500;line-height:${BODY_LINE_HEIGHT};letter-spacing:0;color:${TEXT_COLOR};text-align:left;`;
 }
 
 export function buildImportUserEmailText(params: ImportUserEmailParams): string {
@@ -113,10 +113,10 @@ export function buildImportUserEmailHtml(
         <table width="${EMAIL_WIDTH}" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:${EMAIL_WIDTH}px;background:#ffffff;">
           <tr>
             <td
-              align="center"
+              align="left"
               width="${EMAIL_WIDTH}"
               background="${burstUrl}"
-              style="background-color:#ffffff;background-image:url('${burstUrl}');background-repeat:no-repeat;background-position:center ${burstOffsetY}px;background-size:${burstDisplay}px auto;padding:${BURST_SECTION_PADDING};"
+              style="background-color:#ffffff;background-image:url('${burstUrl}');background-repeat:no-repeat;background-position:center ${burstOffsetY}px;background-size:${burstDisplay}px auto;padding:${BURST_SECTION_PADDING};text-align:left;"
             >
               <!--[if gte mso 9]>
               <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;">
