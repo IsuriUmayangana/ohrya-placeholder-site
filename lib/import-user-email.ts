@@ -78,7 +78,6 @@ export function buildImportUserEmailHtml(
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
-  const spiralUrl = `${assetBase}/email/spiral.png`;
   const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
   const textStyle = bodyTextStyle();
 
@@ -98,32 +97,13 @@ export function buildImportUserEmailHtml(
       <td align="center" style="padding:0;">
         <table width="${EMAIL_WIDTH}" cellpadding="0" cellspacing="0" role="presentation" style="width:100%;max-width:${EMAIL_WIDTH}px;background:#ffffff;">
           <tr>
-            <td align="center" style="padding:0;">
-              <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                <tr>
-                  <td
-                    align="center"
-                    valign="middle"
-                    width="${EMAIL_WIDTH}"
-                    height="230"
-                    background="${spiralUrl}"
-                    style="background-color:#ffffff;background-image:url('${spiralUrl}');background-repeat:no-repeat;background-position:center center;background-size:520px auto;padding:42px 0 28px;"
-                  >
-                    <!--[if gte mso 9]>
-                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:230px;">
-                      <v:fill type="frame" src="${spiralUrl}" color="#ffffff" />
-                      <v:textbox inset="0,0,0,0" style="mso-fit-shape-to-text:true;">
-                    <![endif]-->
-                    <img
-                      src="${logoUrl}"
-                      alt="OHRYA — Give • Vote • Shine"
-                      width="170"
-                      style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
-                    />
-                    <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
-                  </td>
-                </tr>
-              </table>
+            <td align="center" style="padding:32px 0 24px;">
+              <img
+                src="${logoUrl}"
+                alt="OHRYA — Give • Vote • Shine"
+                width="170"
+                style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+              />
             </td>
           </tr>
           <tr>
