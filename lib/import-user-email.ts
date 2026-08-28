@@ -105,21 +105,27 @@ export function buildImportUserEmailHtml(
                     align="center"
                     valign="middle"
                     width="${EMAIL_WIDTH}"
-                    height="220"
+                    height="240"
                     background="${spiralUrl}"
-                    style="background-color:#ffffff;background-image:url('${spiralUrl}');background-repeat:no-repeat;background-position:center center;background-size:480px auto;padding:38px 0 24px;"
+                    style="background-color:#ffffff;background-image:url('${spiralUrl}');background-repeat:no-repeat;background-position:center center;background-size:520px auto;padding:36px 0 22px;"
                   >
                     <!--[if gte mso 9]>
-                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:220px;">
+                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:240px;">
                       <v:fill type="frame" src="${spiralUrl}" color="#ffffff" />
                       <v:textbox inset="0,0,0,0" style="mso-fit-shape-to-text:true;">
                     <![endif]-->
-                    <img
-                      src="${logoUrl}"
-                      alt="OHRYA — Give • Vote • Shine"
-                      width="170"
-                      style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
-                    />
+                    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto;">
+                      <tr>
+                        <td align="center" bgcolor="#ffffff" style="background-color:#ffffff;padding:4px 8px;">
+                          <img
+                            src="${logoUrl}"
+                            alt="OHRYA — Give • Vote • Shine"
+                            width="170"
+                            style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto;border:0;outline:none;text-decoration:none;"
+                          />
+                        </td>
+                      </tr>
+                    </table>
                     <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
                   </td>
                 </tr>
