@@ -186,7 +186,7 @@ export function buildImportUserEmailHtml(
                 style="display:block;width:170px;max-width:170px;height:auto;margin:0 auto 24px;border:0;outline:none;text-decoration:none;"
               />
               <p style="${textStyle}">
-                Hi ${name},
+                Hi <span style="text-transform:capitalize;">${name}</span>,
               </p>
               <p style="${textStyle}">
                 Welcome to OHRYA!
