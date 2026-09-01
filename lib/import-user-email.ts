@@ -43,6 +43,27 @@ const EMAIL_FOOTER_LINKS = [
   { label: "Privacy Policy", href: "https://ohrya.org/privacy-policy" },
 ] as const;
 
+const IMPORT_EMAIL_DASHBOARD_UTM = {
+  utm_source: "Meta",
+  utm_medium: "Invite Email",
+  utm_campaign: "Leaderboard",
+} as const;
+
+export function buildImportEmailDashboardUrl(email: string): string {
+  const base = (
+    process.env.DASHBOARD_BASE_URL?.trim() || "https://dashboard.ohrya.org"
+  ).replace(/\/$/, "");
+  const url = new URL(`${base}/my-dashboard`);
+  const trimmedEmail = email.trim();
+  if (trimmedEmail) {
+    url.searchParams.set("email", trimmedEmail);
+  }
+  for (const [key, value] of Object.entries(IMPORT_EMAIL_DASHBOARD_UTM)) {
+    url.searchParams.set(key, value);
+  }
+  return url.toString();
+}
+
 export function getEmailAssetBaseUrl(): string {
   return (
     process.env.EMAIL_ASSET_BASE_URL?.trim() ||

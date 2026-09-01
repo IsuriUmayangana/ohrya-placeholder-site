@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { getAdminSessionSecret } from "@/lib/admin-auth";
 import { sendImportUserEmail } from "@/lib/email";
+import { buildImportEmailDashboardUrl } from "@/lib/import-user-email";
 import { getUserByEmail } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -12,12 +13,8 @@ export type BulkEmailRecipient = {
   campaign?: string;
 };
 
-function dashboardBaseUrl(): string {
-  return process.env.DASHBOARD_BASE_URL?.trim() || "https://dashboard.ohrya.org";
-}
-
 function dashboardAccessUrl(email: string): string {
-  return `${dashboardBaseUrl()}/my-dashboard?email=${encodeURIComponent(email)}`;
+  return buildImportEmailDashboardUrl(email);
 }
 
 export async function POST(req: Request) {

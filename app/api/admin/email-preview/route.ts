@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminSessionSecret } from "@/lib/admin-auth";
 import {
+  buildImportEmailDashboardUrl,
   buildImportUserEmailHtml,
   buildImportUserEmailText,
 } from "@/lib/import-user-email";
@@ -9,8 +10,7 @@ import {
 export const dynamic = "force-dynamic";
 
 function dashboardAccessUrl(email: string): string {
-  const base = process.env.DASHBOARD_BASE_URL?.trim() || "https://dashboard.ohrya.org";
-  return `${base}/my-dashboard?email=${encodeURIComponent(email)}`;
+  return buildImportEmailDashboardUrl(email);
 }
 
 export async function GET(req: NextRequest) {
