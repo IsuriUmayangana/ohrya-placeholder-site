@@ -50,11 +50,21 @@ type SendEmailResult = {
 
 const VALID_DEVICES = new Set(["Desktop", "Mobile", "Tablet", "Other"]);
 
+function normalizeHeaderKey(key: string): string {
+  return key
+    .replace(/^\uFEFF/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
+}
+
 function cellValue(raw: Record<string, unknown>, ...headers: string[]): string {
+  const entries = Object.entries(raw).map(
+    ([key, value]) => [normalizeHeaderKey(key), value] as const
+  );
   for (const header of headers) {
-    const match = Object.entries(raw).find(
-      ([key]) => key.trim().toLowerCase() === header.toLowerCase()
-    );
+    const target = normalizeHeaderKey(header);
+    const match = entries.find(([key]) => key === target);
     if (match && match[1] != null && String(match[1]).trim()) {
       return String(match[1]).trim();
     }

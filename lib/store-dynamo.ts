@@ -201,6 +201,11 @@ export async function dynamoGetUserBySlug(slug: string): Promise<PublicUserStats
 }
 
 export async function dynamoGetUserByEmail(email: string): Promise<PublicUserStats | null> {
+  const response = await dynamoGetResponseByEmail(email);
+  return response ? toPublic(response) : null;
+}
+
+export async function dynamoGetResponseByEmail(email: string): Promise<SurveyResponse | null> {
   const doc = getDoc();
   const tbl = tableName();
   const q = await doc.send(
@@ -213,8 +218,12 @@ export async function dynamoGetUserByEmail(email: string): Promise<PublicUserSta
     })
   );
   const item = q.Items?.[0];
-  if (!item) return null;
-  return toPublic(itemToResponse(item));
+  return item ? itemToResponse(item) : null;
+}
+
+export async function dynamoGetStoredNameByEmail(email: string): Promise<string> {
+  const response = await dynamoGetResponseByEmail(email);
+  return response?.name?.trim() ?? "";
 }
 
 export async function dynamoGetAllResponses(): Promise<SurveyResponse[]> {

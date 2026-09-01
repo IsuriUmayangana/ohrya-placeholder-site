@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getAdminSessionSecret } from "@/lib/admin-auth";
 import { sendImportUserEmail } from "@/lib/email";
 import { buildImportEmailDashboardUrl } from "@/lib/import-user-email";
-import { getUserByEmail } from "@/lib/store";
+import { getStoredNameByEmail, getUserByEmail } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
@@ -50,11 +50,14 @@ export async function POST(req: Request) {
 
     try {
       const user = await getUserByEmail(email);
+      const storedName = await getStoredNameByEmail(email);
+      const csvName = recipients[i].name?.trim() ?? "";
+      const name = storedName || csvName;
 
       await sendImportUserEmail({
         email,
-        name: recipients[i].name || user?.name || "",
-        campaign: recipients[i].campaign || user?.campaign || "",
+        name,
+        campaign: recipients[i].campaign?.trim() || user?.campaign || "",
         dashboardUrl: dashboardAccessUrl(email),
       });
       sent++;

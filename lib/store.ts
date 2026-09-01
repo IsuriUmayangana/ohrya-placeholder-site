@@ -299,6 +299,13 @@ export async function getUserByEmail(email: string): Promise<PublicUserStats | n
   return r ? toPublic(r) : null;
 }
 
+export async function getStoredNameByEmail(email: string): Promise<string> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetStoredNameByEmail(email);
+  const responses = readDB();
+  const r = responses.find((res) => res.email.toLowerCase() === email.toLowerCase().trim());
+  return r?.name?.trim() ?? "";
+}
+
 export async function getAllResponses(): Promise<SurveyResponse[]> {
   if (useDynamo) return (await loadDynamo()).dynamoGetAllResponses();
   return readDB();
