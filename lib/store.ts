@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { applyImportRowUpdates } from "@/lib/import-merge";
 
 export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 
@@ -174,6 +175,7 @@ export type ImportResponseRow = {
 
 export type ImportResult = {
   imported: number;
+  updated: number;
   skipped: number;
   errors: string[];
 };
@@ -212,8 +214,11 @@ function buildImportedResponse(row: ImportResponseRow): SurveyResponse {
 
 async function fileImportResponses(rows: ImportResponseRow[]): Promise<ImportResult> {
   const responses = readDB();
-  const existingEmails = new Set(responses.map((r) => r.email.toLowerCase().trim()));
+  const existingByEmail = new Map(
+    responses.map((r) => [r.email.toLowerCase().trim(), r] as const)
+  );
   let imported = 0;
+  let updated = 0;
   let skipped = 0;
   const errors: string[] = [];
 
@@ -224,18 +229,24 @@ async function fileImportResponses(rows: ImportResponseRow[]): Promise<ImportRes
       continue;
     }
     const emailLower = email.toLowerCase();
-    if (existingEmails.has(emailLower)) {
-      skipped++;
+    const existing = existingByEmail.get(emailLower);
+    if (existing) {
+      if (applyImportRowUpdates(existing, { ...rows[i], email }, calcReferralScore)) {
+        updated++;
+      } else {
+        skipped++;
+      }
       continue;
     }
 
-    responses.push(buildImportedResponse({ ...rows[i], email }));
-    existingEmails.add(emailLower);
+    const response = buildImportedResponse({ ...rows[i], email });
+    responses.push(response);
+    existingByEmail.set(emailLower, response);
     imported++;
   }
 
-  if (imported > 0) writeDB(responses);
-  return { imported, skipped, errors };
+  if (imported > 0 || updated > 0) writeDB(responses);
+  return { imported, updated, skipped, errors };
 }
 
 export async function importResponses(rows: ImportResponseRow[]): Promise<ImportResult> {

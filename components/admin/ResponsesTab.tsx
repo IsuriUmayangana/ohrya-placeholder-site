@@ -37,6 +37,7 @@ type ImportRow = {
 
 type ImportResult = {
   imported: number;
+  updated: number;
   skipped: number;
   errors: string[];
 };
@@ -72,7 +73,7 @@ function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
     const device = VALID_DEVICES.has(deviceRaw) ? deviceRaw : "Other";
 
     rows.push({
-      name: cellValue(raw, "Name"),
+      name: cellValue(raw, "Name", "Full Name", "full_name", "Full_Name"),
       email,
       campaign: cellValue(raw, "Campaign"),
       willGive: cellValue(raw, "Will Give?", "Give?"),
@@ -698,7 +699,7 @@ export default function ResponsesTab() {
             </div>
 
             <p className="text-sm text-[#555] mb-4">
-              Upload a CSV or Excel file exported from this dashboard. Rows with duplicate emails are skipped.
+              Upload a CSV or Excel file exported from this dashboard. Existing emails are updated with new CSV data.
             </p>
 
             <label className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed border-slate-200 rounded-lg mb-4 cursor-pointer bg-[#fafcfd] hover:border-[#8CC7D5] transition-colors">
@@ -727,7 +728,8 @@ export default function ResponsesTab() {
             {importResult && (
               <div className="rounded-lg border border-slate-200 bg-[#f8fbfc] p-4 mb-4 text-sm text-[#2d2d2d]">
                 <p className="m-0 mb-1"><strong>{importResult.imported}</strong> imported</p>
-                <p className="m-0 mb-1"><strong>{importResult.skipped}</strong> skipped (duplicate emails)</p>
+                <p className="m-0 mb-1"><strong>{importResult.updated}</strong> updated</p>
+                <p className="m-0 mb-1"><strong>{importResult.skipped}</strong> skipped (no changes)</p>
                 {importResult.errors.length > 0 && (
                   <p className="m-0 mt-2 text-[#a04444]">
                     {importResult.errors.slice(0, 3).join(" ")}
