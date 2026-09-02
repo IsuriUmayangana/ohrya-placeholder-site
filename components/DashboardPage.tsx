@@ -17,6 +17,7 @@ export default function DashboardPage({ slug }: Props) {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const referralLink = stats ? `https://form.ohrya.org/?ref=${stats.referralCode}` : "";
   const dashboardUrl = `https://dashboard.ohrya.org/dashboard/${slug}`;
@@ -45,6 +46,16 @@ export default function DashboardPage({ slug }: Props) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     });
+  }
+
+  function downloadSocialImage() {
+    const link = document.createElement("a");
+    link.href = "/referral-social-share/OHRYA.png";
+    link.download = "OHRYA.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setShowDownloadModal(false);
   }
 
   // Loading state
@@ -208,16 +219,39 @@ export default function DashboardPage({ slug }: Props) {
             </div>
           </section>
 
-          {/* Lower grid */}
-          <section className="grid grid-cols-1 xl:grid-cols-[1fr_1.2fr] gap-6">
-            {/* Referral card */}
-            <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-              <div className="flex flex-col gap-5">
+          {/* Lower grid
+              Mobile: stacked — link → score → visual
+              Tablet: link full width, then score | visual
+              Desktop: score → link → visual (equal columns) */}
+          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {/* Your referral link */}
+            <div className="order-1 xl:order-2 md:col-span-2 xl:col-span-1 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+              <div className="flex flex-col gap-5 h-full">
+                <h3 className="text-base font-semibold text-[#000000]">Your referral link</h3>
+                <p className="text-sm text-[#000000] leading-6">
+                  The more you share, the more you earn. Copy your referral link and share on social media, email, or any other platform to unlock additional points.
+                </p>
+
+                <div className="mt-auto w-full flex items-center gap-2 border border-[#5A9AAA] rounded-lg p-3 bg-[#EEF5F6]">
+                  <span className="flex-1 text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">{referralLink}</span>
+
+                  <button
+                    onClick={() => copyLink(referralLink)}
+                    className="flex-shrink-0 bg-[#5A9AAA] hover:bg-[#477D8A] text-white rounded-full px-4 py-2 text-sm transition-all duration-200 cursor-pointer"
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Referral score */}
+            <div className="order-2 xl:order-1 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+              <div className="flex flex-col gap-5 h-full">
                 <p className="text-base font-semibold text-[#000000]">Your referral score</p>
                 <p className="text-sm text-[#000000] leading-6">
                   Every referral who completes the survey helps boost your score.
                 </p>
-                {/* Referrals */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
                     <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">REFERRAL COUNT</p>
@@ -234,27 +268,39 @@ export default function DashboardPage({ slug }: Props) {
               </div>
             </div>
 
-            {/* Share and earn more points */}
-            <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-              <div className="flex flex-col gap-5">
-                <h3 className="text-base font-semibold text-[#000000]">Share and earn more points</h3>
+            {/* Share with a social visual */}
+            <div className="order-3 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+              <div className="flex flex-col gap-5 h-full">
+                <h3 className="text-base font-semibold text-[#000000]">Share with a social visual</h3>
                 <p className="text-sm text-[#000000] leading-6">
-                  The more you share, the more you earn. Copy your referral link and share on social media, email, or any other platform to unlock additional points.
+                  Save this ready-to-post graphic and share it anywhere along with your referral link to start earning points faster.
                 </p>
 
-                {/* Referral link */}
-                <div className="w-full flex items-center gap-2 border border-[#5A9AAA] rounded-lg p-3 bg-[#EEF5F6]">
-                  <span className="flex-1 text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">{referralLink}</span>
-
+                <div className="mt-auto flex justify-end">
                   <button
-                    onClick={() => copyLink(referralLink)}
-                    className="flex-shrink-0 bg-[#5A9AAA] hover:bg-[#477D8A] text-white rounded-full px-4 py-2 text-sm transition-all duration-200 cursor-pointer"
+                    type="button"
+                    onClick={() => setShowDownloadModal(true)}
+                    aria-label="Download social share image"
+                    className="text-[#5A9AAA] hover:text-[#477D8A] transition-colors cursor-pointer bg-transparent border-none p-2"
                   >
-                    {copied ? "Copied!" : "Copy"}
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+                      <path
+                        d="M24 32V8M24 32L16 24M24 32L32 24"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M8 36V38C8 39.1046 8.89543 40 10 40H38C39.1046 40 40 39.1046 40 38V36"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </button>
                 </div>
-
-                
               </div>
             </div>
           </section>
@@ -282,6 +328,38 @@ export default function DashboardPage({ slug }: Props) {
           </section>
         </div>
       </main>
+
+      {/* Download confirmation modal */}
+      {showDownloadModal && (
+        <div
+          className="fixed inset-0 bg-black/35 z-50 flex items-center justify-center px-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowDownloadModal(false); }}
+        >
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 sm:p-8">
+            <h2 className="text-lg font-semibold text-[#000000] mb-2">Save social share image</h2>
+            <p className="text-sm text-[#000000]/70 leading-6 mb-6">
+              Download the OHRYA social graphic to share on your favorite platforms along with your referral link.
+            </p>
+
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setShowDownloadModal(false)}
+                className="px-5 py-2 border border-slate-200 rounded-lg text-sm text-[#666] bg-white cursor-pointer hover:border-slate-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={downloadSocialImage}
+                className="px-5 py-2 border-none rounded-lg bg-[#5A9AAA] hover:bg-[#477D8A] text-sm text-white cursor-pointer transition-colors"
+              >
+                Save to device
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
