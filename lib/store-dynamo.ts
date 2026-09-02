@@ -10,6 +10,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { applyImportRowUpdates } from "@/lib/import-merge";
 
 function getDoc() {
   const region = process.env.AWS_REGION ?? "us-east-1";
@@ -200,6 +201,11 @@ export async function dynamoGetUserBySlug(slug: string): Promise<PublicUserStats
 }
 
 export async function dynamoGetUserByEmail(email: string): Promise<PublicUserStats | null> {
+  const response = await dynamoGetResponseByEmail(email);
+  return response ? toPublic(response) : null;
+}
+
+export async function dynamoGetResponseByEmail(email: string): Promise<SurveyResponse | null> {
   const doc = getDoc();
   const tbl = tableName();
   const q = await doc.send(
@@ -212,8 +218,12 @@ export async function dynamoGetUserByEmail(email: string): Promise<PublicUserSta
     })
   );
   const item = q.Items?.[0];
-  if (!item) return null;
-  return toPublic(itemToResponse(item));
+  return item ? itemToResponse(item) : null;
+}
+
+export async function dynamoGetStoredNameByEmail(email: string): Promise<string> {
+  const response = await dynamoGetResponseByEmail(email);
+  return response?.name?.trim() ?? "";
 }
 
 export async function dynamoGetAllResponses(): Promise<SurveyResponse[]> {
@@ -293,6 +303,7 @@ export type DynamoImportRow = {
 
 export type DynamoImportResult = {
   imported: number;
+  updated: number;
   skipped: number;
   errors: string[];
 };
@@ -308,9 +319,12 @@ export async function dynamoImportResponses(
   const doc = getDoc();
   const tbl = tableName();
   const existing = await dynamoGetAllResponses();
-  const existingEmails = new Set(existing.map((r) => r.email.toLowerCase().trim()));
+  const existingByEmail = new Map(
+    existing.map((r) => [r.email.toLowerCase().trim(), r] as const)
+  );
 
   let imported = 0;
+  let updated = 0;
   let skipped = 0;
   const errors: string[] = [];
 
@@ -321,8 +335,21 @@ export async function dynamoImportResponses(
       continue;
     }
     const emailLower = email.toLowerCase();
-    if (existingEmails.has(emailLower)) {
-      skipped++;
+    const existingRow = existingByEmail.get(emailLower);
+    if (existingRow) {
+      const merged = { ...existingRow };
+      if (applyImportRowUpdates(merged, { ...rows[i], email }, helpers.calcReferralScore)) {
+        await doc.send(
+          new PutCommand({
+            TableName: tbl,
+            Item: { ...merged, emailLower },
+          })
+        );
+        existingByEmail.set(emailLower, merged);
+        updated++;
+      } else {
+        skipped++;
+      }
       continue;
     }
 
@@ -362,9 +389,9 @@ export async function dynamoImportResponses(
       })
     );
 
-    existingEmails.add(emailLower);
+    existingByEmail.set(emailLower, response);
     imported++;
   }
 
-  return { imported, skipped, errors };
+  return { imported, updated, skipped, errors };
 }
