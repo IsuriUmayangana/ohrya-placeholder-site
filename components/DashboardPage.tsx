@@ -168,25 +168,25 @@ export default function DashboardPage({ slug }: Props) {
               </div>
 
               {/* Score panel */}
-              <div className="w-full sm:w-[500px] relative rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-5 sm:p-7 shadow-md flex flex-col gap-4 sm:gap-6 min-h-[160px] sm:min-h-[160px]">
+              <div className="w-full lg:w-[500px] mt-12 md:mt-16 lg:mt-0 relative rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-5 sm:p-7 shadow-md flex flex-col gap-4 sm:gap-6 min-h-[160px] sm:min-h-[160px]">
                 {/* Floating medallion badge */}
                 <div
-                  className="absolute -top-2 right-8 sm:-top-11 sm:right-10 w-[76px] h-[76px] sm:w-[116px] sm:h-[116px] flex items-center justify-center shadow-lg"
+                  className="absolute -top-3 right-6 md:-top-8 md:right-8 lg:-top-11 lg:right-10 w-[96px] h-[96px] md:w-[132px] md:h-[132px] lg:w-[116px] lg:h-[116px] flex items-center justify-center shadow-lg"
                   style={{
                     clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
                     background: "linear-gradient(145deg, #FFE9A8, #FFC62B 45%, #B8860B 100%)",
                   }}
                 >
                   <div
-                    className="w-[66px] h-[66px] sm:w-[102px] sm:h-[102px] flex flex-col items-center justify-center gap-0.5 p-1.5 sm:p-2"
+                    className="w-[84px] h-[84px] md:w-[116px] md:h-[116px] lg:w-[102px] lg:h-[102px] flex flex-col items-center justify-center gap-0.5 p-2"
                     style={{
                       clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
                       background: "linear-gradient(145deg, #06596D, #0A3A47)",
                     }}
                   >
                     
-                    <span className="text-2xl font-bold text-white leading-none">{leaderboardRank ?? "—"}</span>
-                    <p className="text-[8.5px] text-center leading-tight text-white/85 max-w-[52px] sm:max-w-[74px] mt-0.5">
+                    <span className="text-2xl md:text-3xl lg:text-2xl font-bold text-white leading-none">{leaderboardRank ?? "—"}</span>
+                    <p className="text-[9px] md:text-[10px] lg:text-[8.5px] text-center leading-tight text-white/85 max-w-[62px] md:max-w-[80px] lg:max-w-[74px] mt-0.5">
                       Your position on the leaderboard
                     </p>
                   </div>
@@ -219,10 +219,7 @@ export default function DashboardPage({ slug }: Props) {
             </div>
           </section>
 
-          {/* Lower grid
-              Mobile: stacked — link → score → visual
-              Tablet: link full width, then score | visual
-              Desktop: score → link → visual (equal columns) */}
+          {/* Lower grid */}
           <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {/* Your referral link */}
             <div className="order-1 xl:order-2 md:col-span-2 xl:col-span-1 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
