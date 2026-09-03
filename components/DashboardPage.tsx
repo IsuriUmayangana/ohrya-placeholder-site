@@ -108,23 +108,23 @@ export default function DashboardPage({ slug }: Props) {
         <div className="flex flex-col gap-6">
 
           {/* Hero */}
-          <section className="relative overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm pt-6">
+          <section className="relative overflow-visible rounded-[24px] border border-slate-200 bg-white shadow-sm pt-6">
             
             {/* Content */}
-            <div className="relative grid grid-cols-1 lg:grid-cols-[1.4fr_0.9fr] gap-6 p-6 sm:p-8">
-              <div className="flex flex-col justify-between gap-6">
+            <div className="relative grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(280px,440px)] gap-5 lg:gap-6 p-6 sm:p-8 lg:items-stretch">
+              <div className="flex flex-col justify-between gap-6 min-w-0">
                 <div>
                   {/* Title */}
-                  <h1 className="lg:text-4xl text-2xl font-semibold text-[#000000] leading-tight"
+                  <h1 className="lg:text-3xl xl:text-4xl text-2xl font-semibold text-[#000000] leading-tight"
                   >
                     Your Social Impact Dashboard
                   </h1>
 
                   {/* Name & email */}
-                  <p className="lg:text-lg text-base font-bold text-[#4a8798] mt-3">
+                  <p className="lg:text-base xl:text-lg text-base font-bold text-[#4a8798] mt-3">
                     {stats!.name}
                   </p>
-                  <p className="lg:text-sm text-sm text-[#4a8798] mt-1">
+                  <p className="text-sm text-[#4a8798] mt-1 break-all">
                     {stats!.email}
                   </p>
 
@@ -135,12 +135,14 @@ export default function DashboardPage({ slug }: Props) {
                   </p>
                 </div>
 
-                {/* Score cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* Score cards — stay 3-up once side-by-side starts */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 lg:gap-3">
                   {/* Survey score */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Survey score</p>
-                    <p className="mt-2 text-2xl font-semibold text-[#06596d]">{stats!.surveyScore}</p>
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3 lg:p-4 min-w-0">
+                    <p className="text-[10px] lg:text-xs uppercase tracking-[0.12em] lg:tracking-[0.16em] text-[#000000] font-medium">
+                      Survey score
+                    </p>
+                    <p className="mt-2 text-xl lg:text-2xl font-semibold text-[#06596d]">{stats!.surveyScore}</p>
                     <div className="mt-3 h-2 rounded-full bg-slate-200 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-[#06596d] transition-all duration-700"
@@ -150,35 +152,41 @@ export default function DashboardPage({ slug }: Props) {
                   </div>
 
                   {/* Referral Score */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Referral Score</p>
-                    <p className="mt-2 text-2xl font-semibold text-[#FFBB00]">+{stats!.referralScore}</p>
-                    <p className="mt-2 text-xs text-[#000000]/50">
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3 lg:p-4 min-w-0">
+                    <p className="text-[10px] lg:text-xs uppercase tracking-[0.12em] lg:tracking-[0.16em] text-[#000000] font-medium">
+                      Referral Score
+                    </p>
+                    <p className="mt-2 text-xl lg:text-2xl font-semibold text-[#FFBB00] truncate">
+                      +{stats!.referralScore}
+                    </p>
+                    <p className="mt-2 text-xs text-[#000000]/50 truncate">
                       {stats!.referralCount} referral{stats!.referralCount !== 1 ? "s" : ""}
                     </p>
                   </div>
 
                   {/* Campaign */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Campaign</p>
-                    <p className="mt-2 text-2xl font-semibold text-[#06596d]">{stats!.campaign}</p>
-                    <p className="mt-2 text-xs text-[#000000]/50">Your selected cause</p>
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3 lg:p-4 min-w-0">
+                    <p className="text-[10px] lg:text-xs uppercase tracking-[0.12em] lg:tracking-[0.16em] text-[#000000] font-medium">
+                      Campaign
+                    </p>
+                    <p className="mt-2 text-xl lg:text-2xl font-semibold text-[#06596d] truncate">{stats!.campaign}</p>
+                    <p className="mt-2 text-xs text-[#000000]/50 truncate">Your selected cause</p>
                   </div>
                 </div>
               </div>
 
-              {/* Score panel */}
-              <div className="w-full lg:w-[500px] mt-12 md:mt-16 lg:mt-0 relative rounded-[20px] sm:rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-5 sm:p-7 shadow-md flex flex-col gap-4 sm:gap-6 min-h-[160px] sm:min-h-[160px]">
+              {/* Score panel — fixed height, flexible width in the grid */}
+              <div className="w-full h-auto lg:h-[280px] mt-10 md:mt-20 lg:mt-0 relative rounded-[24px] bg-gradient-to-r from-[#005A71] to-[#30B1D5]/80 text-white p-5 sm:p-6 lg:p-7 shadow-md flex flex-col justify-between gap-4 self-stretch lg:self-end">
                 {/* Floating medallion badge */}
                 <div
-                  className="absolute -top-3 right-6 md:-top-8 md:right-8 lg:-top-11 lg:right-10 w-[96px] h-[96px] md:w-[132px] md:h-[132px] lg:w-[116px] lg:h-[116px] flex items-center justify-center shadow-lg"
+                  className="absolute -top-7 right-6 md:-top-14 md:right-8 lg:-top-10 lg:right-8 w-[96px] h-[96px] md:w-[132px] md:h-[132px] lg:w-[108px] lg:h-[108px] flex items-center justify-center shadow-lg"
                   style={{
                     clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
                     background: "linear-gradient(145deg, #FFE9A8, #FFC62B 45%, #B8860B 100%)",
                   }}
                 >
                   <div
-                    className="w-[84px] h-[84px] md:w-[116px] md:h-[116px] lg:w-[102px] lg:h-[102px] flex flex-col items-center justify-center gap-0.5 p-2"
+                    className="w-[84px] h-[84px] md:w-[116px] md:h-[116px] lg:w-[94px] lg:h-[94px] flex flex-col items-center justify-center gap-0.5 p-2"
                     style={{
                       clipPath: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
                       background: "linear-gradient(145deg, #06596D, #0A3A47)",
@@ -186,7 +194,7 @@ export default function DashboardPage({ slug }: Props) {
                   >
                     
                     <span className="text-2xl md:text-3xl lg:text-2xl font-bold text-white leading-none">{leaderboardRank ?? "—"}</span>
-                    <p className="text-[9px] md:text-[10px] lg:text-[8.5px] text-center leading-tight text-white/85 max-w-[62px] md:max-w-[80px] lg:max-w-[74px] mt-0.5">
+                    <p className="text-[9px] md:text-[10px] lg:text-[8.5px] text-center leading-tight text-white/85 max-w-[62px] md:max-w-[80px] lg:max-w-[68px] mt-0.5">
                       Your position on the leaderboard
                     </p>
                   </div>
@@ -198,19 +206,19 @@ export default function DashboardPage({ slug }: Props) {
                       Total impact score
                     </p>
                     <div className="mt-3 sm:mt-4 flex items-end gap-2 sm:gap-3">
-                      <h2 className="text-4xl sm:text-6xl font-semibold leading-none">{totalScore}</h2>
+                      <h2 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-semibold leading-none">{totalScore}</h2>
                       <span className="text-xs sm:text-sm text-white pb-1.5 sm:pb-2">pts</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-col justify-start gap-3 border-t border-white/20 pt-3 sm:pt-4">
-                  <p className="text-xs sm:text-sm text-white flex-1">
+                <div className="flex flex-col justify-start gap-3 border-t border-white/20 pt-3 sm:pt-4">
+                  <p className="text-xs sm:text-sm text-white">
                     Keep sharing your referral link to continue increasing your score.
                   </p>
                   <Link
                     href="https://leaderboard.ohrya.org/"
-                    className="bg-[#FFC62B] text-[#4A3600] max-w-[150px] text-xs text-center font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
+                    className="bg-[#FFC62B] text-[#4A3600] max-w-[150px] text-xs text-center font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start"
                   >
                     View leaderboard
                   </Link>
@@ -220,7 +228,7 @@ export default function DashboardPage({ slug }: Props) {
           </section>
 
           {/* Lower grid */}
-          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-4">
             {/* Your referral link */}
             <div className="order-1 xl:order-2 md:col-span-2 xl:col-span-1 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col gap-5 h-full">
@@ -303,7 +311,7 @@ export default function DashboardPage({ slug }: Props) {
           </section>
 
           {/* Footer bits */}
-          <section className="flex flex-col items-center gap-3 pt-2">
+          <section className="flex flex-col items-center gap-3 pt-6">
             <div className="text-center">
               <p className="text-xs text-[#94a3b8] mb-2"
               >
