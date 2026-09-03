@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import "../referral/referral.css";
 
 interface Props {
@@ -9,6 +10,29 @@ interface Props {
   email: string;
   showLogo?: boolean;
 }
+
+const SOCIAL_PLATFORMS = [
+  {
+    id: "whatsapp",
+    label: "WhatsApp",
+    iconSrc: "/social-icons/whatsapp_icon.svg",
+  },
+  {
+    id: "instagram",
+    label: "Instagram",
+    iconSrc: "/social-icons/instagram_icon.svg",
+  },
+  {
+    id: "facebook",
+    label: "Facebook",
+    iconSrc: "/social-icons/facebook_icon.svg",
+  },
+  {
+    id: "linkedin",
+    label: "LinkedIn",
+    iconSrc: "/social-icons/linkedin_icon.svg",
+  },
+] as const;
 
 export default function ReferralStep({ referralCode, email, showLogo = false }: Props) {
   const [copied, setCopied] = useState(false);
@@ -21,42 +45,92 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
     });
   }
 
+  // TODO: wire up actual social share actions for each platform
+  function handleSocialShare(_platform: string) {
+    // no-op for now
+  }
+
   const content = (
     <div className="referral-page__content">
-      <div className="referral-page__share-icon" aria-hidden="true">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-            stroke="white"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+      <div className="referral-page__header">
+        {showLogo && (
+          <Image
+            src="/logo-V2.png"
+            alt="Ohrya"
+            width={120}
+            height={40}
+            className="referral-page__logo"
+            priority
           />
-        </svg>
+        )}
+
+        <h1 className="referral-page__title">Your unique referral link is ready!</h1>
+        <p className="referral-page__description">
+          Share it with friends. Every time someone signs up using your link, you earn a Participation
+          Score &amp; climb up the leaderboard.
+        </p>
       </div>
 
-      <h1 className="referral-page__title">Your unique referral link is ready!</h1>
-      <p className="referral-page__description">
-        Share it with friends. Every time someone completes the survey using your link, you earn Social
-        Impact Score points &amp; climb up the leaderboard.
-      </p>
+      <div className="referral-page__step">
+        <p className="referral-page__step-text">
+          <span className="referral-page__step-label">Step 1 :</span> Choose a platform below to share
+          your link
+        </p>
 
-      <div className="referral-page__link-box">
-        <span className="referral-page__link-text">{referralLink}</span>
-        <button type="button" className="referral-page__copy-btn" onClick={copyLink}>
-          {copied ? "Copied!" : "Copy"}
-        </button>
+        <div className="referral-page__social-row">
+          {SOCIAL_PLATFORMS.map((platform) => (
+            <button
+              key={platform.id}
+              type="button"
+              className="referral-page__social-btn"
+              aria-label={`Share on ${platform.label}`}
+              onClick={() => handleSocialShare(platform.id)}
+            >
+              <Image
+                src={platform.iconSrc}
+                alt=""
+                width={32}
+                height={32}
+                className="referral-page__social-icon"
+                aria-hidden="true"
+              />
+            </button>
+          ))}
+        </div>
+
+        <p className="referral-page__copy-hint">or copy it to your clipboard.</p>
+
+        <div className="referral-page__link-box">
+          <span className="referral-page__link-text">{referralLink}</span>
+          <button type="button" className="referral-page__copy-btn" onClick={copyLink}>
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
       </div>
 
-      <a
-        href={`/my-dashboard?email=${encodeURIComponent(email)}`}
-        className="referral-page__dashboard-btn"
-      >
-        View My Dashboard
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </a>
+      <div className="referral-page__step">
+        <p className="referral-page__step-text">
+          <span className="referral-page__step-label">Step 2 :</span>
+          {" "}Access your dashboard to view your Participation Score. You&apos;ll be prompted to
+          enter a one-time password (OTP) sent to your registered email.
+        </p>
+
+        <a
+          href={`/my-dashboard?email=${encodeURIComponent(email)}`}
+          className="referral-page__dashboard-btn"
+        >
+          View My Dashboard
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 12h14M12 5l7 7-7 7"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </a>
+      </div>
     </div>
   );
 
