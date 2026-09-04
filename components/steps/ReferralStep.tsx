@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -23,17 +24,6 @@ const RESEND_COOLDOWN_SEC = 30;
 
 type OtpStage = "idle" | "otp";
 type OtpStatus = "idle" | "sending" | "verifying" | "error";
-
-function WhatsAppIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <path
-        d="M16 2C8.28 2 2 8.28 2 16c0 2.46.67 4.88 1.94 7.02L2 30l7.17-1.88A13.94 13.94 0 0016 30c7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.5c-2.26 0-4.47-.61-6.4-1.77l-.46-.27-4.25 1.11 1.14-4.13-.3-.48A11.47 11.47 0 014.5 16c0-6.34 5.16-11.5 11.5-11.5S27.5 9.66 27.5 16 22.34 27.5 16 27.5zm6.3-8.6c-.34-.17-2.02-1-2.33-1.11-.32-.12-.54-.17-.77.17-.22.34-.87 1.11-1.07 1.34-.2.22-.4.25-.74.08-.34-.17-1.44-.53-2.74-1.69-1.01-.9-1.7-2.02-1.89-2.36-.2-.34-.02-.52.15-.69.15-.15.34-.4.51-.6.17-.2.22-.34.34-.57.11-.22.06-.42-.03-.59-.08-.17-.77-1.86-1.06-2.55-.28-.67-.56-.58-.77-.59h-.65c-.22 0-.57.08-.87.42-.3.34-1.14 1.11-1.14 2.71s1.17 3.14 1.33 3.36c.17.22 2.3 3.51 5.57 4.92.78.34 1.38.54 1.85.69.78.25 1.49.21 2.05.13.62-.09 1.92-.78 2.19-1.54.27-.76.27-1.41.19-1.54-.08-.13-.3-.21-.64-.38z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
 
 function DashboardArrow() {
   return (
@@ -238,24 +228,30 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
 
   const content = (
     <div className="referral-page__content">
-      {showLogo && (
-        <img
-          className="referral-page__logo"
-          src="/email/ohrya-logo-primary.png"
-          alt="OHRYA — Give • Vote • Shine"
-          width={170}
-        />
-      )}
+      <div className="referral-page__header">
+        {showLogo && (
+          <Image
+            src="/logo-v2.png"
+            alt="Ohrya"
+            width={171}
+            height={40}
+            className="referral-page__logo"
+            style={{ width: "auto", height: 40 }}
+            priority
+          />
+        )}
 
-      <h1 className="referral-page__title">Your unique referral link is ready!</h1>
-      <p className="referral-page__description">
-        Share it with friends. Every time someone signs up using your link, you earn a
-        Participation Score &amp; climb up the leaderboard.
-      </p>
+        <h1 className="referral-page__title">Your unique referral link is ready!</h1>
+        <p className="referral-page__description">
+          Share it with friends. Every time someone signs up using your link, you earn a Participation
+          Score &amp; climb up the leaderboard.
+        </p>
+      </div>
 
       <div className="referral-page__step">
-        <p className="referral-page__step-label">
-          <strong>Step 1 :</strong> Choose a platform below to share your link
+        <p className="referral-page__step-text">
+          <span className="referral-page__step-label">Step 1 :</span> Choose a platform below to share
+          your link
         </p>
 
         <div className="referral-page__social-row">
@@ -266,7 +262,15 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             rel="noopener noreferrer"
             aria-label="Share on WhatsApp"
           >
-            <WhatsAppIcon />
+            <Image
+              src="/referral-share/whatsapp_icon.png"
+              alt=""
+              width={46}
+              height={46}
+              className="referral-page__social-icon"
+              style={{ width: 48, height: 48 }}
+              aria-hidden="true"
+            />
           </a>
           <button
             type="button"
@@ -274,7 +278,15 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             onClick={shareToInstagramStory}
             aria-label="Share to Instagram story"
           >
-            <img src="/splash/assets/icon-instagram.svg" alt="" aria-hidden="true" />
+            <Image
+              src="/referral-share/instagram_icon.png"
+              alt=""
+              width={46}
+              height={46}
+              className="referral-page__social-icon"
+              style={{ width: 48, height: 48 }}
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
@@ -282,7 +294,15 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             onClick={shareToFacebook}
             aria-label="Share as Facebook post"
           >
-            <img src="/splash/assets/icon-facebook.svg" alt="" aria-hidden="true" />
+            <Image
+              src="/referral-share/facebook_icon.png"
+              alt=""
+              width={46}
+              height={46}
+              className="referral-page__social-icon"
+              style={{ width: 48, height: 48 }}
+              aria-hidden="true"
+            />
           </button>
           <button
             type="button"
@@ -290,7 +310,15 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             onClick={shareToLinkedIn}
             aria-label="Share as LinkedIn post"
           >
-            <img src="/splash/assets/icon-linkedin.svg" alt="" aria-hidden="true" />
+            <Image
+              src="/referral-share/linkedin_icon.png"
+              alt=""
+              width={44}
+              height={44}
+              className="referral-page__social-icon"
+              style={{ width: 48, height: 48 }}
+              aria-hidden="true"
+            />
           </button>
         </div>
 
@@ -306,10 +334,11 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
         </div>
       </div>
 
-      <div className="referral-page__step referral-page__step--two">
-        <p className="referral-page__step-label">
-          <strong>Step 2 :</strong> Access your dashboard to view your Participation Score.
-          You&apos;ll be prompted to enter a one-time password (OTP) sent to your registered email.
+      <div className="referral-page__step">
+        <p className="referral-page__step-text">
+          <span className="referral-page__step-label">Step 2 :</span>
+          {" "}Access your dashboard to view your Participation Score. You&apos;ll be prompted to
+          enter a one-time password (OTP) sent to your registered email.
         </p>
 
         {otpStage === "idle" ? (
@@ -383,4 +412,3 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
 
   return content;
 }
-
