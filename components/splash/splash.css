@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap");
 
-/* OHRYA Landing Page - Figma Design Implementation */
 /* Design: OHRYA Placeholder - Desktop - New */
 
 /* ==========================================
@@ -33,10 +32,6 @@
    Unscoped global resets break Tailwind on client
    navigation to /leaderboard and /dashboard.
    ========================================== */
-html {
-  scrollbar-gutter: stable;
-}
-
 .landing-page,
 .privacy-page,
 .landing-page *,
@@ -59,14 +54,15 @@ html {
 .landing-page,
 .privacy-page {
   line-height: 1.21;
-  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  .landing-page,
+  .privacy-page {
     scroll-behavior: auto;
   }
 }
+
 
 /* ==========================================
    LANDING PAGE CONTAINER
@@ -80,7 +76,7 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: clip;
+  overflow: hidden;
 }
 
 /* ==========================================
@@ -144,11 +140,7 @@ html {
    HEADER & LOGO
    ========================================== */
 .header {
-  /* Bar height drives both the nav and the spacer so they can't drift apart */
   --nav-h: 72px;
-
-  /* Fallback only: Header measures the real banner height and sets this
-     inline, so the spacer stays correct even when the text wraps */
   --announce-h: 32px;
 
   position: relative;
@@ -173,7 +165,6 @@ html {
   border: 0;
 }
 
-/* Pins the announcement bar and the nav to the top as one unit */
 .site-header-fixed {
   position: fixed;
   top: 0;
@@ -514,8 +505,7 @@ html {
     background-color 0.3s ease;
 }
 
-.join-campaign-btn svg,
-.join-campaign-btn img {
+.join-campaign-btn svg {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
@@ -569,7 +559,7 @@ html {
 .step-card {
   width: 100%;
   min-height: 135px;
-  border-radius: 129px;
+  border-radius: 68px;
   display: flex;
   align-items: center;
   gap: 30px;
@@ -626,7 +616,7 @@ html {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 100px 20px 0;
+  padding: 100px 20px 80px;
   scroll-margin-top: 40px;
 }
 
@@ -636,6 +626,8 @@ html {
   border-radius: 24px;
   padding: 50px;
   text-align: center;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .join-title {
@@ -659,18 +651,20 @@ html {
 }
 
 .campaign-options {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 15px;
   margin-top: 30px;
+  margin-bottom: 10px;
+  width: 100%;
 }
 
 .campaign-option {
-  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   padding: 0;
   background: transparent;
   border: 0;
@@ -683,23 +677,26 @@ html {
   aspect-ratio: 1 / 1;
   border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(65, 111, 129, 1);
+  border: 4px solid rgba(65, 111, 129, 1);
+  box-sizing: border-box;
   transition:
-    border 0.25s ease,
+    border-color 0.25s ease,
     transform 0.25s ease;
+  background: var(--color-bg-dark);
 }
 
 .campaign-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
 .campaign-option.is-selected .campaign-thumb,
 .campaign-option:hover .campaign-thumb,
 .campaign-option:focus-visible .campaign-thumb {
-  border: 4px solid var(--color-yellow);
+  border-color: var(--color-yellow);
 }
 
 .campaign-option:hover .campaign-thumb {
@@ -717,6 +714,8 @@ html {
   line-height: 30px;
   color: var(--color-white);
   transition: color 0.25s ease;
+  width: 100%;
+  text-align: center;
 }
 
 .campaign-option.is-selected .campaign-name,
@@ -726,7 +725,7 @@ html {
 }
 
 .join-form {
-  margin-top: 30px;
+  margin-top: 40px;
   text-align: left;
   position: relative;
   z-index: 1;
@@ -775,6 +774,7 @@ html {
   width: 100%;
   height: 70px;
   padding: 0 24px;
+  box-sizing: border-box;
   background-color: var(--color-bg-dark);
   border: 1px solid var(--color-divider);
   border-radius: 8px;
@@ -795,14 +795,14 @@ html {
 }
 
 .join-submit-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
   width: 100%;
   height: 70px;
   margin-top: 30px;
-  padding: 8px 15px;
+  padding: 0 20px;
   background-color: var(--color-yellow);
   color: #000000;
   border: none;
@@ -810,6 +810,7 @@ html {
   font-family: var(--font-family);
   font-size: 20px;
   font-weight: 700;
+  line-height: 1;
   text-transform: uppercase;
   cursor: pointer;
   transition:
@@ -817,8 +818,7 @@ html {
     background-color 0.3s ease;
 }
 
-.join-submit-btn svg,
-.join-submit-btn img {
+.join-submit-btn svg {
   width: 24px;
   height: 24px;
   flex-shrink: 0;
@@ -895,10 +895,9 @@ html {
 
 .charity-navigator-logo img {
   display: block;
-  width: 217px;
+  width: 192px;
   height: auto;
 }
-
 
 .charity-navigator-badge {
   display: inline-flex;
@@ -1074,6 +1073,8 @@ html {
 
 .faq-answer p,
 .faq-answer-inner p {
+  min-height: 0;
+  overflow: hidden;
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -1112,18 +1113,7 @@ html {
 .video-container {
   width: 980px;
   max-width: 100%;
-  aspect-ratio: 16 / 9;
-}
-
-
-.video-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  aspect-ratio: 980 / 551;
 }
 
 .video-wrapper {
@@ -1134,6 +1124,16 @@ html {
   overflow: hidden;
   position: relative;
   box-shadow: 0 20px 80px rgba(0, 0, 0, 0.5);
+}
+
+.video-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
 .video-embed {
@@ -1153,6 +1153,45 @@ html {
 }
 
 /* ==========================================
+   SHINE THE LIGHT BRANDING
+   ========================================== */
+.social-icons {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  padding: 100px 20px 0;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  color: var(--color-yellow);
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.social-icon:hover,
+.social-icon:focus-visible {
+  transform: translateY(-2px) scale(1.08);
+  opacity: 0.85;
+  outline: none;
+}
+
+.social-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  display: block;
+}
+
+/* ==========================================
    INSTAGRAM CAROUSEL (full-width stripe, 5 visible)
    ========================================== */
 .instagram-section {
@@ -1168,9 +1207,7 @@ html {
   align-self: stretch;
   padding: 80px 0 0;
   text-align: center;
-  /* clip pairs with visible; hidden would coerce overflow-y to auto and
-     clip the slide shadows this section is meant to let through */
-  overflow-x: clip;
+  overflow-x: hidden;
   overflow-y: visible;
 }
 
@@ -1225,7 +1262,6 @@ html {
   outline: none;
   touch-action: pan-y;
   cursor: grab;
-  /* Horizontal clip; extra bottom padding lets shadows fade fully */
   overflow: hidden;
 }
 
@@ -1258,7 +1294,6 @@ html {
   color: inherit;
   cursor: pointer;
   opacity: 0.9;
-  /* Shadow on the slide (not media) so media overflow:hidden doesn't clip it */
   border-radius: 14px;
   box-shadow: 0 14px 32px hsl(200 55% 8% / 38%);
   transition:
@@ -1298,6 +1333,19 @@ html {
   object-fit: cover;
   display: block;
   transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.instagram-slide-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-yellow);
+  background: linear-gradient(145deg, var(--color-bg-mid), var(--color-bg-dark));
 }
 
 .instagram-slide:hover .instagram-slide-image,
@@ -1514,47 +1562,6 @@ html {
 }
 
 /* ==========================================
-   SHINE THE LIGHT BRANDING
-   ========================================== */
-.social-icons {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 32px;
-  padding: 100px 20px 0;
-}
-
-.social-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 27px;
-  height: 27px;
-  color: var(--color-yellow);
-  transition:
-    transform 0.25s ease,
-    opacity 0.25s ease;
-}
-
-.social-icon:hover,
-.social-icon:focus-visible {
-  transform: translateY(-2px) scale(1.08);
-  opacity: 0.85;
-  outline: none;
-}
-
-.social-icon svg,
-.social-icon img {
-  width: auto;
-  height: 100%;
-  max-width: 100%;
-  fill: currentColor;
-  display: block;
-}
-
-/* ==========================================
    SITE FOOTER
    ========================================== */
 .site-footer {
@@ -1739,7 +1746,6 @@ html {
     pointer-events: auto;
   }
 
-  /* Grows the header itself: the nav's height follows this row */
   .site-nav-drawer {
     display: grid;
     grid-template-rows: 0fr;
@@ -1752,15 +1758,12 @@ html {
     grid-template-rows: 1fr;
   }
 
-  /* Padding-free so the 0fr row truly collapses to 0 and the bar keeps
-     equal space above and below its contents while closed */
   .site-nav-drawer-track {
     display: block;
     min-height: 0;
     overflow: hidden;
   }
 
-  /* No top padding: the bar's own centering already leaves 12px above */
   .site-nav-drawer-inner {
     display: flex;
     flex-direction: column;
@@ -1810,7 +1813,6 @@ html {
   .logo {
     width: 152px;
     height: 130px;
-    margin-top: 36px;
   }
 
   .hero-section {
@@ -1987,7 +1989,7 @@ html {
 
   .video-container {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 355.72 / 200;
   }
 
   .impact-section {
@@ -2020,7 +2022,8 @@ html {
     padding: 16px 0;
   }
 
-  .faq-answer p {
+  .faq-answer p,
+  .faq-answer-inner p {
     font-size: 15px;
     line-height: 22px;
   }
@@ -2129,21 +2132,6 @@ html {
   justify-content: center;
   padding: 120px 40px;
   color: #06596d;
-}
-
-.policy-back {
-  margin: 0 0 32px;
-}
-
-.policy-back a {
-  color: #06596d;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.policy-back a:hover {
-  text-decoration: underline;
 }
 
 .policy-container {
