@@ -101,7 +101,7 @@ export default function Header({ announceName }: Props) {
         {showAnnounce && (
           <div className="site-announce" ref={announceRef}>
             <p className="site-announce-text">
-              {announceName} unlocked your pass to OHRYA&rsquo;s $2,500 Campaign!
+              {`${announceName} invited you to OHRYA!`}
             </p>
           </div>
         )}
