@@ -7,6 +7,7 @@ import NotFound from "./ui/NotFond";
 import Image from "next/image";
 import Link from "next/link";
 import { buildDashboardUrl, buildLeaderboardUrl, buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
+import { copyReferralShareText } from "@/lib/referral-share";
 
 interface Props {
   slug: string;
@@ -43,11 +44,12 @@ export default function DashboardPage({ slug }: Props) {
     return () => clearInterval(interval);
   }, [fetchStats]);
 
-  function copyLink(link: string) {
-    navigator.clipboard.writeText(link).then(() => {
+  async function copyLink(link: string) {
+    const copied = await copyReferralShareText(link);
+    if (copied) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    });
+    }
   }
 
   function downloadSocialImage() {
