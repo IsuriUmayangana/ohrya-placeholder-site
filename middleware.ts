@@ -15,20 +15,18 @@ export function middleware(req: NextRequest) {
   const host = req.headers.get("host") ?? "";
   const sub = getSubdomain(host);
 
-  // ── dashboard.ohrya.org ───────────────────────────────────────────────────
+  // ── dashboard.ohrya.org → ohrya.org (canonical) ───────────────────────────
   if (sub === "dashboard") {
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", req.url));
-    }
-    return NextResponse.next();
+    const mainSite = process.env.NEXT_PUBLIC_MAIN_SITE_ORIGIN ?? "https://ohrya.org";
+    const target = new URL(`${pathname}${req.nextUrl.search}`, mainSite);
+    return NextResponse.redirect(target);
   }
 
-  // ── leaderboard.ohrya.org ─────────────────────────────────────────────────
+  // ── leaderboard.ohrya.org → ohrya.org (canonical) ─────────────────────────
   if (sub === "leaderboard") {
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL("/leaderboard", req.url));
-    }
-    return NextResponse.next();
+    const mainSite = process.env.NEXT_PUBLIC_MAIN_SITE_ORIGIN ?? "https://ohrya.org";
+    const target = new URL(`${pathname}${req.nextUrl.search}`, mainSite);
+    return NextResponse.redirect(target);
   }
 
   // ── admin.ohrya.org ───────────────────────────────────────────────────────

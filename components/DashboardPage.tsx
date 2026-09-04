@@ -22,7 +22,11 @@ export default function DashboardPage({ slug }: Props) {
   const referralLink = stats
     ? ensureAbsoluteReferralLink(buildReferralSignupUrl(stats.referralCode))
     : "";
-  const dashboardUrl = buildDashboardUrl(slug);
+  const [dashboardUrl, setDashboardUrl] = useState(() => buildDashboardUrl(slug));
+
+  useEffect(() => {
+    setDashboardUrl(`${window.location.origin}/dashboard/${encodeURIComponent(slug)}`);
+  }, [slug]);
 
   // Fetch stats from API
   const fetchStats = useCallback(async () => {
@@ -270,11 +274,12 @@ export default function DashboardPage({ slug }: Props) {
                 Bookmark your personal dashboard
               </p>
 
-              <button
+              <a
+                href={dashboardUrl}
                 className="text-xs text-teal-700 underline underline-offset-4"
               >
                 {dashboardUrl}
-              </button>
+              </a>
             </div>
 
             <p
