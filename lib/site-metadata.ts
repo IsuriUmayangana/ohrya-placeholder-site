@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { MAIN_SITE_ORIGIN } from "@/lib/site-urls";
+import { REFERRAL_SHARE_MESSAGE } from "@/lib/referral-share";
+import { MAIN_SITE_ORIGIN, buildReferralSignupUrl } from "@/lib/site-urls";
 
 const SITE_ORIGIN = MAIN_SITE_ORIGIN || "https://ohrya.org";
 
@@ -11,6 +12,45 @@ const OG_IMAGE = {
   height: 630,
   alt: "OHRYA — Give • Vote • Shine",
 };
+
+/** OG image for ?ref= links — WhatsApp/Facebook read this when the referral URL is shared. */
+export function buildReferralShareOgImagePath(referralCode: string): string {
+  return `/api/referral-share-image?ref=${encodeURIComponent(referralCode.trim())}`;
+}
+
+export function buildReferralLinkMetadata(referralCode: string): Pick<Metadata, "title" | "description" | "openGraph" | "twitter"> {
+  const code = referralCode.trim();
+  const ogImage = buildReferralShareOgImagePath(code);
+  const description = REFERRAL_SHARE_MESSAGE.replace(/\n/g, " ");
+  const title = "Join me on OHRYA";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      siteName: "OHRYA",
+      title,
+      description,
+      url: buildReferralSignupUrl(code),
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: "OHRYA — Give • Vote • Shine",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 export const sharedSiteMetadata: Metadata = {
   metadataBase: siteMetadataBase,

@@ -5,6 +5,7 @@ import {
 
 export const runtime = "nodejs";
 
+/** Public preview image for social crawlers (WhatsApp, Facebook, iMessage). */
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const ref = searchParams.get("ref")?.trim();
@@ -15,5 +16,7 @@ export async function GET(request: Request) {
   const format: ReferralShareImageFormat =
     searchParams.get("format") === "story" ? "story" : "post";
 
-  return renderReferralShareImage(ref, format);
+  const image = await renderReferralShareImage(ref, format);
+  image.headers.set("Cache-Control", "public, max-age=86400, s-maxage=604800");
+  return image;
 }
