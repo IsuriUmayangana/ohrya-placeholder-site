@@ -42,6 +42,7 @@ export async function sendImportUserEmail(params: ImportUserEmailParams): Promis
   );
 }
 
+/** Welcome email sent immediately after first-time sign-up. */
 export async function sendWelcomeEmail(params: {
   name: string;
   email: string;

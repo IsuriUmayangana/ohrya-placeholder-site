@@ -12,6 +12,8 @@ export type ImportUserEmailParams = {
   email: string;
   campaign: string;
   dashboardUrl: string;
+  /** Defaults to “Go to Dashboard”. Welcome emails use “Get Your Referral Link”. */
+  buttonLabel?: string;
 };
 
 export type ImportUserEmailOptions = {
@@ -140,6 +142,7 @@ export function buildImportUserEmailHtml(
 ): string {
   const name = escapeHtml(displayName(params));
   const dashboardUrl = escapeHtml(params.dashboardUrl);
+  const buttonLabel = escapeHtml(params.buttonLabel?.trim() || "Go to Dashboard");
   const assetBase = (options.assetBaseUrl || getEmailAssetBaseUrl()).replace(/\/$/, "");
   const burstUrl = `${assetBase}/email/burst.png`;
   const logoUrl = `${assetBase}/email/ohrya-logo-primary.png`;
@@ -201,7 +204,7 @@ export function buildImportUserEmailHtml(
                       href="${dashboardUrl}"
                       style="display:inline-block;background:${BUTTON_COLOR};color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:999px;font-family:${FONT_FAMILY};font-size:16px;font-weight:500;line-height:1.2;"
                     >
-                      Go to Dashboard
+                      ${buttonLabel}
                     </a>
                   </td>
                 </tr>

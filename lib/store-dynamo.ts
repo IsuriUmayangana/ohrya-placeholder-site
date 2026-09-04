@@ -11,7 +11,6 @@ import {
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
 import { applyImportRowUpdates } from "@/lib/import-merge";
-import { isWelcomeEmailDue, welcomeEmailDueAtFromNow } from "@/lib/welcome-email";
 
 function getDoc() {
   const region = process.env.AWS_REGION ?? "us-east-1";
@@ -155,7 +154,6 @@ export async function dynamoSaveResponse(
     submittedAt: now.toISOString(),
     timeToCompleteSeconds,
     device: data.device ?? "Other",
-    welcomeEmailDueAt: welcomeEmailDueAtFromNow(now),
   };
 
   await doc.send(
@@ -396,44 +394,4 @@ export async function dynamoImportResponses(
   }
 
   return { imported, updated, skipped, errors };
-}
-
-export async function dynamoGetPendingWelcomeEmails(now = new Date()): Promise<SurveyResponse[]> {
-  const responses = await dynamoGetAllResponses();
-  return responses.filter((r) => isWelcomeEmailDue(r, now));
-}
-
-export async function dynamoMarkWelcomeEmailSent(id: string, sentAt = new Date()): Promise<boolean> {
-  const doc = getDoc();
-  const tbl = tableName();
-  const iso = sentAt.toISOString();
-
-  try {
-    await doc.send(
-      new UpdateCommand({
-        TableName: tbl,
-        Key: { id },
-        UpdateExpression: "SET welcomeEmailSentAt = :sentAt",
-        ConditionExpression: "attribute_not_exists(welcomeEmailSentAt)",
-        ExpressionAttributeValues: { ":sentAt": iso },
-      })
-    );
-    return true;
-  } catch (err) {
-    const name = err instanceof Error && "name" in err ? (err as { name?: string }).name : "";
-    if (name === "ConditionalCheckFailedException") return false;
-    throw err;
-  }
-}
-
-export async function dynamoClearWelcomeEmailSent(id: string): Promise<void> {
-  const doc = getDoc();
-  const tbl = tableName();
-  await doc.send(
-    new UpdateCommand({
-      TableName: tbl,
-      Key: { id },
-      UpdateExpression: "REMOVE welcomeEmailSentAt",
-    })
-  );
 }

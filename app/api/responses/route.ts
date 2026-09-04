@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sendWelcomeEmail } from "@/lib/email";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
 import type { SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function detectDevice(ua: string): SurveyResponse["device"] {
   const s = ua.toLowerCase();
@@ -9,6 +13,19 @@ function detectDevice(ua: string): SurveyResponse["device"] {
   if (/mobile|android|iphone|ipod|blackberry|windows phone/i.test(s)) return "Mobile";
   if (/windows|macintosh|linux/i.test(s)) return "Desktop";
   return "Other";
+}
+
+async function sendSignupWelcomeEmail(response: SurveyResponse): Promise<void> {
+  try {
+    await sendWelcomeEmail({
+      name: response.name,
+      email: response.email,
+      campaign: response.campaign,
+    });
+  } catch (err) {
+    // Sign-up still succeeds if email fails — log for Amplify/server logs.
+    console.error("[api/responses] welcome email failed", response.email, err);
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -30,6 +47,7 @@ export async function POST(req: NextRequest) {
       startedAt: body.startedAt || new Date().toISOString(),
       device: detectDevice(ua),
     });
+    await sendSignupWelcomeEmail(response);
     return NextResponse.json({ success: true, response });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
