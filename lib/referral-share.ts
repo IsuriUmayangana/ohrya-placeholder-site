@@ -3,6 +3,13 @@ import { ensureAbsoluteReferralLink } from "@/lib/site-urls";
 export const WHATSAPP_REFERRAL_MESSAGE =
   "I'm in this with OHRYA. Free to join, no donation. If I bring the most people I get $2,500 and another $2,500 goes to charity. Use my link:";
 
+export const SOCIAL_POST_MESSAGE = "Join me on OHRYA! GIVE. VOTE. SHINE.";
+
+export function buildSocialPostText(referralLink: string): string {
+  const absoluteLink = ensureAbsoluteReferralLink(referralLink);
+  return `${SOCIAL_POST_MESSAGE}\n\n${absoluteLink}`;
+}
+
 export function buildWhatsAppShareText(referralLink: string): string {
   const absoluteLink = ensureAbsoluteReferralLink(referralLink);
   // Blank line before URL helps WhatsApp detect it and attach a link preview card.
@@ -11,4 +18,82 @@ export function buildWhatsAppShareText(referralLink: string): string {
 
 export function buildWhatsAppShareUrl(referralLink: string): string {
   return `https://api.whatsapp.com/send?text=${encodeURIComponent(buildWhatsAppShareText(referralLink))}`;
+}
+
+/** Opens Facebook share dialog as a post with message + link preview. */
+export function buildFacebookPostShareUrl(referralLink: string): string {
+  const link = ensureAbsoluteReferralLink(referralLink);
+  const params = new URLSearchParams({
+    u: link,
+    quote: SOCIAL_POST_MESSAGE,
+  });
+  return `https://www.facebook.com/sharer/sharer.php?${params.toString()}`;
+}
+
+/** Opens LinkedIn compose post with pre-filled message and link. */
+export function buildLinkedInPostShareUrl(referralLink: string): string {
+  const params = new URLSearchParams({
+    shareActive: "true",
+    text: buildSocialPostText(referralLink),
+  });
+  return `https://www.linkedin.com/feed/?${params.toString()}`;
+}
+
+export function openSharePopup(url: string): void {
+  window.open(url, "_blank", "noopener,noreferrer,width=640,height=720");
+}
+
+function isMobileDevice(): boolean {
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
+
+function isIosDevice(): boolean {
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+/** Copy referral text and open Instagram story camera when possible. */
+export async function shareReferralToInstagramStory(
+  referralLink: string
+): Promise<{ copied: boolean; message: string }> {
+  const text = buildSocialPostText(referralLink);
+  let copied = false;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    copied = true;
+  } catch {
+    copied = false;
+  }
+
+  if (isMobileDevice()) {
+    const storyTarget = isIosDevice()
+      ? "instagram://story-camera"
+      : "intent://story-camera/#Intent;scheme=instagram;package=com.instagram.android;end";
+
+    // Prefer deep-linking without leaving the referral page (iOS iframe trick).
+    if (isIosDevice()) {
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = storyTarget;
+      document.body.appendChild(iframe);
+      window.setTimeout(() => iframe.remove(), 1500);
+    } else {
+      window.open(storyTarget, "_blank");
+    }
+
+    return {
+      copied,
+      message: copied
+        ? "Link copied — paste it as a link sticker in your Instagram story."
+        : "Open Instagram and add your referral link as a story link sticker.",
+    };
+  }
+
+  window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+  return {
+    copied,
+    message: copied
+      ? "Link copied. Open Instagram on your phone and share it to your story."
+      : "Open Instagram on your phone to share your link as a story.",
+  };
 }
