@@ -5,6 +5,7 @@ import path from "path";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
 import { applyImportRowUpdates } from "@/lib/import-merge";
+import { isWelcomeEmailDue, welcomeEmailDueAtFromNow } from "@/lib/welcome-email";
 
 export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 
@@ -153,6 +154,7 @@ async function fileSaveResponse(
     submittedAt: now.toISOString(),
     timeToCompleteSeconds,
     device: data.device ?? "Other",
+    welcomeEmailDueAt: welcomeEmailDueAtFromNow(now),
   };
 
   responses.push(response);
@@ -356,4 +358,28 @@ export async function getStats() {
     return acc;
   }, {});
   return { total, avgScore: Math.round(avgScore * 10) / 10, campaigns };
+}
+
+export async function getPendingWelcomeEmails(now = new Date()): Promise<SurveyResponse[]> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetPendingWelcomeEmails(now);
+  return readDB().filter((r) => isWelcomeEmailDue(r, now));
+}
+
+export async function markWelcomeEmailSent(id: string, sentAt = new Date()): Promise<boolean> {
+  if (useDynamo) return (await loadDynamo()).dynamoMarkWelcomeEmailSent(id, sentAt);
+  const responses = readDB();
+  const index = responses.findIndex((r) => r.id === id);
+  if (index === -1 || responses[index].welcomeEmailSentAt) return false;
+  responses[index].welcomeEmailSentAt = sentAt.toISOString();
+  writeDB(responses);
+  return true;
+}
+
+export async function clearWelcomeEmailSent(id: string): Promise<void> {
+  if (useDynamo) return (await loadDynamo()).dynamoClearWelcomeEmailSent(id);
+  const responses = readDB();
+  const index = responses.findIndex((r) => r.id === id);
+  if (index === -1) return;
+  delete responses[index].welcomeEmailSentAt;
+  writeDB(responses);
 }

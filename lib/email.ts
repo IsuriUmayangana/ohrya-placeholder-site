@@ -3,6 +3,7 @@ import "server-only";
 import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
 import {
   IMPORT_USER_EMAIL_SUBJECT,
+  buildImportEmailDashboardUrl,
   buildImportUserEmailHtml,
   buildImportUserEmailText,
   type ImportUserEmailParams,
@@ -39,6 +40,17 @@ export async function sendImportUserEmail(params: ImportUserEmailParams): Promis
       },
     })
   );
+}
+
+export async function sendWelcomeEmail(params: {
+  name: string;
+  email: string;
+  campaign: string;
+}): Promise<void> {
+  await sendImportUserEmail({
+    ...params,
+    dashboardUrl: buildImportEmailDashboardUrl(params.email),
+  });
 }
 
 export async function sendOtpEmail(to: string, code: string): Promise<void> {

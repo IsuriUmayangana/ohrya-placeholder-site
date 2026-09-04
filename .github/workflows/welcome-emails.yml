@@ -1,0 +1,24 @@
+name: Send welcome emails
+
+on:
+  schedule:
+    # Check every 2 minutes for sign-ups whose 5-minute welcome email is due
+    - cron: "*/2 * * * *"
+  workflow_dispatch:
+
+jobs:
+  send-welcome-emails:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger welcome email cron
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ secrets.SITE_URL }}
+        run: |
+          if [ -z "$CRON_SECRET" ] || [ -z "$SITE_URL" ]; then
+            echo "CRON_SECRET and SITE_URL must be set in repository secrets"
+            exit 1
+          fi
+          curl -fsS -X POST \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/welcome-emails"
