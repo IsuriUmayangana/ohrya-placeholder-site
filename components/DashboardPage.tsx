@@ -7,7 +7,7 @@ import Loading from "@/app/loading";
 import NotFound from "./ui/NotFond";
 import Image from "next/image";
 import Link from "next/link";
-import { buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
+import { buildDashboardUrl, buildLeaderboardUrl, buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
 
 interface Props {
   slug: string;
@@ -22,7 +22,7 @@ export default function DashboardPage({ slug }: Props) {
   const referralLink = stats
     ? ensureAbsoluteReferralLink(buildReferralSignupUrl(stats.referralCode))
     : "";
-  const dashboardUrl = `https://dashboard.ohrya.org/dashboard/${slug}`;
+  const dashboardUrl = buildDashboardUrl(slug);
 
   // Fetch stats from API
   const fetchStats = useCallback(async () => {
@@ -201,7 +201,7 @@ export default function DashboardPage({ slug }: Props) {
                     Keep sharing your referral link to continue increasing your score.
                   </p>
                   <Link
-                    href="https://leaderboard.ohrya.org/"
+                    href={buildLeaderboardUrl()}
                     className="bg-[#FFC62B] text-[#4A3600] max-w-[150px] text-xs text-center font-semibold px-3.5 py-2 rounded-full whitespace-nowrap flex-shrink-0 hover:bg-[#FFD65C] transition-colors self-start sm:self-auto"
                   >
                     View leaderboard

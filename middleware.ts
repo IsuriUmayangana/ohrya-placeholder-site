@@ -18,7 +18,7 @@ export function middleware(req: NextRequest) {
   // ── dashboard.ohrya.org ───────────────────────────────────────────────────
   if (sub === "dashboard") {
     if (pathname === "/") {
-      return NextResponse.redirect(new URL("/my-dashboard", req.url));
+      return NextResponse.redirect(new URL("/dashboard", req.url));
     }
     return NextResponse.next();
   }

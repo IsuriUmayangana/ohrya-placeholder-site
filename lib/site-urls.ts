@@ -47,3 +47,30 @@ export function ensureAbsoluteReferralLink(referralLink: string): string {
   const origin = REFERRAL_SIGNUP_ORIGIN || DEFAULT_PUBLIC_ORIGIN;
   return trimmed.startsWith("/") ? `${origin}${trimmed}` : `${origin}/${trimmed}`;
 }
+
+/** Canonical ohrya.org origin for user-facing links (never dashboard.* subdomains). */
+export function getPublicSiteOrigin(): string {
+  return MAIN_SITE_ORIGIN || DEFAULT_PUBLIC_ORIGIN;
+}
+
+export function buildAbsoluteSiteUrl(path: string): string {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${getPublicSiteOrigin()}${normalizedPath}`;
+}
+
+export function buildDashboardUrl(slug: string): string {
+  return buildAbsoluteSiteUrl(`/dashboard/${encodeURIComponent(slug)}`);
+}
+
+export function buildMyDashboardUrl(email?: string): string {
+  const url = new URL(buildAbsoluteSiteUrl("/dashboard"));
+  const trimmedEmail = email?.trim();
+  if (trimmedEmail) {
+    url.searchParams.set("email", trimmedEmail);
+  }
+  return url.toString();
+}
+
+export function buildLeaderboardUrl(): string {
+  return buildAbsoluteSiteUrl("/leaderboard");
+}
