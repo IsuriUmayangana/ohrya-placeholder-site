@@ -19,6 +19,7 @@ import {
   submitSurveyResponse,
 } from "@/lib/submit-survey-response";
 import { navigateAfterSignup } from "@/lib/navigate-after-signup";
+import { buildMyDashboardUrl } from "@/lib/site-urls";
 
 const SURVEY_STEPS = ["campaign", "name", "email", "referral-share"] as const;
 type Step = (typeof SURVEY_STEPS)[number];
@@ -125,7 +126,7 @@ function SurveyInner() {
             setStepError(
               <>
                 This email has already completed the survey.{" "}
-                <a href="https://dashboard.ohrya.org/my-dashboard" className="underline text-[#5a9aaa]">
+                <a href={buildMyDashboardUrl(email)} className="underline text-[#5a9aaa]">
                   Visit My Dashboard
                 </a>{" "}
                 to view your results.
@@ -247,7 +248,7 @@ function SurveyInner() {
             <>
               This email has already completed the survey.{" "}
               <a
-                href="https://dashboard.ohrya.org/my-dashboard"
+                href={buildMyDashboardUrl(trimmed)}
                 className="underline text-[#5a9aaa]"
               >
                 Visit My Dashboard

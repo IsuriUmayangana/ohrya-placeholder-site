@@ -51,9 +51,9 @@ const IMPORT_EMAIL_DASHBOARD_UTM = {
 
 export function buildImportEmailDashboardUrl(email: string): string {
   const base = (
-    process.env.DASHBOARD_BASE_URL?.trim() || "https://dashboard.ohrya.org"
+    process.env.DASHBOARD_BASE_URL?.trim() || MAIN_SITE_ORIGIN || "https://ohrya.org"
   ).replace(/\/$/, "");
-  const url = new URL(`${base}/my-dashboard`);
+  const url = new URL(`${base}/dashboard`);
   const trimmedEmail = email.trim();
   if (trimmedEmail) {
     url.searchParams.set("email", trimmedEmail);

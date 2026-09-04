@@ -77,7 +77,7 @@ export default function SplashLandingPage() {
         setFormError(
           <>
             This email has already completed the survey.{" "}
-            <a href={`/my-dashboard?email=${encodeURIComponent(trimmedEmail)}`}>
+            <a href={`/dashboard?email=${encodeURIComponent(trimmedEmail)}`}>
               Visit My Dashboard
             </a>{" "}
             to view your results.
