@@ -7,9 +7,9 @@ import { buildReferralSignupUrl } from "@/lib/site-urls";
 export type ReferralShareImageFormat = "post" | "story";
 
 async function loadLogoDataUrl(): Promise<string> {
-  const logoPath = join(process.cwd(), "public", "splash", "assets", "ohrya-logo-new.svg");
-  const logoSvg = await readFile(logoPath, "utf8");
-  return `data:image/svg+xml;base64,${Buffer.from(logoSvg).toString("base64")}`;
+  const logoPath = join(process.cwd(), "public", "email", "ohrya-logo-primary.png");
+  const logoPng = await readFile(logoPath);
+  return `data:image/png;base64,${logoPng.toString("base64")}`;
 }
 
 export async function renderReferralShareImage(

@@ -7,15 +7,15 @@ const SITE_ORIGIN = MAIN_SITE_ORIGIN || "https://ohrya.org";
 export const siteMetadataBase = new URL(SITE_ORIGIN);
 
 const OG_IMAGE = {
-  url: "/opengraph-image",
+  url: "/og/ohrya-referral-share.png",
   width: 1200,
   height: 630,
   alt: "OHRYA — Give • Vote • Shine",
 };
 
-/** OG image for ?ref= links — WhatsApp/Facebook read this when the referral URL is shared. */
-export function buildReferralShareOgImagePath(referralCode: string): string {
-  return `/api/referral-share-image?ref=${encodeURIComponent(referralCode.trim())}`;
+/** OG image for ?ref= links — static PNG for WhatsApp/Facebook crawlers. */
+export function buildReferralShareOgImagePath(_referralCode?: string): string {
+  return "/og/ohrya-referral-share.png";
 }
 
 export function buildReferralLinkMetadata(referralCode: string): Pick<Metadata, "title" | "description" | "openGraph" | "twitter"> {

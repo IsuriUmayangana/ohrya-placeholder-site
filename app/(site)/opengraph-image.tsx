@@ -7,9 +7,9 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
-  const logoPath = join(process.cwd(), "public", "splash", "assets", "ohrya-logo-new.svg");
-  const logoSvg = await readFile(logoPath, "utf8");
-  const logoSrc = `data:image/svg+xml;base64,${Buffer.from(logoSvg).toString("base64")}`;
+  const logoPath = join(process.cwd(), "public", "email", "ohrya-logo-primary.png");
+  const logoPng = await readFile(logoPath);
+  const logoSrc = `data:image/png;base64,${logoPng.toString("base64")}`;
 
   return new ImageResponse(
     (
