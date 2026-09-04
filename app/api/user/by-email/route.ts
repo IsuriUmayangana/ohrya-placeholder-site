@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
   const user = await getUserByEmail(email);
   if (!user) {
-    return NextResponse.json({ error: "No survey found for this email" }, { status: 404 });
+    return NextResponse.json({ error: "No sign up found for this email" }, { status: 404 });
   }
   return NextResponse.json({ emailSlug: user.emailSlug });
 }

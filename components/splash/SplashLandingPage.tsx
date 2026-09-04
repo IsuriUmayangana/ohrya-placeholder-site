@@ -76,7 +76,7 @@ export default function SplashLandingPage() {
       if (await checkEmailAlreadyRegistered(trimmedEmail)) {
         setFormError(
           <>
-            This email has already completed the survey.{" "}
+            This email has already completed sign up.{" "}
             <a href={`/dashboard?email=${encodeURIComponent(trimmedEmail)}`}>
               Visit My Dashboard
             </a>{" "}

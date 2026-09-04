@@ -12,10 +12,10 @@ export default function NotFound() {
 
                 {/* Message */}
                 <p style={{ fontFamily: "Georgia, serif", fontSize: "1.1rem", color: "#555", marginTop: 16 }}>
-                    Dashboard not found. Please complete the survey to get your personal link.
+                    Dashboard not found. Please complete sign up to get your personal link.
                 </p>
                 <a href="/" className="btn-primary" style={{ textDecoration: "none", padding: "12px 32px", borderRadius: 9999 }}>
-                    Take the Survey
+                    Sign Up
                 </a>
     
             </div>

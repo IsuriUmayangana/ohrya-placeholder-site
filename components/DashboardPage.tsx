@@ -126,16 +126,16 @@ export default function DashboardPage({ slug }: Props) {
 
                   {/* Description */}
                   <p className="mt-4 max-w-2xl text-sm text-[#000000] leading-6">
-                    Track your survey score, referral momentum, and campaign participation in one place.
+                    Track your participation score, referral momentum, and campaign participation in one place.
                     Your dashboard refreshes automatically as new responses come in.
                   </p>
                 </div>
 
                 {/* Score cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {/* Survey score */}
+                  {/* Participation Score */}
                   <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Survey score</p>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">Participation Score</p>
                     <p className="mt-2 text-2xl font-semibold text-[#06596d]">{stats!.surveyScore}</p>
                     <div className="mt-3 h-2 rounded-full bg-slate-200 overflow-hidden">
                       <div
@@ -222,7 +222,7 @@ export default function DashboardPage({ slug }: Props) {
               <div className="flex flex-col gap-5">
                 <p className="text-base font-semibold text-[#000000]">Your referral score</p>
                 <p className="text-sm text-[#000000] leading-6">
-                  Every referral who completes the survey helps boost your score.
+                  Every referral who completes sign up helps boost your score.
                 </p>
                 {/* Referrals */}
                 <div className="grid grid-cols-2 gap-3">
@@ -285,7 +285,7 @@ export default function DashboardPage({ slug }: Props) {
             <p
               className="text-xs text-[#94a3b8] text-center"
             >
-              Score updates live every 10 seconds as friends complete the survey.
+              Score updates live every 10 seconds as friends complete sign up.
             </p>
           </section>
         </div>

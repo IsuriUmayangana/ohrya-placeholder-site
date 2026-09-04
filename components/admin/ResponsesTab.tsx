@@ -20,7 +20,7 @@ const CAMPAIGN_COLORS: Record<string, string> = {
   Children: "#f0e6ff", Animals: "#e6f7ff", Veterans: "#fff3e6",
 };
 
-const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Survey", "Referral", "Total"] as const;
+const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Sign Up", "Referral", "Total"] as const;
 
 type ImportRow = {
   name?: string;
@@ -192,7 +192,7 @@ export default function ResponsesTab() {
         Campaign: r.campaign,
       };
       row.Device = r.device;
-      row["Survey Score"] = r.surveyScore;
+      row["Participation Score"] = r.surveyScore;
       row["Referral Bonus"] = r.referralScore;
       row["Friends Referred"] = r.referralCount;
       row["Total Score"] = r.totalScore;
@@ -512,7 +512,7 @@ export default function ResponsesTab() {
                       {r.device || <span className="text-slate-300">—</span>}
                     </td>
 
-                    {/* Survey Score */}
+                    {/* Participation Score */}
                     <td className="px-4 py-3.5 text-center">
                       <span className="inline-flex min-w-[36px] justify-center rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-100 px-2.5 py-1 text-[11px] font-semibold">
                         {r.surveyScore}
@@ -606,7 +606,7 @@ export default function ResponsesTab() {
                     </div>
 
                     <div>
-                      <p className="text-slate-400 mb-1">Survey</p>
+                      <p className="text-slate-400 mb-1">Sign Up</p>
                       <span className="inline-flex min-w-[36px] justify-center rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-100 px-2.5 py-1 text-[11px] font-semibold">
                         {r.surveyScore}
                       </span>

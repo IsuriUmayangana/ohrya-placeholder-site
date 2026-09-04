@@ -125,7 +125,7 @@ function SurveyInner() {
           if (check.ok) {
             setStepError(
               <>
-                This email has already completed the survey.{" "}
+                This email has already completed sign up.{" "}
                 <a href={buildMyDashboardUrl(email)} className="underline text-[#5a9aaa]">
                   Visit My Dashboard
                 </a>{" "}
@@ -246,7 +246,7 @@ function SurveyInner() {
         if (check.ok) {
           setStepError(
             <>
-              This email has already completed the survey.{" "}
+              This email has already completed sign up.{" "}
               <a
                 href={buildMyDashboardUrl(trimmed)}
                 className="underline text-[#5a9aaa]"

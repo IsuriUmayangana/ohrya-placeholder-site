@@ -119,7 +119,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
             }}
           >
             <p style={{ fontFamily: "Georgia, serif", fontSize: "0.8rem", color: "#888", marginBottom: 4 }}>
-              Survey Score
+              Participation Score
             </p>
             <p style={{ fontFamily: "Georgia, serif", fontSize: "2rem", color: "#5a9aaa", fontWeight: "bold" }}>
               {surveyScore}
@@ -216,7 +216,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
                 WhatsApp
               </a>
               <a
-                href={`mailto:?subject=${encodeURIComponent("Join me on OHRYA")}&body=${encodeURIComponent(`Take the OHRYA survey and earn your Social Impact Score!\n\n${referralLink}`)}`}
+                href={`mailto:?subject=${encodeURIComponent("Join me on OHRYA")}&body=${encodeURIComponent(`Sign up for OHRYA and earn your Social Impact Score!\n\n${referralLink}`)}`}
                 style={{
                   flex: 1,
                   display: "flex",
@@ -245,7 +245,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
 
       {/* Live refresh note */}
       <p style={{ fontFamily: "Georgia, serif", fontSize: "0.78rem", color: "#bbb", textAlign: "center" }}>
-        Your score updates live as friends complete the survey using your link.
+        Your score updates live as friends complete sign up using your link.
       </p>
 
       <button
@@ -260,7 +260,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
           textDecoration: "underline",
         }}
       >
-        Take survey again
+        Sign up again
       </button>
     </div>
   );

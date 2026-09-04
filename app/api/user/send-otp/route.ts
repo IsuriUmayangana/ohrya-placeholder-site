@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     const user = await getUserByEmail(trimmed);
     if (!user) {
       return NextResponse.json(
-        { error: "No survey found for this email" },
+        { error: "No sign up found for this email" },
         { status: 404 }
       );
     }
