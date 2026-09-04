@@ -25,7 +25,30 @@ export default function SplashLandingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const referredBy = searchParams.get("ref") || "";
+  const [referrerLookup, setReferrerLookup] = useState<{ code: string; name: string } | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignId>("Pets");
+
+  useEffect(() => {
+    if (!referredBy) return;
+
+    let cancelled = false;
+
+    fetch(`/api/user/${encodeURIComponent(referredBy)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { name?: string } | null) => {
+        if (cancelled || !data?.name) return;
+        const firstName = data.name.trim().split(/\s+/)[0];
+        if (firstName) setReferrerLookup({ code: referredBy, name: firstName });
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [referredBy]);
+
+  const announceName =
+    referrerLookup?.code === referredBy ? referrerLookup.name : "[Name]";
 
   useEffect(() => {
     if (!referredBy) return;
@@ -104,7 +127,7 @@ export default function SplashLandingPage() {
   return (
     <div className="landing-page">
       <div className="hero-background" aria-hidden="true" />
-      <Header />
+      <Header announceName={announceName} />
       <Hero />
       <Steps />
       <JoinFormSection
