@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import type { PublicUserStats } from "@/lib/survey-types";
-import { buildWhatsAppShareUrl } from "@/lib/referral-share";
+import { buildWhatsAppShareUrl, copyReferralShareText } from "@/lib/referral-share";
 import { buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
 
 interface Props {
@@ -43,12 +43,12 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
   const referralScore = stats ? stats.referralScore : 0;
   const referralCount = stats ? stats.referralCount : 0;
 
-  // Copy link to clipboard
-  function copyLink() {
-    navigator.clipboard.writeText(referralLink).then(() => {
+  async function copyLink() {
+    const copied = await copyReferralShareText(referralLink);
+    if (copied) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    });
+    }
   }
 
   // Calculate progress percentage

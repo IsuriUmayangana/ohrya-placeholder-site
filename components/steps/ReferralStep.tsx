@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   buildWhatsAppShareUrl,
+  copyReferralShareText,
   shareReferralToFacebook,
   shareReferralToInstagramStory,
   shareReferralToLinkedIn,
@@ -200,11 +201,12 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
     window.setTimeout(() => setShareFeedback(""), 4000);
   }
 
-  function copyLink() {
-    navigator.clipboard.writeText(referralLink).then(() => {
+  async function copyLink() {
+    const copied = await copyReferralShareText(referralLink);
+    if (copied) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    });
+    }
   }
 
   async function shareToFacebook() {

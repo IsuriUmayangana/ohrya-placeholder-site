@@ -1,14 +1,23 @@
 import { ensureAbsoluteReferralLink } from "@/lib/site-urls";
 
 export const REFERRAL_SHARE_MESSAGE =
-  "I'm in this with OHRYA. Free to join, no donation. If I bring the most people I get $2,500 and another $2,500 goes to charity. Use my link:";
+  "I'm in this with OHRYA. Free to join, no donation. If I bring the most people I get $2,500 and another\n$2,500 goes to charity. Use my link:";
 
 /** @deprecated Use REFERRAL_SHARE_MESSAGE */
 export const WHATSAPP_REFERRAL_MESSAGE = REFERRAL_SHARE_MESSAGE;
 
 export function buildReferralShareText(referralLink: string): string {
   const absoluteLink = ensureAbsoluteReferralLink(referralLink);
-  return `${REFERRAL_SHARE_MESSAGE}\n\n${absoluteLink}`;
+  return `${REFERRAL_SHARE_MESSAGE}\n${absoluteLink}`;
+}
+
+export async function copyReferralShareText(referralLink: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(buildReferralShareText(referralLink));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function buildSocialPostText(referralLink: string): string {
