@@ -28,33 +28,39 @@
 }
 
 /* ==========================================
-   RESET & BASE STYLES
+   RESET & BASE STYLES (landing scope only)
+   Unscoped global resets break Tailwind on client
+   navigation to /leaderboard and /dashboard.
    ========================================== */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
+.landing-page,
+.privacy-page,
+.landing-page *,
+.privacy-page *,
+.landing-page *::before,
+.privacy-page *::before,
+.landing-page *::after,
+.privacy-page *::after {
   box-sizing: border-box;
 }
 
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+.landing-page,
+.privacy-page,
+.landing-page *,
+.privacy-page * {
+  margin: 0;
+  padding: 0;
+}
+
+.landing-page,
+.privacy-page {
+  line-height: 1.21;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
+  .landing-page,
+  .privacy-page {
     scroll-behavior: auto;
   }
-}
-
-body {
-  line-height: 1.21;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
 }
 
 
