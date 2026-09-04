@@ -1,23 +1,26 @@
 import { ensureAbsoluteReferralLink } from "@/lib/site-urls";
 
-export const WHATSAPP_REFERRAL_MESSAGE =
+export const REFERRAL_SHARE_MESSAGE =
   "I'm in this with OHRYA. Free to join, no donation. If I bring the most people I get $2,500 and another $2,500 goes to charity. Use my link:";
 
-export const SOCIAL_POST_MESSAGE = "Join me on OHRYA! GIVE. VOTE. SHINE.";
+/** @deprecated Use REFERRAL_SHARE_MESSAGE */
+export const WHATSAPP_REFERRAL_MESSAGE = REFERRAL_SHARE_MESSAGE;
+
+export function buildReferralShareText(referralLink: string): string {
+  const absoluteLink = ensureAbsoluteReferralLink(referralLink);
+  return `${REFERRAL_SHARE_MESSAGE}\n\n${absoluteLink}`;
+}
 
 export function buildSocialPostText(referralLink: string): string {
-  const absoluteLink = ensureAbsoluteReferralLink(referralLink);
-  return `${SOCIAL_POST_MESSAGE}\n\n${absoluteLink}`;
+  return buildReferralShareText(referralLink);
 }
 
 export function buildWhatsAppShareText(referralLink: string): string {
-  const absoluteLink = ensureAbsoluteReferralLink(referralLink);
-  // Blank line before URL helps WhatsApp detect it and attach a link preview card.
-  return `${WHATSAPP_REFERRAL_MESSAGE}\n\n${absoluteLink}`;
+  return buildReferralShareText(referralLink);
 }
 
 export function buildWhatsAppShareUrl(referralLink: string): string {
-  return `https://api.whatsapp.com/send?text=${encodeURIComponent(buildWhatsAppShareText(referralLink))}`;
+  return `https://api.whatsapp.com/send?text=${encodeURIComponent(buildReferralShareText(referralLink))}`;
 }
 
 /** Opens Facebook share dialog as a post with message + link preview. */
@@ -25,7 +28,7 @@ export function buildFacebookPostShareUrl(referralLink: string): string {
   const link = ensureAbsoluteReferralLink(referralLink);
   const params = new URLSearchParams({
     u: link,
-    quote: SOCIAL_POST_MESSAGE,
+    quote: REFERRAL_SHARE_MESSAGE,
   });
   return `https://www.facebook.com/sharer/sharer.php?${params.toString()}`;
 }
@@ -34,7 +37,7 @@ export function buildFacebookPostShareUrl(referralLink: string): string {
 export function buildLinkedInPostShareUrl(referralLink: string): string {
   const params = new URLSearchParams({
     shareActive: "true",
-    text: buildSocialPostText(referralLink),
+    text: buildReferralShareText(referralLink),
   });
   return `https://www.linkedin.com/feed/?${params.toString()}`;
 }
@@ -55,7 +58,7 @@ function isIosDevice(): boolean {
 export async function shareReferralToInstagramStory(
   referralLink: string
 ): Promise<{ copied: boolean; message: string }> {
-  const text = buildSocialPostText(referralLink);
+  const text = buildReferralShareText(referralLink);
   let copied = false;
 
   try {
@@ -70,7 +73,6 @@ export async function shareReferralToInstagramStory(
       ? "instagram://story-camera"
       : "intent://story-camera/#Intent;scheme=instagram;package=com.instagram.android;end";
 
-    // Prefer deep-linking without leaving the referral page (iOS iframe trick).
     if (isIosDevice()) {
       const iframe = document.createElement("iframe");
       iframe.style.display = "none";
