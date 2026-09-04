@@ -50,8 +50,8 @@ export default function DashboardPage({ slug }: Props) {
 
   function downloadSocialImage() {
     const link = document.createElement("a");
-    link.href = "/referral-social-share/OHRYA.png";
-    link.download = "OHRYA.png";
+    link.href = "/referral-social-share/OHRYA.jpg";
+    link.download = "OHRYA.jpg";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
