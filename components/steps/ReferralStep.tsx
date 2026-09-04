@@ -263,7 +263,7 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             aria-label="Share on WhatsApp"
           >
             <Image
-              src="/referral-share/whatsapp_icon.png"
+              src="/referral-share/whatsapp_icon.svg"
               alt=""
               width={46}
               height={46}
@@ -279,7 +279,7 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             aria-label="Share to Instagram story"
           >
             <Image
-              src="/referral-share/instagram_icon.png"
+              src="/referral-share/instagram_icon.svg"
               alt=""
               width={46}
               height={46}
@@ -295,7 +295,7 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             aria-label="Share as Facebook post"
           >
             <Image
-              src="/referral-share/facebook_icon.png"
+              src="/referral-share/facebook_icon.svg"
               alt=""
               width={46}
               height={46}
@@ -311,7 +311,7 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
             aria-label="Share as LinkedIn post"
           >
             <Image
-              src="/referral-share/linkedin_icon.png"
+              src="/referral-share/linkedin_icon.svg"
               alt=""
               width={44}
               height={44}

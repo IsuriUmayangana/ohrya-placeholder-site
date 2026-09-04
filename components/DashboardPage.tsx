@@ -73,7 +73,7 @@ export default function DashboardPage({ slug }: Props) {
   const leaderboardRank = stats!.leaderboardRank ?? null;
 
   const linkBox = (
-    <div className="mt-auto w-full flex items-center gap-2 border border-[#5A9AAA] rounded-lg p-3 bg-[#EEF5F6]">
+    <div className="mt-auto w-full flex items-center gap-2 border border-[#6098AE] rounded-lg p-3 bg-[#F0F5F6]">
       <span className="flex-1 text-sm text-slate-500 overflow-hidden text-ellipsis whitespace-nowrap">{referralLink}</span>
       <button
         onClick={() => copyLink(referralLink)}
@@ -208,9 +208,28 @@ export default function DashboardPage({ slug }: Props) {
             </div>
           </section>
 
-          {/* Lower grid */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+          {/* Referral cards: mobile link → download → stats; tablet link / stats+download; desktop stats → link → download */}
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+            <div className="order-3 md:order-2 lg:order-1 min-w-0 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+              <div className="flex flex-col gap-5 h-full">
+                <p className="text-base font-semibold text-[#000000]">Your referral score</p>
+                <p className="text-sm text-[#000000] leading-6">
+                  Every referral who completes sign up helps boost your score.
+                </p>
+                <div className="mt-auto grid grid-cols-2 gap-3">
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4 min-w-0">
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">REFERRAL COUNT</p>
+                    <p className="mt-2 text-2xl font-semibold text-[#2d2d2d]">{stats!.referralCount}</p>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4 min-w-0">
+                    <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">CONVERSION RATE</p>
+                    <p className="mt-2 text-2xl font-semibold text-[#FFBB00]">{Math.round(referralPct)}%</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="order-1 md:order-1 md:col-span-2 lg:col-span-1 lg:order-2 min-w-0 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col gap-5 h-full">
                 <h3 className="text-base font-semibold text-[#000000]">Share and earn more points</h3>
                 <p className="text-sm text-[#000000] leading-6">
@@ -220,7 +239,7 @@ export default function DashboardPage({ slug }: Props) {
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="order-2 md:order-3 lg:order-3 min-w-0 rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col gap-5 h-full">
                 <h3 className="text-base font-semibold text-[#000000]">Share with a social visual</h3>
                 <p className="text-sm text-[#000000] leading-6">
@@ -237,14 +256,14 @@ export default function DashboardPage({ slug }: Props) {
                       <path
                         d="M24 32V8M24 32L16 24M24 32L32 24"
                         stroke="currentColor"
-                        strokeWidth="2.5"
+                        strokeWidth="3.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                       <path
                         d="M8 36V38C8 39.1046 8.89543 40 10 40H38C39.1046 40 40 39.1046 40 38V36"
                         stroke="currentColor"
-                        strokeWidth="2.5"
+                        strokeWidth="3.5"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
@@ -255,26 +274,7 @@ export default function DashboardPage({ slug }: Props) {
             </div>
           </section>
 
-          {/* Referral stats */}
-          <section className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-            <div className="flex flex-col gap-5">
-              <p className="text-base font-semibold text-[#000000]">Your referral score</p>
-              <p className="text-sm text-[#000000] leading-6">
-                Every referral who completes sign up helps boost your score.
-              </p>
-              <div className="grid grid-cols-2 gap-3 max-w-md">
-                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">REFERRAL COUNT</p>
-                  <p className="mt-2 text-2xl font-semibold text-[#2d2d2d]">{stats!.referralCount}</p>
-                </div>
-                <div className="rounded-2xl bg-slate-50 border border-slate-200 p-4">
-                  <p className="text-xs uppercase tracking-[0.16em] text-[#000000] font-medium">CONVERSION RATE</p>
-                  <p className="mt-2 text-2xl font-semibold text-[#FFBB00]">{Math.round(referralPct)}%</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
+          {/* Footer */}
           <section className="flex flex-col items-center gap-3 pt-6">
             <div className="text-center">
               <p className="text-xs text-[#94a3b8] mb-2">Bookmark your personal dashboard</p>
