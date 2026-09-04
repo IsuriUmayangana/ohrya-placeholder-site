@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 interface Props {
+  /** Referrer first name — banner is hidden when omitted. */
   announceName?: string;
 }
 
@@ -32,12 +33,18 @@ function NavButtons({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export default function Header({ announceName = "[Name]" }: Props) {
+export default function Header({ announceName }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const announceRef = useRef<HTMLDivElement>(null);
   const [announceHeight, setAnnounceHeight] = useState<number | null>(null);
+  const showAnnounce = Boolean(announceName?.trim());
 
   useEffect(() => {
+    if (!showAnnounce) {
+      setAnnounceHeight(0);
+      return undefined;
+    }
+
     const el = announceRef.current;
     if (!el) return undefined;
 
@@ -49,7 +56,7 @@ export default function Header({ announceName = "[Name]" }: Props) {
     setAnnounceHeight(el.offsetHeight);
 
     return () => observer.disconnect();
-  }, [announceName]);
+  }, [announceName, showAnnounce]);
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -85,17 +92,19 @@ export default function Header({ announceName = "[Name]" }: Props) {
     <header
       className="header"
       style={
-        announceHeight === null
+        announceHeight === null && showAnnounce
           ? undefined
-          : ({ "--announce-h": `${announceHeight}px` } as React.CSSProperties)
+          : ({ "--announce-h": `${announceHeight ?? 0}px` } as React.CSSProperties)
       }
     >
       <div className="site-header-fixed">
-        <div className="site-announce" ref={announceRef}>
-          <p className="site-announce-text">
-            {announceName} unlocked your pass to OHRYA&rsquo;s $2,500 Campaign!
-          </p>
-        </div>
+        {showAnnounce && (
+          <div className="site-announce" ref={announceRef}>
+            <p className="site-announce-text">
+              {announceName} unlocked your pass to OHRYA&rsquo;s $2,500 Campaign!
+            </p>
+          </div>
+        )}
 
         <nav className="site-nav" aria-label="Main">
           <div className="site-nav-inner">

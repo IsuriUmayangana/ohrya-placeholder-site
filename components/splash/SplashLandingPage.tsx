@@ -48,7 +48,7 @@ export default function SplashLandingPage() {
   }, [referredBy]);
 
   const announceName =
-    referrerLookup?.code === referredBy ? referrerLookup.name : "[Name]";
+    referredBy && referrerLookup?.code === referredBy ? referrerLookup.name : undefined;
 
   useEffect(() => {
     if (!referredBy) return;
