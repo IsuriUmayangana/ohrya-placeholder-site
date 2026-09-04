@@ -68,7 +68,7 @@ export function getEmailAssetBaseUrl(): string {
   return (
     process.env.EMAIL_ASSET_BASE_URL?.trim() ||
     MAIN_SITE_ORIGIN ||
-    "https://www.ohrya.org"
+    "https://ohrya.org"
   ).replace(/\/$/, "");
 }
 

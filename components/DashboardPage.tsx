@@ -7,6 +7,7 @@ import Loading from "@/app/loading";
 import NotFound from "./ui/NotFond";
 import Image from "next/image";
 import Link from "next/link";
+import { buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
 
 interface Props {
   slug: string;
@@ -18,7 +19,9 @@ export default function DashboardPage({ slug }: Props) {
   const [notFound, setNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const referralLink = stats ? `https://form.ohrya.org/?ref=${stats.referralCode}` : "";
+  const referralLink = stats
+    ? ensureAbsoluteReferralLink(buildReferralSignupUrl(stats.referralCode))
+    : "";
   const dashboardUrl = `https://dashboard.ohrya.org/dashboard/${slug}`;
 
   // Fetch stats from API

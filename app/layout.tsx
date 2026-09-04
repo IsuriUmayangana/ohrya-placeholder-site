@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import { Poppins } from "next/font/google";
 import Script from "next/script";
+import { sharedSiteMetadata } from "@/lib/site-metadata";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -12,10 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "OHRYA",
-  description:
-    "Every action you take builds your Social Impact Score — GIVE. VOTE. SHINE.",
-
+  ...sharedSiteMetadata,
   icons: {
     icon: "/logo-icon.png",
   },

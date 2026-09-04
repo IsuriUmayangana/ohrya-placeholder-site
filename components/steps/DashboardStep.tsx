@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import type { PublicUserStats } from "@/lib/survey-types";
+import { buildWhatsAppShareUrl } from "@/lib/referral-share";
+import { buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
 
 interface Props {
   referralCode: string;
@@ -13,8 +15,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
   const [stats, setStats] = useState<PublicUserStats | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-  const referralLink = `${baseUrl}/?ref=${referralCode}`;
+  const referralLink = ensureAbsoluteReferralLink(buildReferralSignupUrl(referralCode));
 
   // Fetch stats from API
   const fetchStats = useCallback(async () => {
@@ -191,7 +192,7 @@ export default function DashboardStep({ referralCode, initialSurveyScore, onRest
             {/* Share mini buttons */}
             <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Join me on OHRYA! GIVE. VOTE. SHINE.\n${referralLink}`)}`}
+                href={buildWhatsAppShareUrl(referralLink)}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{

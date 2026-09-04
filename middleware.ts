@@ -57,7 +57,7 @@ export function middleware(req: NextRequest) {
       const ref = req.nextUrl.searchParams.get("ref");
       if (ref) {
         const mainSite =
-          process.env.NEXT_PUBLIC_MAIN_SITE_ORIGIN ?? "https://www.ohrya.org";
+          process.env.NEXT_PUBLIC_MAIN_SITE_ORIGIN ?? "https://ohrya.org";
         const landing = new URL("/", mainSite);
         landing.searchParams.set("ref", ref);
         return NextResponse.redirect(landing);

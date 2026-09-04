@@ -1,6 +1,6 @@
 .referral-page {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,9 +9,10 @@
 }
 
 .referral-page__logo {
-  width: 168px;
+  width: 170px;
   height: auto;
-  margin-bottom: 40px;
+  margin: 0 auto 32px;
+  display: block;
 }
 
 .referral-page__content {
@@ -23,24 +24,9 @@
   text-align: center;
 }
 
-.referral-page__share-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #ffc62b 0%, #ffe59f 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 28px;
-  flex-shrink: 0;
-}
-
-.referral-page__share-icon svg {
-  display: block;
-}
-
 .referral-page__title {
   margin: 0 0 12px;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.25;
@@ -49,11 +35,79 @@
 }
 
 .referral-page__description {
-  margin: 0 0 32px;
+  margin: 0 0 28px;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   color: #2d2d2d;
   max-width: 460px;
+}
+
+.referral-page__step {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.referral-page__step--two {
+  margin-bottom: 0;
+}
+
+.referral-page__step-label {
+  margin: 0 0 16px;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #2d2d2d;
+  text-align: center;
+}
+
+.referral-page__step-label strong {
+  font-weight: 700;
+}
+
+.referral-page__social-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.referral-page__social-btn {
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 12px;
+  background: #eef5f6;
+  color: #699bb0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  padding: 0;
+}
+
+.referral-page__social-btn:hover {
+  background: #e2eef0;
+  transform: translateY(-1px);
+}
+
+.referral-page__social-btn img {
+  width: 22px;
+  height: auto;
+  display: block;
+  filter: brightness(0) saturate(100%) invert(58%) sepia(14%) saturate(707%) hue-rotate(152deg)
+    brightness(93%) contrast(88%);
+}
+
+.referral-page__copy-hint {
+  margin: 0 0 10px;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #2d2d2d;
 }
 
 .referral-page__link-box {
@@ -61,16 +115,16 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 12px 12px 16px;
-  border: 1px solid #5a9aaa;
+  padding: 10px 10px 10px 16px;
+  border: 1px solid #d8e6ea;
   border-radius: 8px;
-  background: #eef5f6;
-  margin-bottom: 24px;
+  background: #f3f7f8;
 }
 
 .referral-page__link-text {
   flex: 1;
   min-width: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.4;
   color: #64748b;
@@ -84,8 +138,9 @@
   flex-shrink: 0;
   border: none;
   border-radius: 6px;
-  background: #5a9aaa;
+  background: #699bb0;
   color: #ffffff;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
@@ -95,7 +150,7 @@
 }
 
 .referral-page__copy-btn:hover {
-  background: #477d8a;
+  background: #5a8a9d;
 }
 
 .referral-page__dashboard-btn {
@@ -106,8 +161,9 @@
   width: 100%;
   border: none;
   border-radius: 9999px;
-  background: #5a9aaa;
+  background: #699bb0;
   color: #ffffff;
+  font-family: Inter, Arial, Helvetica, sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
@@ -118,7 +174,7 @@
 }
 
 .referral-page__dashboard-btn:hover {
-  background: #477d8a;
+  background: #5a8a9d;
   transform: translateY(-1px);
 }
 
@@ -126,22 +182,113 @@
   transform: translateY(0);
 }
 
+.referral-page__dashboard-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.referral-page__dashboard-btn:disabled:hover {
+  background: #699bb0;
+  transform: none;
+}
+
+.referral-page__otp-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.referral-page__otp-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+}
+
+.referral-page__otp-box {
+  width: 44px;
+  height: 52px;
+  border: 1.5px solid #b8cdd4;
+  border-radius: 10px;
+  background: #f3f7f8;
+  text-align: center;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #2d2d2d;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.referral-page__otp-box:focus {
+  border-color: #699bb0;
+  background: #ffffff;
+}
+
+.referral-page__otp-box--filled {
+  border-color: #699bb0;
+  background: #ffffff;
+}
+
+.referral-page__otp-box--error {
+  border-color: #c0392b;
+  background: #fff5f5;
+}
+
+.referral-page__otp-resend {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.referral-page__otp-resend:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.referral-page__otp-error {
+  margin: 0;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #c0392b;
+  text-align: center;
+}
+
 @media (max-width: 480px) {
+  .referral-page {
+    padding: 32px 20px 48px;
+  }
+
   .referral-page__logo {
-    width: 140px;
-    margin-bottom: 32px;
+    width: 150px;
+    margin-bottom: 24px;
   }
 
   .referral-page__title {
     font-size: 22px;
   }
 
-  .referral-page__description {
+  .referral-page__description,
+  .referral-page__step-label,
+  .referral-page__copy-hint {
     font-size: 13px;
   }
 
+  .referral-page__social-btn {
+    width: 48px;
+    height: 48px;
+  }
+
   .referral-page__link-box {
-    padding: 10px 10px 10px 12px;
+    padding: 8px 8px 8px 12px;
   }
 
   .referral-page__link-text {
@@ -151,5 +298,15 @@
   .referral-page__copy-btn {
     padding: 9px 12px;
     font-size: 13px;
+  }
+
+  .referral-page__otp-row {
+    gap: 8px;
+  }
+
+  .referral-page__otp-box {
+    width: 40px;
+    height: 48px;
+    font-size: 1.1rem;
   }
 }
