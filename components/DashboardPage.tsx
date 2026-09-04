@@ -208,34 +208,11 @@ export default function DashboardPage({ slug }: Props) {
             </div>
           </section>
 
-          {/* Share and earn + banner */}
-          <section className="grid grid-cols-1 xl:grid-cols-[1fr_minmax(280px,440px)] gap-6">
-            <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-              <div className="flex flex-col gap-5 h-full">
-                <h3 className="text-base font-semibold text-[#000000]">Share and earn more points</h3>
-                <p className="text-sm text-[#000000] leading-6">
-                  The more you share, the more you earn. Copy your referral link and share on social media, email, or any other platform to unlock additional points.
-                </p>
-                {linkBox}
-              </div>
-            </div>
-
-            <div className="rounded-[24px] border border-slate-200 bg-white shadow-sm overflow-hidden flex items-center justify-center min-h-[220px]">
-              <Image
-                src="/referral-social-share/OHRYA.jpg"
-                alt="OHRYA social share graphic"
-                width={440}
-                height={560}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </section>
-
           {/* Lower grid */}
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+          <div className="rounded-[24px] border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
               <div className="flex flex-col gap-5 h-full">
-                <h3 className="text-base font-semibold text-[#000000]">Your referral link</h3>
+                <h3 className="text-base font-semibold text-[#000000]">Share and earn more points</h3>
                 <p className="text-sm text-[#000000] leading-6">
                   The more you share, the more you earn. Copy your referral link and share on social media, email, or any other platform to unlock additional points.
                 </p>
