@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  buildFacebookPostShareUrl,
-  buildLinkedInPostShareUrl,
   buildWhatsAppShareUrl,
-  openSharePopup,
+  shareReferralToFacebook,
   shareReferralToInstagramStory,
+  shareReferralToLinkedIn,
 } from "@/lib/referral-share";
 import { buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
 import "../referral/referral.css";
@@ -65,8 +64,6 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
 
   const referralLink = ensureAbsoluteReferralLink(buildReferralSignupUrl(referralCode));
   const whatsAppShareUrl = buildWhatsAppShareUrl(referralLink);
-  const facebookShareUrl = buildFacebookPostShareUrl(referralLink);
-  const linkedInShareUrl = buildLinkedInPostShareUrl(referralLink);
   const otpComplete = otp.every((digit) => digit !== "");
 
   useEffect(() => {
@@ -221,15 +218,17 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
   }
 
   async function shareToFacebook() {
-    openSharePopup(facebookShareUrl);
+    const result = await shareReferralToFacebook(referralLink, referralCode);
+    showShareFeedback(result.message);
   }
 
   async function shareToLinkedIn() {
-    openSharePopup(linkedInShareUrl);
+    const result = await shareReferralToLinkedIn(referralLink, referralCode);
+    showShareFeedback(result.message);
   }
 
   async function shareToInstagramStory() {
-    const result = await shareReferralToInstagramStory(referralLink);
+    const result = await shareReferralToInstagramStory(referralLink, referralCode);
     if (result.copied) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2500);
