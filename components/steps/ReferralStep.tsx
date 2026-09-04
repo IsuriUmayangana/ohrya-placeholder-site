@@ -218,17 +218,17 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
   }
 
   async function shareToFacebook() {
-    const result = await shareReferralToFacebook(referralLink, referralCode);
+    const result = shareReferralToFacebook(referralLink);
     showShareFeedback(result.message);
   }
 
   async function shareToLinkedIn() {
-    const result = await shareReferralToLinkedIn(referralLink, referralCode);
+    const result = shareReferralToLinkedIn(referralLink);
     showShareFeedback(result.message);
   }
 
   async function shareToInstagramStory() {
-    const result = await shareReferralToInstagramStory(referralLink, referralCode);
+    const result = await shareReferralToInstagramStory(referralLink);
     if (result.copied) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2500);
