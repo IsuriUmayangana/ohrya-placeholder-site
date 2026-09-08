@@ -220,7 +220,7 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
   }
 
   async function shareToInstagramStory() {
-    const result = await shareReferralToInstagramStory(referralLink);
+    const result = await shareReferralToInstagramStory(referralLink, referralCode);
     if (result.copied) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2500);
