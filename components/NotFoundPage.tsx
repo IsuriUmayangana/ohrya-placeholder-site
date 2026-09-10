@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { buildAbsoluteSiteUrl } from "@/lib/site-urls";
 import "./not-found.css";
+
+const HOME_URL = buildAbsoluteSiteUrl("/");
 
 export default function NotFoundPage() {
   const router = useRouter();
@@ -43,9 +45,9 @@ export default function NotFoundPage() {
           >
             Go back
           </button>
-          <Link href="/" className="not-found-page__btn not-found-page__btn--home">
+          <a href={HOME_URL} className="not-found-page__btn not-found-page__btn--home">
             Go to home
-          </Link>
+          </a>
         </div>
       </div>
     </div>
