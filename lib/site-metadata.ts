@@ -18,11 +18,27 @@ export function buildReferralShareOgImagePath(_referralCode?: string): string {
   return "/og/ohrya-referral-share.png";
 }
 
-export function buildReferralLinkMetadata(referralCode: string): Pick<Metadata, "title" | "description" | "openGraph" | "twitter"> {
+export const REFERRAL_OG_TITLE = "Join me on OHRYA";
+
+export const MESSENGER_SHARE_OG_TITLE =
+  "I'm in this with OHRYA — free to join, no donation. $2,500 prize + $2,500 to charity. Please click this text";
+
+type ReferralLinkMetadataOptions = {
+  forMessenger?: boolean;
+};
+
+export function buildReferralLinkMetadata(
+  referralCode: string,
+  options: ReferralLinkMetadataOptions = {}
+): Pick<Metadata, "title" | "description" | "openGraph" | "twitter"> {
   const code = referralCode.trim();
   const ogImage = buildReferralShareOgImagePath(code);
   const description = REFERRAL_SHARE_MESSAGE.replace(/\n/g, " ");
-  const title = "Join me on OHRYA";
+  const title = options.forMessenger ? MESSENGER_SHARE_OG_TITLE : REFERRAL_OG_TITLE;
+  const signupUrl = buildReferralSignupUrl(code);
+  const pageUrl = options.forMessenger
+    ? `${signupUrl}${signupUrl.includes("?") ? "&" : "?"}share=messenger`
+    : signupUrl;
 
   return {
     title,
@@ -33,7 +49,7 @@ export function buildReferralLinkMetadata(referralCode: string): Pick<Metadata, 
       siteName: "OHRYA",
       title,
       description,
-      url: buildReferralSignupUrl(code),
+      url: pageUrl,
       images: [
         {
           url: ogImage,

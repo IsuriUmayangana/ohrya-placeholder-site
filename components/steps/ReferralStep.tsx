@@ -223,8 +223,12 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
     showShareFeedback(result.message);
   }
 
-  function shareToMessenger() {
-    const result = shareReferralToMessenger(referralLink);
+  async function shareToMessenger() {
+    const result = await shareReferralToMessenger(referralLink);
+    if (result.copied) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
+    }
     showShareFeedback(result.message);
   }
 

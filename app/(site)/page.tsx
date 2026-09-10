@@ -2,20 +2,23 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Loading from "@/app/loading";
 import SplashLandingPage from "@/components/splash/SplashLandingPage";
+import { MESSENGER_SHARE_CHANNEL } from "@/lib/referral-share";
 import { buildReferralLinkMetadata, sharedSiteMetadata } from "@/lib/site-metadata";
 
 export const dynamic = "force-dynamic";
 
 type HomePageProps = {
-  searchParams: Promise<{ ref?: string }>;
+  searchParams: Promise<{ ref?: string; share?: string }>;
 };
 
 export async function generateMetadata({ searchParams }: HomePageProps): Promise<Metadata> {
-  const { ref } = await searchParams;
+  const { ref, share } = await searchParams;
   const code = ref?.trim();
 
   if (code) {
-    const referral = buildReferralLinkMetadata(code);
+    const referral = buildReferralLinkMetadata(code, {
+      forMessenger: share === MESSENGER_SHARE_CHANNEL,
+    });
     return {
       ...sharedSiteMetadata,
       ...referral,

@@ -6,6 +6,14 @@ export const REFERRAL_SHARE_MESSAGE =
 /** @deprecated Use REFERRAL_SHARE_MESSAGE */
 export const WHATSAPP_REFERRAL_MESSAGE = REFERRAL_SHARE_MESSAGE;
 
+export const MESSENGER_SHARE_CHANNEL = "messenger";
+
+export function buildMessengerShareLink(referralLink: string): string {
+  const url = new URL(ensureAbsoluteReferralLink(referralLink));
+  url.searchParams.set("share", MESSENGER_SHARE_CHANNEL);
+  return url.toString();
+}
+
 export function buildReferralShareText(referralLink: string): string {
   const absoluteLink = ensureAbsoluteReferralLink(referralLink);
   return `${REFERRAL_SHARE_MESSAGE}\n${absoluteLink}`;
@@ -14,6 +22,19 @@ export function buildReferralShareText(referralLink: string): string {
 export async function copyReferralShareText(referralLink: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(buildReferralShareText(referralLink));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function buildReferralShareTextForMessenger(referralLink: string): string {
+  return `${REFERRAL_SHARE_MESSAGE}\n${buildMessengerShareLink(referralLink)}`;
+}
+
+async function copyReferralShareTextForMessenger(referralLink: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(buildReferralShareTextForMessenger(referralLink));
     return true;
   } catch {
     return false;
@@ -76,7 +97,7 @@ function isMobileDevice(): boolean {
 
 /** Opens Facebook Messenger send dialog with referral link preview (OHRYA logo + message). */
 export function buildMessengerShareUrl(referralLink: string): string {
-  const link = ensureAbsoluteReferralLink(referralLink);
+  const link = buildMessengerShareLink(referralLink);
   const redirectUri =
     typeof window !== "undefined" ? window.location.origin + "/" : link;
   const params = new URLSearchParams({
@@ -89,14 +110,28 @@ export function buildMessengerShareUrl(referralLink: string): string {
   return `https://www.facebook.com/dialog/send?${params.toString()}`;
 }
 
-export function shareReferralToMessenger(referralLink: string): { message: string } {
-  const link = ensureAbsoluteReferralLink(referralLink);
+export async function shareReferralToMessenger(
+  referralLink: string
+): Promise<{ message: string; copied: boolean }> {
+  const copied = await copyReferralShareTextForMessenger(referralLink);
 
   if (isMobileDevice()) {
-    window.location.href = `fb-messenger://share/?link=${encodeURIComponent(link)}`;
-    return { message: "Opening Messenger — choose a friend to send your referral link." };
+    // Link-only share (fb-messenger://share) sends a preview card without your message text.
+    // Copy the full message + URL, then open Messenger so the user can paste it into a chat.
+    window.location.href = "fb-messenger://";
+    return {
+      copied,
+      message: copied
+        ? "Referral message copied — pick a friend in Messenger and paste to send."
+        : "Opening Messenger — paste your OHRYA referral message into a chat.",
+    };
   }
 
   openSharePopup(buildMessengerShareUrl(referralLink));
-  return { message: "Messenger opened — choose a friend to send your referral link." };
+  return {
+    copied,
+    message: copied
+      ? "Referral message copied — paste it into Messenger before sending the link preview."
+      : "Messenger opened — paste your OHRYA referral message into the chat.",
+  };
 }
