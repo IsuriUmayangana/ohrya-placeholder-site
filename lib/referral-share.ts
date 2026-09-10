@@ -32,13 +32,10 @@ export function buildWhatsAppShareUrl(referralLink: string): string {
   return `https://api.whatsapp.com/send?text=${encodeURIComponent(buildReferralShareText(referralLink))}`;
 }
 
-/** Opens Facebook share dialog as a post with message + link preview (includes OHRYA logo). */
+/** Opens Facebook share dialog with referral link preview (OHRYA logo + message from OG tags). */
 export function buildFacebookPostShareUrl(referralLink: string): string {
   const link = ensureAbsoluteReferralLink(referralLink);
-  const params = new URLSearchParams({
-    u: link,
-    quote: REFERRAL_SHARE_MESSAGE,
-  });
+  const params = new URLSearchParams({ u: link });
   return `https://www.facebook.com/sharer/sharer.php?${params.toString()}`;
 }
 
@@ -55,9 +52,17 @@ export function openSharePopup(url: string): void {
   window.open(url, "_blank", "noopener,noreferrer,width=640,height=720");
 }
 
-export function shareReferralToFacebook(referralLink: string): { message: string } {
+export async function shareReferralToFacebook(
+  referralLink: string
+): Promise<{ message: string; copied: boolean }> {
+  const copied = await copyReferralShareText(referralLink);
   openSharePopup(buildFacebookPostShareUrl(referralLink));
-  return { message: "Facebook post opened with your referral message and link." };
+  return {
+    copied,
+    message: copied
+      ? "Referral message copied — paste it into your Facebook post above the link preview."
+      : "Facebook post opened — paste your OHRYA referral message and link into the post.",
+  };
 }
 
 export function shareReferralToLinkedIn(referralLink: string): { message: string } {

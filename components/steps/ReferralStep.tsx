@@ -210,7 +210,11 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
   }
 
   async function shareToFacebook() {
-    const result = shareReferralToFacebook(referralLink);
+    const result = await shareReferralToFacebook(referralLink);
+    if (result.copied) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
+    }
     showShareFeedback(result.message);
   }
 
