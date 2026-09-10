@@ -108,6 +108,11 @@
   object-fit: contain;
 }
 
+.referral-page__social-icon--messenger {
+  box-sizing: border-box;
+  padding: 3px;
+}
+
 .referral-page__social-btn:hover {
   background: #e4eef0;
 }
@@ -312,6 +317,10 @@
   .referral-page__social-icon {
     width: 30px !important;
     height: 30px !important;
+  }
+
+  .referral-page__social-icon--messenger {
+    padding: 3px;
   }
 
   .referral-page__link-box {

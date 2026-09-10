@@ -305,7 +305,7 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
               alt=""
               width={46}
               height={46}
-              className="referral-page__social-icon"
+              className="referral-page__social-icon referral-page__social-icon--messenger"
               style={{ width: 48, height: 48 }}
               aria-hidden="true"
             />
