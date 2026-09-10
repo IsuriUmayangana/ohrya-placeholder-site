@@ -7,8 +7,8 @@ import {
   buildWhatsAppShareUrl,
   copyReferralShareText,
   shareReferralToFacebook,
-  shareReferralToInstagramStory,
   shareReferralToLinkedIn,
+  shareReferralToMessenger,
 } from "@/lib/referral-share";
 import { buildReferralSignupUrl, ensureAbsoluteReferralLink } from "@/lib/site-urls";
 import "../referral/referral.css";
@@ -219,12 +219,8 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
     showShareFeedback(result.message);
   }
 
-  async function shareToInstagramStory() {
-    const result = await shareReferralToInstagramStory(referralLink, referralCode);
-    if (result.copied) {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2500);
-    }
+  function shareToMessenger() {
+    const result = shareReferralToMessenger(referralLink);
     showShareFeedback(result.message);
   }
 
@@ -277,11 +273,11 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
           <button
             type="button"
             className="referral-page__social-btn"
-            onClick={shareToInstagramStory}
-            aria-label="Share to Instagram story"
+            onClick={shareToFacebook}
+            aria-label="Share as Facebook post"
           >
             <Image
-              src="/referral-share/instagram_icon.svg"
+              src="/referral-share/facebook_icon.svg"
               alt=""
               width={46}
               height={46}
@@ -293,11 +289,11 @@ export default function ReferralStep({ referralCode, email, showLogo = false }: 
           <button
             type="button"
             className="referral-page__social-btn"
-            onClick={shareToFacebook}
-            aria-label="Share as Facebook post"
+            onClick={shareToMessenger}
+            aria-label="Share on Messenger"
           >
             <Image
-              src="/referral-share/facebook_icon.svg"
+              src="/referral-share/messenger_icon.svg"
               alt=""
               width={46}
               height={46}
