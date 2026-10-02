@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
+import { DEFAULT_CAMPAIGN_NAME } from "@/lib/campaign-defaults";
 import DateFilter, { type DateRange } from "./DateFilter";
 import FiltersModal, { type ActiveFilter } from "./FiltersModal";
 
@@ -100,7 +101,7 @@ function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
     rows.push({
       name,
       email,
-      campaign: cellValue(raw, "Campaign name", "Campaign"),
+      campaign: cellValue(raw, "Campaign name", "Campaign") || DEFAULT_CAMPAIGN_NAME,
       willGive: cellValue(raw, "Will Give?", "Give?"),
       donationAmount: cellValue(raw, "Donation Amount", "Donation"),
       willVote: cellValue(raw, "Will Vote?", "Vote?"),

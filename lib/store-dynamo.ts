@@ -10,6 +10,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { normalizeCampaignName } from "@/lib/campaign-defaults";
 import { applyImportRowUpdates } from "@/lib/import-merge";
 
 function getDoc() {
@@ -82,7 +83,8 @@ function toPublic(r: SurveyResponse): PublicUserStats {
 }
 
 function itemToResponse(item: Record<string, unknown>): SurveyResponse {
-  return item as unknown as SurveyResponse;
+  const response = item as unknown as SurveyResponse;
+  return { ...response, campaign: normalizeCampaignName(response.campaign) };
 }
 
 export async function dynamoSaveResponse(
@@ -144,6 +146,7 @@ export async function dynamoSaveResponse(
 
   const response: SurveyResponse = {
     ...data,
+    campaign: normalizeCampaignName(data.campaign),
     surveyScore: SURVEY_SCORE,
     id: Math.random().toString(36).slice(2, 10),
     referralCode,
@@ -364,7 +367,7 @@ export async function dynamoImportResponses(
       referralCode,
       emailSlug: `${helpers.emailToSlug(email)}-${referralCode.toLowerCase()}`,
       referredBy: "",
-      campaign: rows[i].campaign || "",
+      campaign: normalizeCampaignName(rows[i].campaign),
       willGive: rows[i].willGive || "Yes",
       donationAmount: rows[i].donationAmount || "$25",
       willVote: rows[i].willVote || "Yes",

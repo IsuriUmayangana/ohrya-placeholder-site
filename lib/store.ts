@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { normalizeCampaignName } from "@/lib/campaign-defaults";
 import { applyImportRowUpdates } from "@/lib/import-merge";
 
 export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
@@ -143,6 +144,7 @@ async function fileSaveResponse(
 
   const response: SurveyResponse = {
     ...data,
+    campaign: normalizeCampaignName(data.campaign),
     surveyScore: SURVEY_SCORE,
     id: Math.random().toString(36).slice(2, 10),
     referralCode,
@@ -193,7 +195,7 @@ function buildImportedResponse(row: ImportResponseRow): SurveyResponse {
     referralCode,
     emailSlug: `${emailToSlug(email)}-${referralCode.toLowerCase()}`,
     referredBy: "",
-    campaign: row.campaign || "",
+    campaign: normalizeCampaignName(row.campaign),
     willGive: row.willGive || "Yes",
     donationAmount: row.donationAmount || "$25",
     willVote: row.willVote || "Yes",
@@ -306,15 +308,20 @@ export async function getStoredNameByEmail(email: string): Promise<string> {
   return r?.name?.trim() ?? "";
 }
 
-export async function getAllResponses(): Promise<SurveyResponse[]> {
-  if (useDynamo) return (await loadDynamo()).dynamoGetAllResponses();
-  return readDB();
+function withDefaultCampaign(response: SurveyResponse): SurveyResponse {
+  const campaign = normalizeCampaignName(response.campaign);
+  return campaign === response.campaign ? response : { ...response, campaign };
 }
 
-export async function getLeaderboard(): Promise<(PublicUserStats & { name: string })[]> {
+export async function getAllResponses(): Promise<SurveyResponse[]> {
   const responses = useDynamo
     ? await (await loadDynamo()).dynamoGetAllResponses()
     : readDB();
+  return responses.map(withDefaultCampaign);
+}
+
+export async function getLeaderboard(): Promise<(PublicUserStats & { name: string })[]> {
+  const responses = await getAllResponses();
 
   return responses
     .map((r) => {

@@ -1,3 +1,4 @@
+import { DEFAULT_CAMPAIGN_NAME } from "@/lib/campaign-defaults";
 import type { SurveyResponse } from "@/lib/survey-types";
 
 export type ImportMergeRow = {
@@ -24,6 +25,11 @@ export function applyImportRowUpdates(
   const name = row.name?.trim();
   if (name && existing.name !== name) {
     existing.name = name;
+    changed = true;
+  }
+
+  if (!existing.campaign?.trim()) {
+    existing.campaign = DEFAULT_CAMPAIGN_NAME;
     changed = true;
   }
 
