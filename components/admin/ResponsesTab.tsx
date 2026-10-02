@@ -22,6 +22,15 @@ const CAMPAIGN_COLORS: Record<string, string> = {
 
 const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Sign Up", "Referral", "Total"] as const;
 
+const EXPORT_HEADERS = ["Email address", "First Name", "Last Name", "Campaign name"] as const;
+
+function splitFullName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { firstName: "", lastName: "" };
+  if (parts.length === 1) return { firstName: parts[0], lastName: "" };
+  return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
+}
+
 type ImportRow = {
   name?: string;
   email: string;
@@ -75,17 +84,23 @@ function cellValue(raw: Record<string, unknown>, ...headers: string[]): string {
 function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
   const rows: ImportRow[] = [];
   for (const raw of rawRows) {
-    const email = cellValue(raw, "Email");
+    const email = cellValue(raw, "Email address", "Email");
     if (!email) continue;
+
+    const firstName = cellValue(raw, "First Name", "FirstName", "first_name");
+    const lastName = cellValue(raw, "Last Name", "LastName", "last_name");
+    const nameFromParts = [firstName, lastName].filter(Boolean).join(" ");
+    const name =
+      nameFromParts || cellValue(raw, "Name", "Full Name", "full_name", "Full_Name");
 
     const friendsReferred = cellValue(raw, "Friends Referred", "Referral Count");
     const deviceRaw = cellValue(raw, "Device");
     const device = VALID_DEVICES.has(deviceRaw) ? deviceRaw : "Other";
 
     rows.push({
-      name: cellValue(raw, "Name", "Full Name", "full_name", "Full_Name"),
+      name,
       email,
-      campaign: cellValue(raw, "Campaign"),
+      campaign: cellValue(raw, "Campaign name", "Campaign"),
       willGive: cellValue(raw, "Will Give?", "Give?"),
       donationAmount: cellValue(raw, "Donation Amount", "Donation"),
       willVote: cellValue(raw, "Will Vote?", "Vote?"),
@@ -182,41 +197,35 @@ export default function ResponsesTab() {
 
   const columnCount = TABLE_HEADERS.length;
 
-  function buildRows() {
-    return filtered.map((r, i) => {
-      const row: Record<string, string | number> = {
-        "#": i + 1,
-        Name: r.name || "—",
-        Email: r.email,
-        Date: new Date(r.submittedAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-        Campaign: r.campaign,
+  function buildExportRows(): Record<(typeof EXPORT_HEADERS)[number], string>[] {
+    return filtered.map((r) => {
+      const { firstName, lastName } = splitFullName(r.name || "");
+      return {
+        "Email address": r.email,
+        "First Name": firstName,
+        "Last Name": lastName,
+        "Campaign name": r.campaign,
       };
-      row.Device = r.device;
-      row["Participation Score"] = r.surveyScore;
-      row["Referral Bonus"] = r.referralScore;
-      row["Friends Referred"] = r.referralCount;
-      row["Total Score"] = r.totalScore;
-      return row;
     });
   }
 
   function downloadXlsx() {
-    const rows = buildRows();
-    const ws = XLSX.utils.json_to_sheet(rows);
-    ws["!cols"] = [{ wch: 4 }, { wch: 32 }, { wch: 14 }, { wch: 12 }, { wch: 11 }, { wch: 16 }, { wch: 11 }, { wch: 11 }, { wch: 20 }, { wch: 10 }, { wch: 13 }, { wch: 14 }, { wch: 16 }, { wch: 12 }, { wch: 40 }];
+    const rows = buildExportRows();
+    const ws = XLSX.utils.json_to_sheet(rows, { header: [...EXPORT_HEADERS] });
+    ws["!cols"] = [{ wch: 36 }, { wch: 18 }, { wch: 18 }, { wch: 16 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "OHRYA Responses");
     XLSX.writeFile(wb, `ohrya-responses-${new Date().toISOString().slice(0, 10)}.xlsx`);
   }
 
   function downloadCsv() {
-    const rows = buildRows();
-    const headers = Object.keys(rows[0] ?? {});
+    const rows = buildExportRows();
+    const headers = [...EXPORT_HEADERS];
     const escape = (v: unknown) => {
       const s = String(v ?? "");
       return s.includes(",") || s.includes('"') || s.includes("\n") ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    const csv = [headers.map(escape).join(","), ...rows.map((r) => headers.map((h) => escape((r as Record<string, unknown>)[h])).join(","))].join("\n");
+    const csv = [headers.map(escape).join(","), ...rows.map((r) => headers.map((h) => escape(r[h])).join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
