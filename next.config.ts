@@ -1,8 +1,18 @@
 import type { NextConfig } from "next";
+import { SECURITY_RESPONSE_HEADERS } from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Load AWS SDK from node_modules at runtime (avoids Turbopack bundle resolution issues).
   serverExternalPackages: ["@aws-sdk/client-dynamodb", "@aws-sdk/lib-dynamodb"],
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [...SECURITY_RESPONSE_HEADERS],
+      },
+    ];
+  },
   async redirects() {
     return [
       {
