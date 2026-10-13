@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAdminSession } from "@/lib/require-admin-session";
 import { getAllResponses, calcReferralScore } from "@/lib/store";
 import { SURVEY_SCORE } from "@/lib/survey-types";
 
@@ -11,6 +12,9 @@ function formatTime(seconds: number): string {
 }
 
 export async function GET(req: NextRequest) {
+  const unauthorized = await requireAdminSession();
+  if (unauthorized) return unauthorized;
+
   const { searchParams } = req.nextUrl;
   const from = searchParams.get("from");   // "YYYY-MM-DD"
   const to = searchParams.get("to");       // "YYYY-MM-DD"

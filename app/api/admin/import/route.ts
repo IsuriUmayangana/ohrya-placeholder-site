@@ -1,16 +1,12 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { getAdminSessionSecret } from "@/lib/admin-auth";
+import { requireAdminSession } from "@/lib/require-admin-session";
 import { importResponses, type ImportResponseRow } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const session = (await cookies()).get("admin_session")?.value;
-  const secret = getAdminSessionSecret();
-  if (!secret || session !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const unauthorized = await requireAdminSession();
+  if (unauthorized) return unauthorized;
 
   let body: unknown;
   try {

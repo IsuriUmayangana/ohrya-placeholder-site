@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { getAdminSessionSecret } from "@/lib/admin-auth";
+import { requireAdminSession } from "@/lib/require-admin-session";
 import { sendImportUserEmail } from "@/lib/email";
 import { buildImportEmailDashboardUrl } from "@/lib/import-user-email";
 import { getStoredNameByEmail, getUserByEmail } from "@/lib/store";
@@ -18,11 +17,8 @@ function dashboardAccessUrl(email: string): string {
 }
 
 export async function POST(req: Request) {
-  const session = (await cookies()).get("admin_session")?.value;
-  const secret = getAdminSessionSecret();
-  if (!secret || session !== secret) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const unauthorized = await requireAdminSession();
+  if (unauthorized) return unauthorized;
 
   let body: unknown;
   try {

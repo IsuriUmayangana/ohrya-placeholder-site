@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendWelcomeEmail } from "@/lib/email";
+import { requireAdminSession } from "@/lib/require-admin-session";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
 import type { SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
@@ -57,6 +58,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
+  const unauthorized = await requireAdminSession();
+  if (unauthorized) return unauthorized;
+
   const responses = await getAllResponses();
   const stats = await getStats();
   return NextResponse.json({ responses, stats });
