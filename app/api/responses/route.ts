@@ -4,6 +4,7 @@ import { requireAdminSession } from "@/lib/require-admin-session";
 import { saveResponse, getAllResponses, getStats } from "@/lib/store";
 import type { SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { isRecaptchaEnforced, verifyRecaptchaToken } from "@/lib/verify-recaptcha";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +33,13 @@ async function sendSignupWelcomeEmail(response: SurveyResponse): Promise<void> {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    const recaptcha = await verifyRecaptchaToken(body.recaptchaToken, "signup");
+    if (!recaptcha.ok) {
+      const status = isRecaptchaEnforced() ? 403 : 500;
+      return NextResponse.json({ success: false, error: recaptcha.error }, { status });
+    }
+
     const ua = req.headers.get("user-agent") || "";
     const response = await saveResponse({
       sessionId: body.sessionId || "anon",

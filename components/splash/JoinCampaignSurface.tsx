@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, type ReactNode } from "react";
+import { getRecaptchaSiteKey } from "@/lib/recaptcha-client";
 
 export type CampaignId = "Children" | "Pets" | "Veterans";
 
@@ -135,6 +136,22 @@ export default function JoinCampaignSurface({
         We never sell your data. No purchase or donation required.
         <br />
         Qualified referrals are tracked on the leaderboard.
+        {getRecaptchaSiteKey() ? (
+          <>
+            <br />
+            <span className="join-recaptcha-notice">
+              Protected by reCAPTCHA. Google{" "}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>{" "}
+              and{" "}
+              <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">
+                Terms
+              </a>{" "}
+              apply.
+            </span>
+          </>
+        ) : null}
       </p>
     </div>
   );

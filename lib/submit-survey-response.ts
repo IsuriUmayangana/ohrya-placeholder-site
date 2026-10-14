@@ -1,3 +1,4 @@
+import { executeRecaptcha } from "@/lib/recaptcha-client";
 import { formReferralUrl } from "@/lib/site-urls";
 
 export const SKIPPED_DEFAULT_ANSWERS = {
@@ -27,6 +28,13 @@ export async function checkEmailAlreadyRegistered(email: string): Promise<boolea
 }
 
 export async function submitSurveyResponse(params: SubmitSurveyParams): Promise<SubmitSurveyResult> {
+  let recaptchaToken: string | undefined;
+  try {
+    recaptchaToken = await executeRecaptcha("signup");
+  } catch {
+    throw new Error("Security check failed to load. Please refresh the page and try again.");
+  }
+
   const res = await fetch("/api/responses", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -39,6 +47,7 @@ export async function submitSurveyResponse(params: SubmitSurveyParams): Promise<
       ...SKIPPED_DEFAULT_ANSWERS,
       surveyScore: 10,
       startedAt: params.startedAt || new Date().toISOString(),
+      ...(recaptchaToken ? { recaptchaToken } : {}),
     }),
   });
   const data = await res.json();
