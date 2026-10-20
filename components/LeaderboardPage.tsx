@@ -5,6 +5,7 @@ import Image from "next/image";
 import { PodiumCard } from "./leaderboard/PodiumCard";
 import { LeaderboardRow } from "./leaderboard/LeaderboardRow";
 import type { LeaderboardEntry } from "./leaderboard/Types";
+import { getPaginationItems, type PaginationItem } from "@/lib/pagination";
 
 const PAGE_SIZE = 10;
 
@@ -56,6 +57,46 @@ export default function LeaderboardPage() {
     setPage(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
+
+  const paginationItems = getPaginationItems(page, totalPages);
+  const mobilePaginationItems = getPaginationItems(page, totalPages, "narrow");
+
+  function renderPageButtons(items: PaginationItem[], size: "mobile" | "desktop") {
+    const pageBtnClass =
+      size === "mobile"
+        ? "h-7 min-w-7 text-[11px]"
+        : "h-[34px] min-w-[34px] text-[12px]";
+    const ellipsisClass =
+      size === "mobile"
+        ? "flex h-7 min-w-5 shrink-0 items-center justify-center text-[11px] text-[#a9d0da]"
+        : "flex h-[34px] min-w-[34px] items-center justify-center text-[12px] text-[#a9d0da]";
+
+    return items.map((item, index) =>
+      item === "ellipsis" ? (
+        <span key={`ellipsis-${size}-${index}`} className={ellipsisClass} aria-hidden="true">
+          …
+        </span>
+      ) : (
+        <button
+          key={`${size}-${item}`}
+          type="button"
+          onClick={() => goToPage(item)}
+          aria-current={item === page ? "page" : undefined}
+          className={`${pageBtnClass} shrink-0 cursor-pointer rounded-xl border transition-colors ${
+            item === page
+              ? "border-[#4a8798] bg-[#4a8798] font-bold text-white"
+              : "border-[#a9d0da] bg-[#a9d0da] text-[#04374B] hover:bg-[#a9d0da]/90 hover:border-[#a9d0da]/90 "
+          }`}
+        >
+          {item}
+        </button>
+      ),
+    );
+  }
+
+  const prevButtonClass =
+    "flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-xl border border-[#a9d0da] bg-[#a9d0da] px-2 py-1.5 text-[11px] text-[#04374B] transition-colors hover:bg-[#a9d0da]/90 hover:border-[#a9d0da]/90 disabled:cursor-not-allowed disabled:opacity-30 sm:gap-1.5 sm:px-3.5 sm:py-2 sm:text-[12px]";
+  const nextButtonClass = prevButtonClass;
 
   return (
     <div className="leaderboard-background min-h-dvh">
@@ -129,46 +170,36 @@ export default function LeaderboardPage() {
               ))}
             </div>
 
-            {/* PAGINATION */}
             {totalPages > 1 && (
-              <div className="mt-10 flex flex-col gap-4">
+              <div className="mt-10 flex w-full max-w-full flex-nowrap items-center justify-center gap-0.5 sm:gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => goToPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  aria-label="Previous page"
+                  className={prevButtonClass}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" className="h-3.5 w-3.5 sm:h-4 sm:w-4"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 480 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-370.7 0 105.4-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+                  <span className="hidden sm:inline">Prev</span>
+                </button>
 
-                <div className="flex flex-wrap items-center justify-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => goToPage(Math.max(1, page - 1))}
-                    disabled={page === 1}
-                    className="cursor-pointer flex items-center gap-2 rounded-xl border border-[#a9d0da] bg-[#a9d0da] px-3.5 py-2 text-[12px] text-[#04374B] transition-colors hover:bg-[#a9d0da]/90 hover:border-[#a9d0da]/90 disabled:cursor-not-allowed disabled:opacity-30"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" className="w-4 h-4"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 480 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-370.7 0 105.4-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-                     Prev
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      onClick={() => goToPage(p)}
-                      className={`min-w-[34px] h-[34px] cursor-pointer rounded-xl border text-[12px] transition-colors ${
-                        p === page
-                          ? "border-[#4a8798] bg-[#4a8798] font-bold text-white"
-                          : "border-[#a9d0da] bg-[#a9d0da] text-[#04374B] hover:bg-[#a9d0da]/90 hover:border-[#a9d0da]/90 "
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={() => goToPage(Math.min(totalPages, page + 1))}
-                    disabled={page === totalPages}
-                    className="cursor-pointer flex items-center gap-2 rounded-xl border border-[#a9d0da] bg-[#a9d0da] px-3.5 py-2 text-[12px] text-[#04374B] transition-colors hover:bg-[#a9d0da]/90 hover:border-[#a9d0da]/90 disabled:cursor-not-allowed disabled:opacity-30"
-                  >
-                    Next
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" strokeWidth="2" className="w-4 h-4"><path fill="#04374B" d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
-                  </button>
+                <div className="flex flex-nowrap items-center gap-0.5 sm:hidden">
+                  {renderPageButtons(mobilePaginationItems, "mobile")}
                 </div>
+                <div className="hidden flex-nowrap items-center gap-1.5 sm:flex">
+                  {renderPageButtons(paginationItems, "desktop")}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => goToPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  aria-label="Next page"
+                  className={nextButtonClass}
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" strokeWidth="2" className="h-3.5 w-3.5 sm:h-4 sm:w-4"><path fill="#04374B" d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
+                </button>
               </div>
             )}
           </>

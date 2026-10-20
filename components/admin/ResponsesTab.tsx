@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import { DEFAULT_CAMPAIGN_NAME } from "@/lib/campaign-defaults";
 import DateFilter, { type DateRange } from "./DateFilter";
 import FiltersModal, { type ActiveFilter } from "./FiltersModal";
+import { getPaginationItems, type PaginationItem } from "@/lib/pagination";
 
 interface Response {
   id: string; name: string; email: string; campaign: string; willGive: string;
@@ -195,6 +196,47 @@ export default function ResponsesTab() {
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE);
   const paginated  = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const paginationItems = useMemo(
+    () => getPaginationItems(page, totalPages),
+    [page, totalPages]
+  );
+  const mobilePaginationItems = useMemo(
+    () => getPaginationItems(page, totalPages, "narrow"),
+    [page, totalPages]
+  );
+
+  function renderPageButtons(items: PaginationItem[], size: "mobile" | "desktop") {
+    const pageBtnClass =
+      size === "mobile"
+        ? "h-7 min-w-7 text-[11px]"
+        : "h-[34px] min-w-[34px] text-[12px]";
+    const ellipsisClass =
+      size === "mobile"
+        ? "flex h-7 min-w-5 shrink-0 items-center justify-center text-[11px] text-slate-400"
+        : "flex h-[34px] min-w-[34px] shrink-0 items-center justify-center text-[12px] text-slate-400";
+
+    return items.map((item, index) =>
+      item === "ellipsis" ? (
+        <span key={`ellipsis-${size}-${index}`} className={ellipsisClass} aria-hidden="true">
+          …
+        </span>
+      ) : (
+        <button
+          key={`${size}-${item}`}
+          type="button"
+          onClick={() => setPage(item)}
+          aria-current={item === page ? "page" : undefined}
+          className={`${pageBtnClass} shrink-0 rounded-xl border transition-colors ${
+            item === page
+              ? "border-[#4a8798] bg-[#4a8798] font-bold text-white"
+              : "cursor-pointer border-[#a9d0da]/50 bg-white text-[#a9d0da] hover:border-[#a9d0da] hover:bg-[#a9d0da]/50 hover:text-[#4a8798]"
+          }`}
+        >
+          {item}
+        </button>
+      ),
+    );
+  }
 
   const columnCount = TABLE_HEADERS.length;
 
@@ -650,47 +692,40 @@ export default function ResponsesTab() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-4 py-3.5 border-t border-slate-100 bg-slate-50/60">
+          <div className="flex flex-col items-center gap-3 border-t border-slate-100 bg-slate-50/60 px-4 py-3.5 sm:flex-row sm:justify-between">
             <p className="text-[12px] text-slate-400">
               Page <span className="font-medium text-[#2d2d2d]">{page}</span> of{" "}
               <span className="font-medium text-[#4a8798]">{totalPages}</span>
             </p>
 
-            {/* Pagination buttons */}
-            <div className="flex items-center gap-1.5 flex-wrap justify-center">
-              {/* Previous button */}
+            <div className="flex w-full max-w-full flex-nowrap items-center justify-center gap-0.5 sm:w-auto sm:gap-1.5">
               <button
+                type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3.5 py-2 text-[12px] rounded-xl flex items-center gap-2 bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                aria-label="Previous page"
+                className="flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30 sm:gap-2 sm:px-3.5 sm:py-2 sm:text-[12px]"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" className="w-3 h-3"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 480 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-370.7 0 105.4-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
-                Prev
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" className="h-3 w-3"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 288 480 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-370.7 0 105.4-105.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+                <span className="hidden sm:inline">Prev</span>
               </button>
 
-              {/* Page buttons */}
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={`min-w-[34px] h-[34px] text-[12px] rounded-xl border transition-colors ${
-                    p === page
-                      ? "bg-[#4a8798] text-white border-[#4a8798] font-bold"
-                      : "bg-white text-[#a9d0da] border-[#a9d0da]/50 hover:border-[#a9d0da] hover:bg-[#a9d0da]/50 hover:text-[#4a8798] cursor-pointer"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
+              <div className="flex flex-nowrap items-center gap-0.5 sm:hidden">
+                {renderPageButtons(mobilePaginationItems, "mobile")}
+              </div>
+              <div className="hidden flex-nowrap items-center gap-1.5 sm:flex">
+                {renderPageButtons(paginationItems, "desktop")}
+              </div>
 
-              {/* Next button */}
               <button
+                type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3.5 py-2 text-[12px] rounded-xl flex items-center gap-2 bg-white border border-slate-200 text-[#04374B] hover:border-slate-300 hover:bg-slate-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                aria-label="Next page"
+                className="flex shrink-0 cursor-pointer items-center justify-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-1.5 text-[11px] text-[#04374B] transition-colors hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-30 sm:gap-2 sm:px-3.5 sm:py-2 sm:text-[12px]"
               >
-                Next
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#04374B" className="w-3 h-3"><path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
+                <span className="hidden sm:inline">Next</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#04374B" className="h-3 w-3"><path d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l370.7 0-105.4 105.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg>
               </button>
             </div>
           </div>
