@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendWelcomeEmail } from "@/lib/email";
 import { requireAdminSession } from "@/lib/require-admin-session";
-import { saveResponse, getAllResponses, getStats } from "@/lib/store";
+import { markWelcomeEmailSent, saveResponse, getAllResponses, getStats } from "@/lib/store";
 import type { SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
 import { isRecaptchaEnforced, verifyRecaptchaToken } from "@/lib/verify-recaptcha";
@@ -24,6 +24,7 @@ async function sendSignupWelcomeEmail(response: SurveyResponse): Promise<void> {
       email: response.email,
       campaign: response.campaign,
     });
+    await markWelcomeEmailSent(response.email);
   } catch (err) {
     // Sign-up still succeeds if email fails — log for Amplify/server logs.
     console.error("[api/responses] welcome email failed", response.email, err);

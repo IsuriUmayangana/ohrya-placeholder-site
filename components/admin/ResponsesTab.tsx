@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
 import { DEFAULT_CAMPAIGN_NAME } from "@/lib/campaign-defaults";
+import { validateImportEmailForRow } from "@/lib/import-email-validation";
 import DateFilter, { type DateRange } from "./DateFilter";
 import FiltersModal, { type ActiveFilter } from "./FiltersModal";
 import { getPaginationItems, type PaginationItem } from "@/lib/pagination";
@@ -50,14 +51,23 @@ type ImportResult = {
   imported: number;
   updated: number;
   skipped: number;
+  invalid: number;
   errors: string[];
+};
+
+type ParseImportResult = {
+  rows: ImportRow[];
+  issues: string[];
 };
 
 type SendEmailResult = {
   sent: number;
   failed: number;
+  skippedAlreadySent: number;
   errors: string[];
 };
+
+const SEND_EMAIL_CHUNK_SIZE = 40;
 
 const VALID_DEVICES = new Set(["Desktop", "Mobile", "Tablet", "Other"]);
 
@@ -83,11 +93,36 @@ function cellValue(raw: Record<string, unknown>, ...headers: string[]): string {
   return "";
 }
 
-function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
+function parseImportRows(rawRows: Record<string, unknown>[]): ParseImportResult {
   const rows: ImportRow[] = [];
-  for (const raw of rawRows) {
-    const email = cellValue(raw, "Email address", "Email");
-    if (!email) continue;
+  const issues: string[] = [];
+  const seenEmails = new Map<string, number>();
+
+  for (let i = 0; i < rawRows.length; i++) {
+    const raw = rawRows[i];
+    const spreadsheetRow = i + 2;
+    const emailRaw = cellValue(raw, "Email address", "Email");
+
+    if (!emailRaw) {
+      issues.push(`Row ${spreadsheetRow}: missing email (row skipped)`);
+      continue;
+    }
+
+    const validated = validateImportEmailForRow(emailRaw, spreadsheetRow);
+    if (!validated.ok) {
+      issues.push(`${validated.issue} (row skipped)`);
+      continue;
+    }
+
+    const emailLower = validated.email.toLowerCase();
+    const firstSeenRow = seenEmails.get(emailLower);
+    if (firstSeenRow != null) {
+      issues.push(
+        `Row ${spreadsheetRow}: duplicate email "${validated.email}" (same as row ${firstSeenRow}) (row skipped)`
+      );
+      continue;
+    }
+    seenEmails.set(emailLower, spreadsheetRow);
 
     const firstName = cellValue(raw, "First Name", "FirstName", "first_name");
     const lastName = cellValue(raw, "Last Name", "LastName", "last_name");
@@ -101,7 +136,7 @@ function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
 
     rows.push({
       name,
-      email,
+      email: validated.email,
       campaign: cellValue(raw, "Campaign name", "Campaign") || DEFAULT_CAMPAIGN_NAME,
       willGive: cellValue(raw, "Will Give?", "Give?"),
       donationAmount: cellValue(raw, "Donation Amount", "Donation"),
@@ -112,10 +147,41 @@ function parseImportRows(rawRows: Record<string, unknown>[]): ImportRow[] {
       referralCount: friendsReferred ? Math.max(0, Number.parseInt(friendsReferred, 10) || 0) : 0,
     });
   }
-  return rows;
+  return { rows, issues };
 }
 
-function parseImportFile(file: File): Promise<ImportRow[]> {
+async function applyDomainVerification(
+  rows: ImportRow[],
+  issues: string[],
+): Promise<{ rows: ImportRow[]; issues: string[] }> {
+  if (rows.length === 0) return { rows, issues };
+
+  const res = await fetch("/api/admin/verify-email-domains", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ emails: rows.map((r) => r.email) }),
+  });
+  if (!res.ok) return { rows, issues };
+
+  const data = (await res.json()) as { issues?: Array<{ email: string; error: string }> };
+  const bad = new Map(
+    (data.issues ?? []).map((entry) => [entry.email.toLowerCase(), entry.error] as const)
+  );
+  if (bad.size === 0) return { rows, issues };
+
+  const nextIssues = [...issues];
+  const nextRows = rows.filter((row) => {
+    const err = bad.get(row.email.toLowerCase());
+    if (err) {
+      nextIssues.push(`${row.email}: ${err} (row skipped)`);
+      return false;
+    }
+    return true;
+  });
+  return { rows: nextRows, issues: nextIssues };
+}
+
+function parseImportFile(file: File): Promise<ParseImportResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -152,6 +218,9 @@ export default function ResponsesTab() {
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [sendingEmails, setSendingEmails] = useState(false);
   const [sendEmailResult, setSendEmailResult] = useState<SendEmailResult | null>(null);
+  const [importValidationIssues, setImportValidationIssues] = useState<string[]>([]);
+  const [importDomainChecking, setImportDomainChecking] = useState(false);
+  const [forceResendEmails, setForceResendEmails] = useState(false);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch responses (date-filtered at API level)
@@ -289,6 +358,9 @@ export default function ResponsesTab() {
     setImporting(false);
     setSendEmailResult(null);
     setSendingEmails(false);
+    setImportValidationIssues([]);
+    setImportDomainChecking(false);
+    setForceResendEmails(false);
     if (importInputRef.current) importInputRef.current.value = "";
   }
 
@@ -310,16 +382,25 @@ export default function ResponsesTab() {
     setImportFileName(file.name);
 
     try {
-      const rows = await parseImportFile(file);
+      const parsed = await parseImportFile(file);
+      setImportDomainChecking(true);
+      const { rows, issues } = await applyDomainVerification(parsed.rows, parsed.issues);
+      setImportValidationIssues(issues);
       if (rows.length === 0) {
         setImportRows([]);
-        setImportError("No valid rows found. Each row needs at least an Email column.");
+        setImportError(
+          issues.length > 0
+            ? "No valid rows to import. Fix the issues below or upload a corrected file."
+            : "No valid rows found. Each row needs at least an Email column."
+        );
         return;
       }
       setImportRows(rows);
     } catch (err) {
       setImportRows([]);
       setImportError(err instanceof Error ? err.message : "Failed to parse file.");
+    } finally {
+      setImportDomainChecking(false);
     }
   }
 
@@ -351,8 +432,11 @@ export default function ResponsesTab() {
   async function runSendEmails() {
     if (importRows.length === 0 || sendingEmails) return;
 
+    const skipNote = forceResendEmails
+      ? "Everyone in this file will receive another email."
+      : "Users who already received a welcome email will be skipped.";
     const confirmed = window.confirm(
-      `Send email to ${importRows.length} user${importRows.length !== 1 ? "s" : ""} in this file?`
+      `Send email to ${importRows.length} user${importRows.length !== 1 ? "s" : ""} in this file?\n\n${skipNote}`
     );
     if (!confirmed) return;
 
@@ -360,24 +444,35 @@ export default function ResponsesTab() {
     setImportError("");
     setSendEmailResult(null);
 
+    const aggregate: SendEmailResult = { sent: 0, failed: 0, skippedAlreadySent: 0, errors: [] };
+
     try {
-      const res = await fetch("/api/admin/send-emails", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          recipients: importRows.map((row) => ({
-            email: row.email,
-            name: row.name,
-            campaign: row.campaign,
-          })),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setImportError(data.error || "Failed to send emails.");
-        return;
+      for (let offset = 0; offset < importRows.length; offset += SEND_EMAIL_CHUNK_SIZE) {
+        const chunk = importRows.slice(offset, offset + SEND_EMAIL_CHUNK_SIZE);
+        const res = await fetch("/api/admin/send-emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            forceResend: forceResendEmails,
+            recipients: chunk.map((row) => ({
+              email: row.email,
+              name: row.name,
+              campaign: row.campaign,
+            })),
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          setImportError(data.error || "Failed to send emails.");
+          return;
+        }
+        const part = data as SendEmailResult;
+        aggregate.sent += part.sent ?? 0;
+        aggregate.failed += part.failed ?? 0;
+        aggregate.skippedAlreadySent += part.skippedAlreadySent ?? 0;
+        aggregate.errors.push(...(part.errors ?? []));
       }
-      setSendEmailResult(data as SendEmailResult);
+      setSendEmailResult(aggregate);
     } catch {
       setImportError("Failed to send emails. Please try again.");
     } finally {
@@ -774,6 +869,27 @@ export default function ResponsesTab() {
               />
             </label>
 
+            {importValidationIssues.length > 0 && (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 mb-4 text-sm text-[#5c4a00]">
+                <p className="m-0 mb-2 font-semibold">
+                  {importValidationIssues.length} row{importValidationIssues.length !== 1 ? "s" : ""} failed validation
+                  {importRows.length > 0 ? ` — ${importRows.length} valid row${importRows.length !== 1 ? "s" : ""} ready` : ""}
+                </p>
+                <ul className="m-0 pl-4 list-disc space-y-1">
+                  {importValidationIssues.slice(0, 8).map((issue) => (
+                    <li key={issue}>{issue}</li>
+                  ))}
+                </ul>
+                {importValidationIssues.length > 8 && (
+                  <p className="m-0 mt-2">(+{importValidationIssues.length - 8} more)</p>
+                )}
+              </div>
+            )}
+
+            {importDomainChecking && (
+              <p className="text-sm text-[#555] mb-4">Checking email domains (MX records)…</p>
+            )}
+
             {importRows.length > 0 && !importResult && (
               <p className="text-sm text-[#2d2d2d] mb-4">
                 Ready to import <strong>{importRows.length}</strong> response{importRows.length !== 1 ? "s" : ""}.
@@ -785,6 +901,9 @@ export default function ResponsesTab() {
                 <p className="m-0 mb-1"><strong>{importResult.imported}</strong> imported</p>
                 <p className="m-0 mb-1"><strong>{importResult.updated}</strong> updated</p>
                 <p className="m-0 mb-1"><strong>{importResult.skipped}</strong> skipped (no changes)</p>
+                {(importResult.invalid ?? 0) > 0 && (
+                  <p className="m-0 mb-1"><strong>{importResult.invalid}</strong> invalid (skipped)</p>
+                )}
                 {importResult.errors.length > 0 && (
                   <p className="m-0 mt-2 text-[#a04444]">
                     {importResult.errors.slice(0, 3).join(" ")}
@@ -794,10 +913,29 @@ export default function ResponsesTab() {
               </div>
             )}
 
+            {importRows.length > 0 && (
+              <label className="flex items-start gap-2 text-sm text-[#555] mb-4 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={forceResendEmails}
+                  onChange={(e) => setForceResendEmails(e.target.checked)}
+                  className="mt-0.5"
+                />
+                <span>
+                  Resend even if this user already received a welcome email (default: skip duplicates)
+                </span>
+              </label>
+            )}
+
             {sendEmailResult && (
               <div className="rounded-lg border border-slate-200 bg-[#f8fbfc] p-4 mb-4 text-sm text-[#2d2d2d]">
                 <p className="m-0 mb-1"><strong>{sendEmailResult.sent}</strong> emails sent</p>
                 <p className="m-0 mb-1"><strong>{sendEmailResult.failed}</strong> failed</p>
+                {(sendEmailResult.skippedAlreadySent ?? 0) > 0 && (
+                  <p className="m-0 mb-1">
+                    <strong>{sendEmailResult.skippedAlreadySent}</strong> skipped (already emailed)
+                  </p>
+                )}
                 {sendEmailResult.errors.length > 0 && (
                   <p className="m-0 mt-2 text-[#a04444]">
                     {sendEmailResult.errors.slice(0, 3).join(" ")}
@@ -825,7 +963,7 @@ export default function ResponsesTab() {
               {importRows.length > 0 && (
                 <button
                   onClick={runSendEmails}
-                  disabled={sendingEmails || importing}
+                  disabled={sendingEmails || importing || importDomainChecking}
                   className="px-6 py-2 border border-[#06596d] rounded-lg text-sm text-[#06596d] bg-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {sendingEmails ? "Sending…" : `Send emails (${importRows.length})`}
@@ -834,7 +972,7 @@ export default function ResponsesTab() {
               {!importResult && (
                 <button
                   onClick={runImport}
-                  disabled={importRows.length === 0 || importing || sendingEmails}
+                  disabled={importRows.length === 0 || importing || sendingEmails || importDomainChecking}
                   className="px-6 py-2 border-none rounded-lg bg-[#5a9aaa] text-sm text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {importing ? "Importing…" : "Import"}

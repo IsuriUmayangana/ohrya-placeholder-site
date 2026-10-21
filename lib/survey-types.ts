@@ -22,6 +22,8 @@ export interface SurveyResponse {
   submittedAt: string;
   timeToCompleteSeconds: number;
   device: "Desktop" | "Mobile" | "Tablet" | "Other";
+  /** Set after import/welcome email is successfully sent via SES. */
+  welcomeEmailSentAt?: string;
 }
 
 export type PublicUserStats = Pick<

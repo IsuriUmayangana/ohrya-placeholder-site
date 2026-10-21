@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateOtp } from "@/lib/otp-store";
 import { createOtpToken } from "@/lib/otp-token";
 import { sendOtpEmail } from "@/lib/email";
+import { isValidEmailAddress } from "@/lib/email-validation";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,8 +16,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-    if (!emailRegex.test(trimmed)) {
+    if (!isValidEmailAddress(trimmed)) {
       return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
     }
 

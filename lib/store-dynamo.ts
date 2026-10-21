@@ -12,13 +12,19 @@ import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
 import { normalizeCampaignName } from "@/lib/campaign-defaults";
 import { applyImportRowUpdates } from "@/lib/import-merge";
+import { getEmailDeliverabilityError } from "@/lib/email-deliverability";
+import { getEmailValidationError, normalizeEmailInput } from "@/lib/email-validation";
+
+let sharedDoc: DynamoDBDocumentClient | null = null;
 
 function getDoc() {
+  if (sharedDoc) return sharedDoc;
   const region = process.env.AWS_REGION ?? "us-east-1";
   const accessKeyId = process.env.OHRYA_AWS_KEY_ID;
   const secretAccessKey = process.env.OHRYA_AWS_SECRET;
   const credentials = accessKeyId && secretAccessKey ? { accessKeyId, secretAccessKey } : undefined;
-  return DynamoDBDocumentClient.from(new DynamoDBClient({ region, credentials }));
+  sharedDoc = DynamoDBDocumentClient.from(new DynamoDBClient({ region, credentials }));
+  return sharedDoc;
 }
 
 export const REFERRAL_CODE_GSI = "ReferralCodeIndex";
@@ -229,6 +235,21 @@ export async function dynamoGetStoredNameByEmail(email: string): Promise<string>
   return response?.name?.trim() ?? "";
 }
 
+export async function dynamoMarkWelcomeEmailSent(email: string, sentAt: string): Promise<void> {
+  const response = await dynamoGetResponseByEmail(email);
+  if (!response) return;
+
+  const doc = getDoc();
+  await doc.send(
+    new UpdateCommand({
+      TableName: tableName(),
+      Key: { id: response.id },
+      UpdateExpression: "SET welcomeEmailSentAt = :t",
+      ExpressionAttributeValues: { ":t": sentAt },
+    })
+  );
+}
+
 export async function dynamoGetAllResponses(): Promise<SurveyResponse[]> {
   const doc = getDoc();
   const tbl = tableName();
@@ -308,6 +329,7 @@ export type DynamoImportResult = {
   imported: number;
   updated: number;
   skipped: number;
+  invalid: number;
   errors: string[];
 };
 
@@ -329,12 +351,21 @@ export async function dynamoImportResponses(
   let imported = 0;
   let updated = 0;
   let skipped = 0;
+  let invalid = 0;
   const errors: string[] = [];
 
   for (let i = 0; i < rows.length; i++) {
-    const email = rows[i].email?.trim();
-    if (!email) {
-      errors.push(`Row ${i + 1}: missing email`);
+    const emailError = getEmailValidationError(rows[i].email);
+    if (emailError) {
+      invalid++;
+      errors.push(`Row ${i + 1}: ${emailError}`);
+      continue;
+    }
+    const email = normalizeEmailInput(rows[i].email!);
+    const deliverabilityError = await getEmailDeliverabilityError(email);
+    if (deliverabilityError) {
+      invalid++;
+      errors.push(`Row ${i + 1}: ${deliverabilityError}`);
       continue;
     }
     const emailLower = email.toLowerCase();
@@ -396,5 +427,5 @@ export async function dynamoImportResponses(
     imported++;
   }
 
-  return { imported, updated, skipped, errors };
+  return { imported, updated, skipped, invalid, errors };
 }

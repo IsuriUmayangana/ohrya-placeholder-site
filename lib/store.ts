@@ -5,6 +5,8 @@ import path from "path";
 import type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
 import { normalizeCampaignName } from "@/lib/campaign-defaults";
+import { getEmailDeliverabilityError } from "@/lib/email-deliverability";
+import { getEmailValidationError, normalizeEmailInput } from "@/lib/email-validation";
 import { applyImportRowUpdates } from "@/lib/import-merge";
 
 export type { PublicUserStats, SurveyResponse } from "@/lib/survey-types";
@@ -179,6 +181,7 @@ export type ImportResult = {
   imported: number;
   updated: number;
   skipped: number;
+  invalid: number;
   errors: string[];
 };
 
@@ -222,12 +225,22 @@ async function fileImportResponses(rows: ImportResponseRow[]): Promise<ImportRes
   let imported = 0;
   let updated = 0;
   let skipped = 0;
+  let invalid = 0;
   const errors: string[] = [];
 
   for (let i = 0; i < rows.length; i++) {
-    const email = rows[i].email?.trim();
-    if (!email) {
-      errors.push(`Row ${i + 1}: missing email`);
+    const emailRaw = rows[i].email;
+    const emailError = getEmailValidationError(emailRaw);
+    if (emailError) {
+      invalid++;
+      errors.push(`Row ${i + 1}: ${emailError}`);
+      continue;
+    }
+    const email = normalizeEmailInput(emailRaw!);
+    const deliverabilityError = await getEmailDeliverabilityError(email);
+    if (deliverabilityError) {
+      invalid++;
+      errors.push(`Row ${i + 1}: ${deliverabilityError}`);
       continue;
     }
     const emailLower = email.toLowerCase();
@@ -248,7 +261,7 @@ async function fileImportResponses(rows: ImportResponseRow[]): Promise<ImportRes
   }
 
   if (imported > 0 || updated > 0) writeDB(responses);
-  return { imported, updated, skipped, errors };
+  return { imported, updated, skipped, invalid, errors };
 }
 
 export async function importResponses(rows: ImportResponseRow[]): Promise<ImportResult> {
@@ -306,6 +319,26 @@ export async function getStoredNameByEmail(email: string): Promise<string> {
   const responses = readDB();
   const r = responses.find((res) => res.email.toLowerCase() === email.toLowerCase().trim());
   return r?.name?.trim() ?? "";
+}
+
+export async function getResponseByEmail(email: string): Promise<SurveyResponse | null> {
+  if (useDynamo) return (await loadDynamo()).dynamoGetResponseByEmail(email);
+  const responses = readDB();
+  const r = responses.find((res) => res.email.toLowerCase() === email.toLowerCase().trim());
+  return r ? withDefaultCampaign(r) : null;
+}
+
+export async function markWelcomeEmailSent(email: string): Promise<void> {
+  const sentAt = new Date().toISOString();
+  if (useDynamo) {
+    const d = await loadDynamo();
+    return d.dynamoMarkWelcomeEmailSent(email, sentAt);
+  }
+  const responses = readDB();
+  const r = responses.find((res) => res.email.toLowerCase() === email.toLowerCase().trim());
+  if (!r) return;
+  r.welcomeEmailSentAt = sentAt;
+  writeDB(responses);
 }
 
 function withDefaultCampaign(response: SurveyResponse): SurveyResponse {
