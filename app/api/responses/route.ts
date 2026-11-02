@@ -4,6 +4,7 @@ import { requireAdminSession } from "@/lib/require-admin-session";
 import { markWelcomeEmailSent, saveResponse, getAllResponses, getStats } from "@/lib/store";
 import type { SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { upsertMailchimpSignupMember } from "@/lib/mailchimp";
 import { isRecaptchaEnforced, verifyRecaptchaToken } from "@/lib/verify-recaptcha";
 
 export const runtime = "nodejs";
@@ -28,6 +29,18 @@ async function sendSignupWelcomeEmail(response: SurveyResponse): Promise<void> {
   } catch (err) {
     // Sign-up still succeeds if email fails — log for Amplify/server logs.
     console.error("[api/responses] welcome email failed", response.email, err);
+  }
+}
+
+async function syncSignupToMailchimp(response: SurveyResponse): Promise<void> {
+  try {
+    await upsertMailchimpSignupMember({
+      email: response.email,
+      name: response.name,
+      campaign: response.campaign,
+    });
+  } catch (err) {
+    console.error("[api/responses] Mailchimp sync failed", response.email, err);
   }
 }
 
@@ -57,7 +70,7 @@ export async function POST(req: NextRequest) {
       startedAt: body.startedAt || new Date().toISOString(),
       device: detectDevice(ua),
     });
-    await sendSignupWelcomeEmail(response);
+    await Promise.all([sendSignupWelcomeEmail(response), syncSignupToMailchimp(response)]);
     return NextResponse.json({ success: true, response });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
