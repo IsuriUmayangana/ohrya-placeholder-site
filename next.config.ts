@@ -48,6 +48,8 @@ const nextConfig: NextConfig = {
     SES_FROM_EMAIL: process.env.SES_FROM_EMAIL ?? "",
     OHRYA_AWS_KEY_ID: process.env.OHRYA_AWS_KEY_ID ?? "",
     OHRYA_AWS_SECRET: process.env.OHRYA_AWS_SECRET ?? "",
+    MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY ?? "",
+    MAILCHIMP_AUDIENCE_ID: process.env.MAILCHIMP_AUDIENCE_ID ?? "",
   },
 };
 
