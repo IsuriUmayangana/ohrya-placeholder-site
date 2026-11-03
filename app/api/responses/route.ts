@@ -70,7 +70,8 @@ export async function POST(req: NextRequest) {
       startedAt: body.startedAt || new Date().toISOString(),
       device: detectDevice(ua),
     });
-    await Promise.all([sendSignupWelcomeEmail(response), syncSignupToMailchimp(response)]);
+    await syncSignupToMailchimp(response);
+    await sendSignupWelcomeEmail(response);
     return NextResponse.json({ success: true, response });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

@@ -44,14 +44,17 @@ async function mailchimpFetch(path: string, init: RequestInit): Promise<Response
   });
 }
 
-type UpsertBody = {
+type MemberPayload = {
   email_address: string;
-  status_if_new: "subscribed";
-  status: "subscribed";
-  merge_fields: Record<string, string>;
+  status_if_new?: "subscribed";
+  status?: "subscribed";
+  merge_fields?: Record<string, string>;
 };
 
-function buildUpsertBody(params: MailchimpSignupParams, includeCampaignMerge: boolean): UpsertBody {
+function buildMemberPayload(
+  params: MailchimpSignupParams,
+  includeCampaignMerge: boolean,
+): MemberPayload {
   const email = params.email.trim();
   const { firstName, lastName } = splitName(params.name);
   const mergeFields: Record<string, string> = {
@@ -72,11 +75,34 @@ function buildUpsertBody(params: MailchimpSignupParams, includeCampaignMerge: bo
   };
 }
 
-async function upsertMember(body: UpsertBody, listId: string, hash: string): Promise<Response> {
+async function upsertMember(payload: MemberPayload, listId: string, hash: string): Promise<Response> {
   return mailchimpFetch(`/lists/${listId}/members/${hash}`, {
     method: "PUT",
-    body: JSON.stringify(body),
+    body: JSON.stringify(payload),
   });
+}
+
+async function createMember(payload: MemberPayload, listId: string): Promise<Response> {
+  return mailchimpFetch(`/lists/${listId}/members`, {
+    method: "POST",
+    body: JSON.stringify({
+      email_address: payload.email_address,
+      status: "subscribed",
+      merge_fields: payload.merge_fields,
+    }),
+  });
+}
+
+function isMemberExistsError(status: number, body: string): boolean {
+  return status === 400 && body.toLowerCase().includes("member exists");
+}
+
+async function readError(res: Response): Promise<string> {
+  try {
+    return await res.text();
+  } catch {
+    return `HTTP ${res.status}`;
+  }
 }
 
 /**
@@ -90,37 +116,65 @@ export async function upsertMailchimpSignupMember(params: MailchimpSignupParams)
     return;
   }
 
-  const hash = subscriberHash(params.email);
-  let body = buildUpsertBody(params, true);
-  let memberRes = await upsertMember(body, config.listId, hash);
+  const email = params.email.trim();
+  const hash = subscriberHash(email);
+  const errors: string[] = [];
 
-  if (!memberRes.ok) {
-    const firstError = await memberRes.text();
-    // Retry without custom campaign merge field (common Mailchimp 400).
-    body = buildUpsertBody(params, false);
-    memberRes = await upsertMember(body, config.listId, hash);
-    if (!memberRes.ok) {
-      const secondError = await memberRes.text();
-      throw new Error(
-        `Member upsert failed (${memberRes.status}): ${secondError || firstError}`,
-      );
+  for (const includeCampaign of [true, false]) {
+    const payload = buildMemberPayload(params, includeCampaign);
+
+    const putRes = await upsertMember(payload, config.listId, hash);
+    if (putRes.ok) {
+      console.info("[mailchimp] Subscribed (PUT)", email.toLowerCase());
+      await applySignupTag(config.listId, hash);
+      return;
     }
+    errors.push(`PUT: ${await readError(putRes)}`);
+
+    const postRes = await createMember(payload, config.listId);
+    if (postRes.ok) {
+      console.info("[mailchimp] Subscribed (POST)", email.toLowerCase());
+      await applySignupTag(config.listId, hash);
+      return;
+    }
+    const postErr = await readError(postRes);
+    if (isMemberExistsError(postRes.status, postErr)) {
+      console.info("[mailchimp] Already on audience", email.toLowerCase());
+      return;
+    }
+    errors.push(`POST: ${postErr}`);
   }
 
-  console.info("[mailchimp] Subscribed", params.email.trim().toLowerCase());
+  const minimalRes = await mailchimpFetch(`/lists/${config.listId}/members`, {
+    method: "POST",
+    body: JSON.stringify({ email_address: email, status: "subscribed" }),
+  });
+  if (minimalRes.ok) {
+    console.info("[mailchimp] Subscribed (POST minimal)", email.toLowerCase());
+    await applySignupTag(config.listId, hash);
+    return;
+  }
+  const minimalErr = await readError(minimalRes);
+  if (isMemberExistsError(minimalRes.status, minimalErr)) {
+    return;
+  }
+  errors.push(`POST minimal: ${minimalErr}`);
 
+  throw new Error(errors.join(" | "));
+}
+
+async function applySignupTag(listId: string, hash: string): Promise<void> {
   const signupTag = getMailchimpOptionalEnv("SIGNUP_TAG");
-  if (signupTag) {
-    const tagRes = await mailchimpFetch(`/lists/${config.listId}/members/${hash}/tags`, {
-      method: "POST",
-      body: JSON.stringify({
-        tags: [{ name: signupTag, status: "active" }],
-      }),
-    });
-    if (!tagRes.ok) {
-      const tagBody = await tagRes.text();
-      console.warn("[mailchimp] Tag failed (member was subscribed)", tagBody);
-    }
+  if (!signupTag) return;
+
+  const tagRes = await mailchimpFetch(`/lists/${listId}/members/${hash}/tags`, {
+    method: "POST",
+    body: JSON.stringify({
+      tags: [{ name: signupTag, status: "active" }],
+    }),
+  });
+  if (!tagRes.ok) {
+    console.warn("[mailchimp] Tag failed (member was subscribed)", await readError(tagRes));
   }
 }
 
@@ -140,7 +194,7 @@ export async function getMailchimpAudienceHealth(): Promise<{
     method: "GET",
   });
   if (!res.ok) {
-    const body = await res.text();
+    const body = await readError(res);
     return { configured: true, error: `Mailchimp API ${res.status}: ${body}` };
   }
 
