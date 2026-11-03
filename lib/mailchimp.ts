@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import {
+  getMailchimpCampaignMergeTag,
   getMailchimpCredentials,
   getMailchimpOptionalEnv,
 } from "@/lib/mailchimp-credentials";
@@ -54,6 +55,7 @@ type MemberPayload = {
 function buildMemberPayload(
   params: MailchimpSignupParams,
   includeCampaignMerge: boolean,
+  campaignMergeTag: string,
 ): MemberPayload {
   const email = params.email.trim();
   const { firstName, lastName } = splitName(params.name);
@@ -62,9 +64,8 @@ function buildMemberPayload(
     LNAME: lastName,
   };
 
-  const campaignMergeKey = getMailchimpOptionalEnv("MERGE_CAMPAIGN");
-  if (includeCampaignMerge && campaignMergeKey && params.campaign?.trim()) {
-    mergeFields[campaignMergeKey] = params.campaign.trim();
+  if (includeCampaignMerge && params.campaign?.trim()) {
+    mergeFields[campaignMergeTag] = params.campaign.trim();
   }
 
   return {
@@ -105,6 +106,34 @@ async function readError(res: Response): Promise<string> {
   }
 }
 
+let cachedCampaignMergeTag: string | null = null;
+
+async function resolveCampaignMergeTag(listId: string): Promise<string> {
+  if (process.env["MAILCHIMP" + "_MERGE_CAMPAIGN"]?.trim()) {
+    return getMailchimpCampaignMergeTag();
+  }
+  if (cachedCampaignMergeTag) return cachedCampaignMergeTag;
+
+  const mergeRes = await mailchimpFetch(`/lists/${listId}/merge-fields?count=100`, {
+    method: "GET",
+  });
+  if (mergeRes.ok) {
+    const mergeData = (await mergeRes.json()) as {
+      merge_fields?: Array<{ tag: string; name: string }>;
+    };
+    const campaignField = (mergeData.merge_fields ?? []).find(
+      (f) => f.name.toLowerCase() === "campaign",
+    );
+    if (campaignField?.tag) {
+      cachedCampaignMergeTag = campaignField.tag;
+      return campaignField.tag;
+    }
+  }
+
+  cachedCampaignMergeTag = getMailchimpCampaignMergeTag();
+  return cachedCampaignMergeTag;
+}
+
 /**
  * Upserts a list member after website sign-up. No-op when env vars are unset.
  * Sign-up should not depend on this succeeding — callers should catch and log.
@@ -119,9 +148,10 @@ export async function upsertMailchimpSignupMember(params: MailchimpSignupParams)
   const email = params.email.trim();
   const hash = subscriberHash(email);
   const errors: string[] = [];
+  const campaignMergeTag = await resolveCampaignMergeTag(config.listId);
 
   for (const includeCampaign of [true, false]) {
-    const payload = buildMemberPayload(params, includeCampaign);
+    const payload = buildMemberPayload(params, includeCampaign, campaignMergeTag);
 
     const putRes = await upsertMember(payload, config.listId, hash);
     if (putRes.ok) {
@@ -145,9 +175,18 @@ export async function upsertMailchimpSignupMember(params: MailchimpSignupParams)
     errors.push(`POST: ${postErr}`);
   }
 
+  const minimalBody: Record<string, unknown> = {
+    email_address: email,
+    status: "subscribed",
+  };
+  if (params.campaign?.trim()) {
+    minimalBody.merge_fields = {
+      [campaignMergeTag]: params.campaign.trim(),
+    };
+  }
   const minimalRes = await mailchimpFetch(`/lists/${config.listId}/members`, {
     method: "POST",
-    body: JSON.stringify({ email_address: email, status: "subscribed" }),
+    body: JSON.stringify(minimalBody),
   });
   if (minimalRes.ok) {
     console.info("[mailchimp] Subscribed (POST minimal)", email.toLowerCase());
@@ -183,6 +222,8 @@ export async function getMailchimpAudienceHealth(): Promise<{
   configured: boolean;
   audienceName?: string;
   memberCount?: number;
+  campaignMergeTag?: string;
+  campaignFieldFound?: boolean;
   error?: string;
 }> {
   const config = getMailchimpCredentials();
@@ -199,9 +240,30 @@ export async function getMailchimpAudienceHealth(): Promise<{
   }
 
   const data = (await res.json()) as { name?: string; stats?: { member_count?: number } };
+
+  let campaignMergeTag = getMailchimpCampaignMergeTag();
+  let campaignFieldFound = false;
+  const mergeRes = await mailchimpFetch(
+    `/lists/${config.listId}/merge-fields?count=100`,
+    { method: "GET" },
+  );
+  if (mergeRes.ok) {
+    const mergeData = (await mergeRes.json()) as {
+      merge_fields?: Array<{ tag: string; name: string }>;
+    };
+    const fields = mergeData.merge_fields ?? [];
+    const campaignField = fields.find((f) => f.name.toLowerCase() === "campaign");
+    if (campaignField) {
+      campaignFieldFound = true;
+      campaignMergeTag = campaignField.tag;
+    }
+  }
+
   return {
     configured: true,
     audienceName: data.name,
     memberCount: data.stats?.member_count,
+    campaignMergeTag,
+    campaignFieldFound,
   };
 }

@@ -15,9 +15,13 @@ export function getMailchimpCredentials(): {
   return { apiKey, listId, datacenter };
 }
 
-export function getMailchimpOptionalEnv(name: "MERGE_CAMPAIGN" | "SIGNUP_TAG"): string | undefined {
-  const env = process.env;
-  const key = name === "MERGE_CAMPAIGN" ? "MAILCHIMP" + "_MERGE_CAMPAIGN" : "MAILCHIMP" + "_SIGNUP_TAG";
-  const value = env[key]?.trim();
+export function getMailchimpOptionalEnv(name: "SIGNUP_TAG"): string | undefined {
+  const value = process.env["MAILCHIMP" + "_SIGNUP_TAG"]?.trim();
   return value || undefined;
+}
+
+/** Mailchimp merge tag for the audience "Campaign" field (not the display label). */
+export function getMailchimpCampaignMergeTag(): string {
+  const custom = process.env["MAILCHIMP" + "_MERGE_CAMPAIGN"]?.trim();
+  return custom || "CAMPAIGN";
 }

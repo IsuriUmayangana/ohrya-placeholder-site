@@ -11,6 +11,9 @@ frontend:
         - |
           if [ -n "$MAILCHIMP_API_KEY" ] && [ -n "$MAILCHIMP_AUDIENCE_ID" ]; then
             printf "MAILCHIMP_API_KEY=%s\nMAILCHIMP_AUDIENCE_ID=%s\n" "$MAILCHIMP_API_KEY" "$MAILCHIMP_AUDIENCE_ID" >> .env.production
+            if [ -n "$MAILCHIMP_MERGE_CAMPAIGN" ]; then
+              printf "MAILCHIMP_MERGE_CAMPAIGN=%s\n" "$MAILCHIMP_MERGE_CAMPAIGN" >> .env.production
+            fi
           fi
         - npm run fetch:instagram || echo "Instagram fetch skipped (set IG_USER_ID and IG_ACCESS_TOKEN in Amplify env)"
     build:

@@ -50,6 +50,7 @@ const nextConfig: NextConfig = {
     OHRYA_AWS_SECRET: process.env.OHRYA_AWS_SECRET ?? "",
     MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY ?? "",
     MAILCHIMP_AUDIENCE_ID: process.env.MAILCHIMP_AUDIENCE_ID ?? "",
+    MAILCHIMP_MERGE_CAMPAIGN: process.env.MAILCHIMP_MERGE_CAMPAIGN ?? "",
   },
 };
 
