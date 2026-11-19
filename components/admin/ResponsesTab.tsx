@@ -24,7 +24,17 @@ const CAMPAIGN_COLORS: Record<string, string> = {
   Children: "#f0e6ff", Animals: "#e6f7ff", Veterans: "#fff3e6",
 };
 
-const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Sign Up", "Referral", "Total"] as const;
+const TABLE_HEADERS = [
+  "Name",
+  "Email",
+  "Date",
+  "Campaign",
+  "Nomination",
+  "Device",
+  "Sign Up",
+  "Referral",
+  "Total",
+] as const;
 
 const EXPORT_HEADERS = [
   "Email address",
@@ -250,10 +260,12 @@ export default function ResponsesTab() {
   // Apply question filters + search client-side
   const filtered = useMemo(() => {
     return allResponses.filter((r) => {
+      const nomination = (r.campaignNomination ?? "").toLowerCase();
       const matchSearch = !search ||
         r.name.toLowerCase().includes(search.toLowerCase()) ||
         r.email.toLowerCase().includes(search.toLowerCase()) ||
-        r.campaign.toLowerCase().includes(search.toLowerCase());
+        r.campaign.toLowerCase().includes(search.toLowerCase()) ||
+        nomination.includes(search.toLowerCase());
       const matchFilters = activeFilters.every((f) => {
         const val = ((r as unknown as Record<string, string>)[f.fieldId] ?? "");
         switch (f.operator) {
@@ -662,6 +674,18 @@ export default function ResponsesTab() {
                       </span>
                     </td>
 
+                    {/* Nonprofit nomination */}
+                    <td
+                      className="px-4 py-3.5 text-slate-600 text-[13px] max-w-[200px] truncate"
+                      title={r.campaignNomination || undefined}
+                    >
+                      {r.campaignNomination?.trim() ? (
+                        r.campaignNomination.trim()
+                      ) : (
+                        <span className="text-slate-300">—</span>
+                      )}
+                    </td>
+
                     {/* Device */}
                     <td className="px-4 py-3.5 text-slate-500 text-[12px] whitespace-nowrap">
                       {r.device || <span className="text-slate-300">—</span>}
@@ -750,6 +774,13 @@ export default function ResponsesTab() {
                       {r.campaign}
                     </span>
                   </div>
+
+                  {r.campaignNomination?.trim() ? (
+                    <p className="text-[12px] text-slate-600 mb-3 leading-snug">
+                      <span className="text-slate-400">Nomination: </span>
+                      {r.campaignNomination.trim()}
+                    </p>
+                  ) : null}
 
                   {/* Detail grid */}
                   <div className="grid grid-cols-2 gap-x-3 gap-y-3 text-[12px]">
