@@ -11,23 +11,23 @@ interface Props {
 
 const LEADERBOARD_PATH = "/leaderboard";
 const DASHBOARD_PATH = "/dashboard";
+const JOIN_FORM_SECTION_ID = "join-form";
 
 function NavButtons({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
-      <Link
-        className="site-nav-btn site-nav-btn-leaderboard"
-        href={LEADERBOARD_PATH}
-        onClick={onNavigate}
-      >
+      <Link className="site-nav-link" href={LEADERBOARD_PATH} onClick={onNavigate}>
         Leaderboard
       </Link>
+      <Link className="site-nav-link" href={DASHBOARD_PATH} onClick={onNavigate}>
+        Visit Dashboard
+      </Link>
       <Link
-        className="site-nav-btn site-nav-btn-dashboard"
-        href={DASHBOARD_PATH}
+        className="site-nav-btn site-nav-btn-leaderboard"
+        href={`#${JOIN_FORM_SECTION_ID}`}
         onClick={onNavigate}
       >
-        Visit Dashboard
+        Nominate a Charity
       </Link>
     </>
   );
