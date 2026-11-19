@@ -128,7 +128,7 @@ export default function JoinCampaignSurface({
 
         <div className="form-field">
           <label className="form-label" htmlFor="join-campaign-nomination">
-            Know a non-profit doing great things? Nominate below.
+            Know a charity doing great things? Nominate below.
           </label>
           <input
             className="form-input"
