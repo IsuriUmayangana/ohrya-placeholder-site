@@ -1,4 +1,13 @@
+"use client";
+
+import type { MouseEvent } from "react";
+import { JOIN_FORM_SECTION_ID, scrollToJoinForm } from "@/lib/scroll-to-join-form";
 import Button from "../Button";
+
+function handleJoinCampaignClick(event: MouseEvent<HTMLAnchorElement>) {
+  event.preventDefault();
+  scrollToJoinForm();
+}
 
 export default function Hero() {
   return (
@@ -38,7 +47,11 @@ export default function Hero() {
 
       <p className="hero-tagline">Free to join • Verified charities • Real rewards</p>
 
-      <Button href="#join-form" className="join-campaign-btn">
+      <Button
+        href={`#${JOIN_FORM_SECTION_ID}`}
+        className="join-campaign-btn"
+        onClick={handleJoinCampaignClick}
+      >
         Join a Campaign
       </Button>
 
