@@ -56,9 +56,12 @@
   line-height: 1.21;
 }
 
+html:has(.landing-page) {
+  scroll-behavior: smooth;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .landing-page,
-  .privacy-page {
+  html:has(.landing-page) {
     scroll-behavior: auto;
   }
 }
@@ -68,6 +71,7 @@
    LANDING PAGE CONTAINER
    ========================================== */
 .landing-page {
+  --nav-h: 72px;
   width: 100%;
   min-height: 100vh;
   margin: 0 auto;
@@ -647,7 +651,7 @@
   display: flex;
   justify-content: center;
   padding: 100px 20px 80px;
-  scroll-margin-top: 40px;
+  scroll-margin-top: calc(var(--nav-h) + 12px);
 }
 
 .join-card {
@@ -1726,6 +1730,7 @@
    RESPONSIVE - MOBILE
    ========================================== */
 @media (max-width: 767px) {
+  .landing-page,
   .header {
     --nav-h: 64px;
   }

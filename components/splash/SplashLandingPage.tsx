@@ -8,6 +8,7 @@ import {
   submitSurveyResponse,
 } from "@/lib/submit-survey-response";
 import { navigateAfterSignup } from "@/lib/navigate-after-signup";
+import { JOIN_FORM_SECTION_ID, scrollToJoinForm } from "@/lib/scroll-to-join-form";
 import { getSurveyCampaignValue, type CampaignId } from "./JoinCampaignSurface";
 import CharityNavigator from "./sections/CharityNavigator";
 import Faq from "./sections/Faq";
@@ -60,11 +61,9 @@ export default function SplashLandingPage() {
   }, [referredBy]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || window.location.hash !== "#join-form") return;
-
-    const scrollToJoinForm = () => {
-      document.getElementById("join-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
+    if (typeof window === "undefined" || window.location.hash !== `#${JOIN_FORM_SECTION_ID}`) {
+      return undefined;
+    }
 
     scrollToJoinForm();
     const timeoutId = window.setTimeout(scrollToJoinForm, 400);

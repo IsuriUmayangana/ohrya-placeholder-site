@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { JOIN_FORM_SECTION_ID, scrollToJoinForm } from "@/lib/scroll-to-join-form";
 
 interface Props {
   /** Referrer first name — banner is hidden when omitted. */
@@ -11,7 +12,15 @@ interface Props {
 
 const LEADERBOARD_PATH = "/leaderboard";
 const DASHBOARD_PATH = "/dashboard";
-const JOIN_FORM_SECTION_ID = "join-form";
+
+function handleNominateClick(
+  event: MouseEvent<HTMLAnchorElement>,
+  onNavigate?: () => void,
+) {
+  event.preventDefault();
+  onNavigate?.();
+  scrollToJoinForm();
+}
 
 function NavButtons({ onNavigate }: { onNavigate?: () => void }) {
   return (
@@ -25,7 +34,7 @@ function NavButtons({ onNavigate }: { onNavigate?: () => void }) {
       <Link
         className="site-nav-btn site-nav-btn-leaderboard"
         href={`#${JOIN_FORM_SECTION_ID}`}
-        onClick={onNavigate}
+        onClick={(event) => handleNominateClick(event, onNavigate)}
       >
         Nominate a Charity
       </Link>
