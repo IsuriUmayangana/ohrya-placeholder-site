@@ -113,6 +113,7 @@ export async function GET(req: NextRequest) {
       referralScore, referralCount: r.referralCount,
       totalScore: SURVEY_SCORE + referralScore,
       submittedAt: r.submittedAt, device: r.device ?? "Other",
+      campaignNomination: r.campaignNomination ?? "",
       dashboardUrl: `/dashboard/${r.emailSlug}`,
     };
     }),

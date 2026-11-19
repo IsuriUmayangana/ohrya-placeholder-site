@@ -73,6 +73,7 @@ export default function SplashLandingPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [campaignNomination, setCampaignNomination] = useState("");
   const [formError, setFormError] = useState<ReactNode>("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -109,10 +110,12 @@ export default function SplashLandingPage() {
         return;
       }
 
+      const nomination = campaignNomination.trim();
       const result = await submitSurveyResponse({
         campaign: getSurveyCampaignValue(selectedCampaign),
         name: trimmedName,
         email: trimmedEmail,
+        ...(nomination ? { campaignNomination: nomination } : {}),
         referredBy,
         startedAt: new Date().toISOString(),
       });
@@ -143,6 +146,8 @@ export default function SplashLandingPage() {
           setEmail(value);
           setFormError("");
         }}
+        campaignNomination={campaignNomination}
+        onCampaignNominationChange={setCampaignNomination}
         onSubmit={handleJoinSubmit}
         error={formError}
         submitting={submitting}

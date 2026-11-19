@@ -22,6 +22,8 @@ export interface SurveyResponse {
   submittedAt: string;
   timeToCompleteSeconds: number;
   device: "Desktop" | "Mobile" | "Tablet" | "Other";
+  /** Optional nonprofit name suggested on sign-up. */
+  campaignNomination?: string;
   /** Set after import/welcome email is successfully sent via SES. */
   welcomeEmailSentAt?: string;
 }

@@ -9,7 +9,8 @@ import FiltersModal, { type ActiveFilter } from "./FiltersModal";
 import { getPaginationItems, type PaginationItem } from "@/lib/pagination";
 
 interface Response {
-  id: string; name: string; email: string; campaign: string; willGive: string;
+  id: string; name: string; email: string; campaign: string; campaignNomination?: string;
+  willGive: string;
   donationAmount: string; willVote: string; willShine: string;
   prefersEarning: string; surveyScore: number; referralScore: number;
   referralCount: number; totalScore: number; submittedAt: string;
@@ -25,7 +26,13 @@ const CAMPAIGN_COLORS: Record<string, string> = {
 
 const TABLE_HEADERS = ["Name", "Email", "Date", "Campaign", "Device", "Sign Up", "Referral", "Total"] as const;
 
-const EXPORT_HEADERS = ["Email address", "First Name", "Last Name", "Campaign name"] as const;
+const EXPORT_HEADERS = [
+  "Email address",
+  "First Name",
+  "Last Name",
+  "Campaign name",
+  "Campaign nomination",
+] as const;
 
 function splitFullName(fullName: string): { firstName: string; lastName: string } {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
@@ -317,6 +324,7 @@ export default function ResponsesTab() {
         "First Name": firstName,
         "Last Name": lastName,
         "Campaign name": r.campaign,
+        "Campaign nomination": r.campaignNomination ?? "",
       };
     });
   }

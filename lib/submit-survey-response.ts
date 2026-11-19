@@ -13,6 +13,7 @@ export type SubmitSurveyParams = {
   campaign: string;
   name: string;
   email: string;
+  campaignNomination?: string;
   referredBy?: string;
   startedAt?: string;
 };
@@ -44,6 +45,9 @@ export async function submitSurveyResponse(params: SubmitSurveyParams): Promise<
       campaign: params.campaign,
       name: params.name,
       email: params.email,
+      ...(params.campaignNomination?.trim()
+        ? { campaignNomination: params.campaignNomination.trim() }
+        : {}),
       ...SKIPPED_DEFAULT_ANSWERS,
       surveyScore: 10,
       startedAt: params.startedAt || new Date().toISOString(),

@@ -8,6 +8,8 @@ type JoinFormSectionProps = {
   onNameChange: (value: string) => void;
   email: string;
   onEmailChange: (value: string) => void;
+  campaignNomination: string;
+  onCampaignNominationChange: (value: string) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   error?: ReactNode;
   submitting?: boolean;
@@ -20,6 +22,8 @@ export default function JoinFormSection({
   onNameChange,
   email,
   onEmailChange,
+  campaignNomination,
+  onCampaignNominationChange,
   onSubmit,
   error,
   submitting,
@@ -34,6 +38,8 @@ export default function JoinFormSection({
           onNameChange={onNameChange}
           email={email}
           onEmailChange={onEmailChange}
+          campaignNomination={campaignNomination}
+          onCampaignNominationChange={onCampaignNominationChange}
           onSubmit={onSubmit}
           error={error}
           submitting={submitting}

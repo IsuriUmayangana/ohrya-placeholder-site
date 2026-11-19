@@ -38,6 +38,8 @@ type JoinCampaignSurfaceProps = {
   onNameChange: (value: string) => void;
   email: string;
   onEmailChange: (value: string) => void;
+  campaignNomination: string;
+  onCampaignNominationChange: (value: string) => void;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
   error?: ReactNode;
   submitting?: boolean;
@@ -51,6 +53,8 @@ export default function JoinCampaignSurface({
   onNameChange,
   email,
   onEmailChange,
+  campaignNomination,
+  onCampaignNominationChange,
   onSubmit,
   error,
   submitting = false,
@@ -118,6 +122,23 @@ export default function JoinCampaignSurface({
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
             required
+            suppressHydrationWarning
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label" htmlFor="join-campaign-nomination">
+            Know a non-profit doing great things? Nominate below.
+          </label>
+          <input
+            className="form-input"
+            type="text"
+            id="join-campaign-nomination"
+            name="campaignNomination"
+            placeholder="e.g. St. Jude Children’s Charity"
+            value={campaignNomination}
+            onChange={(e) => onCampaignNominationChange(e.target.value)}
+            maxLength={300}
             suppressHydrationWarning
           />
         </div>

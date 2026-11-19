@@ -4,6 +4,7 @@ import { requireAdminSession } from "@/lib/require-admin-session";
 import { markWelcomeEmailSent, saveResponse, getAllResponses, getStats } from "@/lib/store";
 import type { SurveyResponse } from "@/lib/survey-types";
 import { SURVEY_SCORE } from "@/lib/survey-types";
+import { normalizeCampaignNomination } from "@/lib/campaign-nomination";
 import { upsertMailchimpSignupMember } from "@/lib/mailchimp";
 import { isRecaptchaEnforced, verifyRecaptchaToken } from "@/lib/verify-recaptcha";
 
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
       prefersEarning: body.prefersEarning || "",
       name: body.name || "",
       email: body.email || "",
+      campaignNomination: normalizeCampaignNomination(body.campaignNomination),
       surveyScore: SURVEY_SCORE,
       startedAt: body.startedAt || new Date().toISOString(),
       device: detectDevice(ua),
