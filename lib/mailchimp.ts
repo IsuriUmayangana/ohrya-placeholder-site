@@ -1,6 +1,10 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
+import { bulkEmailDelayMs, sleep } from "@/lib/bulk-email-throttle";
+import { normalizeCampaignName } from "@/lib/campaign-defaults";
+import { getEmailDeliverabilityError } from "@/lib/email-deliverability";
+import { getEmailValidationError, normalizeEmailInput } from "@/lib/email-validation";
 import {
   getMailchimpCampaignMergeTag,
   getMailchimpCredentials,
@@ -215,6 +219,76 @@ async function applySignupTag(listId: string, hash: string): Promise<void> {
   if (!tagRes.ok) {
     console.warn("[mailchimp] Tag failed (member was subscribed)", await readError(tagRes));
   }
+}
+
+export type MailchimpBulkSyncResult = {
+  synced: number;
+  failed: number;
+  skipped: number;
+  errors: string[];
+};
+
+export type MailchimpImportRow = {
+  email: string;
+  name?: string;
+  campaign?: string;
+};
+
+/** Adds or updates Mailchimp subscribers for validated import rows (admin CSV). */
+export async function bulkSyncMailchimpFromImportRows(
+  rows: MailchimpImportRow[],
+): Promise<MailchimpBulkSyncResult> {
+  if (!isMailchimpConfigured()) {
+    return { synced: 0, failed: 0, skipped: rows.length, errors: [] };
+  }
+
+  const delayMs = bulkEmailDelayMs();
+  const seen = new Set<string>();
+  let synced = 0;
+  let failed = 0;
+  let skipped = 0;
+  const errors: string[] = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const emailError = getEmailValidationError(rows[i].email);
+    if (emailError) {
+      skipped++;
+      continue;
+    }
+    const email = normalizeEmailInput(rows[i].email);
+    const emailLower = email.toLowerCase();
+    if (seen.has(emailLower)) {
+      skipped++;
+      continue;
+    }
+    seen.add(emailLower);
+
+    const deliverabilityError = await getEmailDeliverabilityError(email);
+    if (deliverabilityError) {
+      failed++;
+      errors.push(`${email}: ${deliverabilityError}`);
+      continue;
+    }
+
+    if (synced + failed > 0 && delayMs > 0) {
+      await sleep(delayMs);
+    }
+
+    try {
+      await upsertMailchimpSignupMember({
+        email,
+        name: rows[i].name?.trim() || "",
+        campaign: normalizeCampaignName(rows[i].campaign),
+      });
+      synced++;
+    } catch (err) {
+      failed++;
+      const message = err instanceof Error ? err.message : "Mailchimp sync failed";
+      errors.push(`${email}: ${message}`);
+    }
+  }
+
+  return { synced, failed, skipped, errors };
 }
 
 /** Admin diagnostics — verifies API key and audience ID. */

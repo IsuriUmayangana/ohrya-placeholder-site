@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/require-admin-session";
+import { bulkSyncMailchimpFromImportRows } from "@/lib/mailchimp";
 import { importResponses, type ImportResponseRow } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   const unauthorized = await requireAdminSession();
@@ -21,5 +23,7 @@ export async function POST(req: Request) {
   }
 
   const result = await importResponses(rows);
-  return NextResponse.json(result);
+  const mailchimp = await bulkSyncMailchimpFromImportRows(rows);
+
+  return NextResponse.json({ ...result, mailchimp });
 }

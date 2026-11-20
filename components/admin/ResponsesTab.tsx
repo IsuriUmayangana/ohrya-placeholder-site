@@ -70,6 +70,12 @@ type ImportResult = {
   skipped: number;
   invalid: number;
   errors: string[];
+  mailchimp?: {
+    synced: number;
+    failed: number;
+    skipped: number;
+    errors: string[];
+  };
 };
 
 type ParseImportResult = {
@@ -889,6 +895,7 @@ export default function ResponsesTab() {
 
             <p className="text-sm text-[#555] mb-4">
               Upload a CSV or Excel file exported from this dashboard. Existing emails are updated with new CSV data.
+              Valid rows are also added or updated as subscribers in Mailchimp when import completes.
             </p>
 
             <label className="flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed border-slate-200 rounded-lg mb-4 cursor-pointer bg-[#fafcfd] hover:border-[#8CC7D5] transition-colors">
@@ -948,6 +955,27 @@ export default function ResponsesTab() {
                     {importResult.errors.slice(0, 3).join(" ")}
                     {importResult.errors.length > 3 ? ` (+${importResult.errors.length - 3} more)` : ""}
                   </p>
+                )}
+                {importResult.mailchimp && (
+                  <>
+                    <p className="m-0 mt-3 mb-1 font-semibold text-[#06596d]">Mailchimp</p>
+                    <p className="m-0 mb-1">
+                      <strong>{importResult.mailchimp.synced}</strong> added/updated in Mailchimp
+                    </p>
+                    {(importResult.mailchimp.failed ?? 0) > 0 && (
+                      <p className="m-0 mb-1">
+                        <strong>{importResult.mailchimp.failed}</strong> Mailchimp failed
+                      </p>
+                    )}
+                    {importResult.mailchimp.errors.length > 0 && (
+                      <p className="m-0 mt-2 text-[#a04444]">
+                        {importResult.mailchimp.errors.slice(0, 2).join(" ")}
+                        {importResult.mailchimp.errors.length > 2
+                          ? ` (+${importResult.mailchimp.errors.length - 2} more)`
+                          : ""}
+                      </p>
+                    )}
+                  </>
                 )}
               </div>
             )}
@@ -1014,7 +1042,7 @@ export default function ResponsesTab() {
                   disabled={importRows.length === 0 || importing || sendingEmails || importDomainChecking}
                   className="px-6 py-2 border-none rounded-lg bg-[#5a9aaa] text-sm text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {importing ? "Importing…" : "Import"}
+                  {importing ? "Importing & syncing Mailchimp…" : "Import"}
                 </button>
               )}
             </div>
